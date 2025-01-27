@@ -1,5 +1,5 @@
 # Hex-Die
-Dynamic Resolution Engine for The Chronicles of Auld Ewe 
+Dynamic Resolution Engine for The Chronicles of Auld Ewe TTRPG.
 A web application that combines the mystical elements of I-Ching hexagrams with dice rolling to create an interactive storytelling experience.
 
 ## Features
