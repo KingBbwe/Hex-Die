@@ -9,7 +9,73 @@
 </head>
 <body>
 
-<!-- Your HTML content here -->
+<nav class="container-fluid">
+    <ul>
+        <li><strong>The Chronicles of Auld Ewe</strong></li>
+    </ul>
+    <ul>
+        <li><a href="#" id="howToPlayBtn">How to Play</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <div class="grid">
+        <section>
+            <h1>The Chronicles of Auld Ewe</h1>
+            <h2>Harmonized Hex & Die System</h2>
+            <h3>Cast a Hexagram and Roll your Die to Play</h3>
+
+            <label for="dc">Set Difficulty Class (DC):</label>
+            <input type="number" id="dc" placeholder="Enter DC value">
+
+            <label for="dieType">Select Die Type:</label>
+            <select id="dieType">
+                <option value="6">d6</option>
+                <option value="8">d8</option>
+                <option value="10">d10</option>
+                <option value="12">d12</option>
+                <option value="20">d20</option>
+                <option value="100">d100</option>
+            </select>
+
+            <label for="modifier">Apply Modifier (+/-):</label>
+            <input type="number" id="modifier" value="0">
+
+            <button onclick="rollDiceAndHexagram()">Harmonize</button>
+            <button onclick="analyzeResult()">Analyze Outcome</button>
+            <button class="oraclize-btn" onclick="oraclizeFunction()">Oraclize</button>
+
+            <div id="result"></div>
+        </section>
+    </div>
+</main>
+
+<footer class="container">
+    <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
+</footer>
+
+<div id="howToPlayContent">
+    <h3>How to Play: One-Click Hex & Die App</h3>
+    <p>Weave Fate and Choice in Auld Ewe’s Cosmos</p>
+    <h4>Cast & Roll (One Tap):</h4>
+    <p>Tap the Harmonize button to simultaneously:</p>
+    <ul>
+        <li><strong>Cast a Hexagram:</strong> The app generates one of 64 I-Ching archetypes (e.g., Hexagram 29: The Abysmal for danger).</li>
+        <li><strong>Roll Your Die:</strong> Automatically uses your selected die type (d6 to d100).</li>
+    </ul>
+    <h4>Add Modifiers (Optional):</h4>
+    <p>Input bonuses/penalties. The app calculates your Total Value (Hexagram + Die Roll + Modifier).</p>
+    <h4>Interpret the Cosmic Threads:</h4>
+    <p><strong>Triumph/Conflict/Disaster:</strong> Determined by your die roll.</p>
+    <p><strong>DC Met/Exceeded?</strong> The hexagram’s lines shape consequences (e.g., Line 5 = peak success, Line 6 = cosmic irony).</p>
+    <h4>Example Playthrough:</h4>
+    <p>Tap Harmonize → Casts Hexagram 29 (The Abysmal) + Rolls d20 (Triumph: 18) + Modifier +2 = Total 49 (DC 29 Exceeded).</p>
+    <p>Outcome: Leap the chasm with feral grace (Line 5), but trigger a rockslide (Line 6).</p>
+    <h4>Begin Your Saga:</h4>
+    <p>One tap. Infinite stories. What will the cosmos reveal?</p>
+    <p><strong>[Harmonize Now]</strong></p>
+    <p>Simplicity meets mysticism—forge legends in seconds.</p>
+</div>
 
 <script src="script.js"></script>
 </body>
