@@ -558,62 +558,60 @@ function rollDiceAndHexagram() {
     const dieTypeInput = document.getElementById('dieType');
     const modifierInput = document.getElementById('modifier');
 
-    const dcValue = parseInt(dcInput.value);
-    const dieTypeValue = parseInt(dieTypeInput.value);
-    const modifierValue = parseInt(modifierInput.value);
+    // Parse inputs with defaults
+    const dcValue = parseInt(dcInput.value) || 0;
+    const dieTypeValue = parseInt(dieTypeInput.value) || 6;
+    const modifierValue = parseInt(modifierInput.value) || 0;
 
+    // Generate random values
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
     const dieRoll = Math.floor(Math.random() * dieTypeValue) + 1;
     const totalValue = currentHexagramNumber + dieRoll + modifierValue;
 
+    // Generate hexagram display
     currentHexagramLines = generateHexagramLines(currentHexagramNumber);
     const changingLines = determineChangingLines();
     applyLineChanges(changingLines);
 
+    // Build result output
     const resultElement = document.getElementById('result');
     resultElement.innerHTML = `
-        Hexagram: ${currentHexagramNumber}<br>
-        Die Roll: ${dieRoll}<br>
-        Total Value: ${totalValue}<br>
-        DC: ${dcValue}<br>
+        <strong>Hexagram:</strong> ${currentHexagramNumber}<br>
+        <strong>Die Roll:</strong> ${dieRoll} (d${dieTypeValue})<br>
+        <strong>Modifier:</strong> ${modifierValue}<br>
+        <strong>Total:</strong> ${totalValue}<br>
+        <strong>DC:</strong> ${dcValue}<br>
     `;
 
-    // Outcome determination
-    let outcomeType;
-    let outcomeMessage;
+    // Determine outcome
+    let outcomeType, outcomeText;
     if (totalValue >= dcValue) {
         outcomeType = 'Triumph';
-        outcomeMessage = hexagramNarratives[currentHexagramNumber].triumph;
-    } else if (totalValue < dcValue && totalValue > dcValue - 10) {
+        outcomeText = hexagramNarratives[currentHexagramNumber].triumph;
+    } else if (totalValue > dcValue - 10) {
         outcomeType = 'Conflict';
-        outcomeMessage = hexagramNarratives[currentHexagramNumber].conflict;
+        outcomeText = hexagramNarratives[currentHexagramNumber].conflict;
     } else {
         outcomeType = 'Disaster';
-        outcomeMessage = hexagramNarratives[currentHexagramNumber].disaster;
+        outcomeText = hexagramNarratives[currentHexagramNumber].disaster;
     }
 
-    resultElement.innerHTML += `<strong>Outcome: ${outcomeType}</strong><br>${outcomeMessage}`;
+    // Add outcome to results
+    resultElement.innerHTML += `
+        <strong>Outcome:</strong> ${outcomeType}<br>
+        ${outcomeText}
+    `;
+
+    // Add hexagram lines
     displayHexagramLines();
 
-    // Telegram Integration (YOU ONLY NEED TO REPLACE THESE TWO VALUES)
-    const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with your token
-    const chatId = '-1002185533073'; // Replace with your chat ID
-    
-    if(telegramBotToken && chatId) {
-        const telegramMessage = 
-            `New Roll Result:\n` +
-            `✨ Hexagram: ${currentHexagramNumber}\n` +
-            `🎲 Die: d${dieTypeValue} → ${dieRoll}\n` +
-            `📊 Total: ${totalValue} (DC: ${dcValue})\n` +
-            `📜 Outcome: ${outcomeType}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
-
+    // Telegram integration (will work after you add credentials)
+    if(telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
+        const telegramMessage = `New Roll:\nHex: ${currentHexagramNumber}\nDie: d${dieTypeValue} → ${dieRoll}\nMod: ${modifierValue}\nTotal: ${totalValue}\nOutcome: ${outcomeType}`;
         const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMessage)}`;
-        
-        fetch(url).catch(error => console.log('Telegram message not sent (normal if credentials not set)'));
+        fetch(url).catch(error => console.log('Telegram notification skipped'));
     }
 }
-
         function oraclizeFunction() {
             const changingLines = determineChangingLines();
             const resultElement = document.getElementById('result');
