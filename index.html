@@ -422,12 +422,38 @@ function applyStepDown(currentDieType) {
 
 // Telegram Integration
 const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-const chatId = '-1002185533073'; 
+const chatId = '-1002185533073';
 
-function sendToTelegram(message) {
-    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    fetch(url).catch(error => console.log('Telegram message not sent:', error));
-} 
+async function sendToTelegram(message) {
+    if (!telegramBotToken || !chatId || !message) {
+        console.warn('Missing required Telegram parameters');
+        return;
+    }
+
+    try {
+        const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Telegram API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to send Telegram message:', error);
+    }
+}
 
 // Roll Dice and Generate Hexagram
 function rollDiceAndHexagram() {
@@ -459,16 +485,16 @@ function rollDiceAndHexagram() {
 
     if (telegramBotToken && chatId) {
         const telegramMessage = 
-            `🎲 *Cast & Roll Result* 🎲\n` +
+            `🎲 *New Roll Result* 🎲\n` +
             `✨ *Hexagram*: ${originalHexagram}\n` +
             `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
             `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
             `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
+            `🔮 *Adjusted Hexagram*: ${adjustedHexagram} (-${stepDown.hexagramReduction})\n` +
+            `💫 ${outcomeMessage ? outcomeMessage.substring(0, 100) + '...' : ''}`;
         
-        sendToTelegram(telegramMessage);
+        await sendToTelegram(telegramMessage);
     }
-}
-</script>
+}</antArtifact>
 </body>
 </html>
