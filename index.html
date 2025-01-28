@@ -43,16 +43,20 @@ button { background-color: #0f3460; color: #eaeaea; }
 </main>
 
 <script>
-// Outcome thresholds for each die type
+// Corrected Outcome Thresholds for Each Die Type
 const outcomeThresholds = {
-    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] },
-    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] },
-    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] },
-    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] },
-    100: { triumph: Array.from({ length: 20 }, (_, i) => 100 - i), conflict: Array.from({ length: 60 }, (_, i) => 80 - i), disaster: Array.from({ length: 20 }, (_, i) => 20 - i) }
+    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] }, // d6
+    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] }, // d8
+    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] }, // d12
+    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] }, // d20
+    100: {
+        triumph: Array.from({ length: 20 }, (_, i) => 100 - i), // 100–81
+        conflict: Array.from({ length: 60 }, (_, i) => 80 - i), // 80–21
+        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)  // 20–1
+    }
 };
 
-// Step-down configuration
+// Step-Down Configuration for Die Types
 const stepDownConfig = {
     6: [6, 2],
     8: [6, 4],
@@ -400,19 +404,21 @@ const hexagramLookup = {
     61: '101001', 62: '110100', 63: '001101', 64: '010101'
 };
 
-// Determine outcome based on roll and thresholds
+// Get Outcome Based on Die Roll and Die Type
 function getOutcome(dieRoll, dieType) {
     const thresholds = outcomeThresholds[dieType];
+    if (!thresholds) return 'Disaster'; // Default to 'Disaster' for invalid die types
     if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
     if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
     return 'Disaster';
 }
 
-// Apply step-down mechanic
+// Apply Step-Down Mechanic
 function applyStepDown(currentDieType) {
     const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
     return { newDieType: reducedDie, hexagramReduction: hexReduction };
 }
+
 
 // Telegram integration
 const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
@@ -423,7 +429,7 @@ function sendToTelegram(message) {
     fetch(url).catch(error => console.log('Telegram message not sent:', error));
 }
 
-// Roll function
+// Roll Dice and Generate Hexagram
 function rollDiceAndHexagram() {
     const dcValue = parseInt(document.getElementById('dc').value) || 0;
     let dieType = parseInt(document.getElementById('dieType').value);
@@ -439,17 +445,16 @@ function rollDiceAndHexagram() {
     const outcome = getOutcome(dieRoll, dieType);
 
     const totalValue = adjustedHexagram + dieRoll + modifier;
-    const outcomeMessage = hexagramNarratives[originalHexagram]?.[outcome.toLowerCase()] || 'No narrative available';
 
     const resultElement = document.getElementById('result');
     resultElement.innerHTML = `
         <strong>Original Hexagram:</strong> ${originalHexagram}<br>
-        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram}<br>
+        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram} (Step-down: -${stepDown.hexagramReduction})<br>
         <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
         <strong>Modifier:</strong> ${modifier}<br>
         <strong>Total:</strong> ${totalValue}<br>
         <strong>Outcome:</strong> ${outcome}<br>
-        <strong>Narrative:</strong> ${outcomeMessage}
+        <strong>DC:</strong> ${dcValue}
     `;
 
     // Send formatted result to Telegram
