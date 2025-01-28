@@ -464,10 +464,12 @@ function rollDiceAndHexagram() {
             `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
             `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
             `📜 *Outcome*: ${outcome}\n` +
-            `♧ Hexagram Adjusted to: ${adjustedHexagram}`;
+            `♧ Hexagram Adjusted to: ${adjustedHexagram}`; +
+            `🔮 ${outcomeMessage.substring(0, 100)}...`;
+        
         sendToTelegram(telegramMessage);
     }
-}
+    
 </script>
 </body>
 </html>
