@@ -40,432 +40,486 @@ button { background-color: #0f3460; color: #eaeaea; }
 <button onclick="rollDiceAndHexagram()">Harmonize</button>
 <div id="result"></div>
 </section>
-</main>
+</main> 
 
 <script>
 // Outcome thresholds for each die type
 const outcomeThresholds = {
-    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] },
-    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] },
-    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] },
-    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] },
-    100: { triumph: Array.from({ length: 20 }, (_, i) => 100 - i), conflict: Array.from({ length: 60 }, (_, i) => 80 - i), disaster: Array.from({ length: 20 }, (_, i) => 20 - i) }
-};
+    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] },
+    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] },
+    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] },
+    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] },
+    100: { triumph: Array.from({ length: 20 }, (_, i) => 100 - i), conflict: Array.from({ length: 60 }, (_, i) => 80 - i), disaster: Array.from({ length: 20 }, (_, i) => 20 - i) }
+}; 
 
 // Step-down configuration
 const stepDownConfig = {
-    6: [6, 2],
-    8: [6, 4],
-    12: [8, 8],
-    20: [12, 10],
-    100: [20, 20]
-};
+    6: [6, 2],
+    8: [6, 4],
+    12: [8, 8],
+    20: [12, 10],
+    100: [20, 20]
+}; 
 
 // Hexagram-related data
-const hexagramNarratives = {
-    1: {
-        triumph: "The Sentient channels raw creative force into devastating effect, reshaping the battlefield.",
-        conflict: "Primal energies surge wildly, threatening to overwhelm the Sentient's control.",
-        disaster: "Unleashed power rebounds catastrophically upon the Sentient."
-    },
-    2: {
-        triumph: "The Sentient yields perfectly to turn an opponent's force against them.",
-        conflict: "Defensive posture limits offensive opportunities, prolonging the encounter.",
-        disaster: "Pure receptivity leaves the Sentient unable to mount any defense."
-    },
-    3: {
-        triumph: "Initial chaos becomes the Sentient's weapon, creating unexpected victory.",
-        conflict: "Difficulty focusing power leads to scattered, ineffective attacks.",
-        disaster: "Chaotic forces spiral beyond control, endangering the Sentient."
-    },
-    4: {
-        triumph: "The Sentient's inexperience becomes an advantage, producing unpredictable success.",
-        conflict: "Uncertainty in technique causes hesitation at crucial moments.",
-        disaster: "Foolish mistakes leave the Sentient critically exposed."
-    },
-    5: {
-        triumph: "Perfect timing transforms the Sentient's strike into an unstoppable force.",
-        conflict: "Awaiting the perfect moment causes missed opportunities.",
-        disaster: "Fatal hesitation allows the enemy to seize initiative."
-    },
-    6: {
-        triumph: "The Sentient resolves internal conflict into harmonious, effective action.",
-        conflict: "Divided focus splits power between attack and defense.",
-        disaster: "Inner contradiction paralyzes the Sentient at a crucial moment."
-    },
-    7: {
-        triumph: "The Sentient marshals inner forces to overwhelm all opposition.",
-        conflict: "Maintaining battlefield control drains vital energy reserves.",
-        disaster: "The army turns upon its general as control slips away."
-    },
-    8: {
-        triumph: "Natural unity with martial forces creates effortless victory.",
-        conflict: "Forced techniques fail to achieve their intended effect.",
-        disaster: "Disharmony with chosen methods leads to self-defeat."
-    },
-    9: {
-        triumph: "Small advantages accumulate into overwhelming combat superiority.",
-        conflict: "Minor setbacks threaten to unravel carefully built momentum.",
-        disaster: "Accumulated tactical errors result in strategic failure."
-    },
-    10: {
-        triumph: "The Sentient steps precisely through danger, turning threat to advantage.",
-        conflict: "Each careful move limits options for the next attack.",
-        disaster: "A single misstep in deadly territory proves fatal."
-    },
-    11: {
-        triumph: "Perfect harmony between offense and defense creates unbreakable position.",
-        conflict: "Balance between attack and protection becomes increasingly unstable.",
-        disaster: "Apparent harmony shatters, leaving critical vulnerabilities."
-    },
-    12: {
-        triumph: "The Sentient turns stagnant energy into an unexpected offensive.",
-        conflict: "Blocked chi creates increasing pressure with no release.",
-        disaster: "Complete stagnation renders the Sentient defenseless."
-    },
-    13: {
-        triumph: "Unity between warrior and weapon achieves extraordinary effect.",
-        conflict: "Disharmony between intention and action weakens strikes.",
-        disaster: "Discord between spirit and body prevents effective action."
-    },
-    14: {
-        triumph: "Abundance of power flows naturally into devastating technique.",
-        conflict: "Excessive force threatens to overwhelm precise control.",
-        disaster: "Too much power shatters the vessel containing it."
-    },
-    15: {
-        triumph: "The Sentient's humble technique bypasses all defense.",
-        conflict: "Reserved power fails to overcome immediate threats.",
-        disaster: "Excessive modesty allows a fatal blow to land."
-    },
-    16: {
-        triumph: "Enthusiastic energy transforms into unstoppable combat momentum.",
-        conflict: "Excitement causes overextension and tactical errors.",
-        disaster: "Reckless enthusiasm leads to devastating counterattack."
-    },
-    17: {
-        triumph: "Perfect adaptation allows victory over superior force.",
-        conflict: "Following the enemy's movement causes loss of initiative.",
-        disaster: "Blind reaction leads into a fatal trap."
-    },
-    18: {
-        triumph: "The Sentient transmutes corruption into purifying flame.",
-        conflict: "The work of cleansing leaves temporary vulnerabilities.",
-        disaster: "Attempt to cure poison spreads it instead."
-    },
-    19: {
-        triumph: "Approaching power gathers into an irresistible assault.",
-        conflict: "Growing strength reveals new weaknesses to address.",
-        disaster: "Power approaches its breaking point unnoticed."
-    },
-    20: {
-        triumph: "Clear perception reveals the perfect moment to strike.",
-        conflict: "Deep observation delays necessary immediate action.",
-        disaster: "Lost in contemplation, the Sentient fails to defend."
-    },
-    21: {
-        triumph: "The Sentient's force bites through all resistance.",
-        conflict: "Breaking through defense costs more than expected.",
-        disaster: "The attempt to breach shatters offensive power."
-    },
-    22: {
-        triumph: "Grace of movement creates openings in any defense.",
-        conflict: "Beautiful technique sacrifices practical effectiveness.",
-        disaster: "Focus on form over function proves fatal."
-    },
-    23: {
-        triumph: "Strategic withdrawal preserves power for the killing blow.",
-        conflict: "Necessary retreat allows enemy advancement.",
-        disaster: "Retreat becomes rout as defenses collapse."
-    },
-    24: {
-        triumph: "Return to fundamental techniques produces unexpected victory.",
-        conflict: "The path back to balance leaves temporary weakness.",
-        disaster: "Failed restoration leaves critical vulnerabilities."
-    },
-    25: {
-        triumph: "Innocent movement becomes unexpected devastating technique.",
-        conflict: "Unconscious habits create exploitable patterns.",
-        disaster: "Naivety allows a lethal trap to spring."
-    },
-    26: {
-        triumph: "Contained power releases with perfect timing and effect.",
-        conflict: "The strain of holding power creates growing instability.",
-        disaster: "Accumulated force explodes uncontrollably."
-    },
-    27: {
-        triumph: "The Sentient's technique provides perfect nourishment for victory.",
-        conflict: "Maintaining power depletes essential reserves.",
-        disaster: "Exhausted resources leave no energy for defense."
-    },
-    28: {
-        triumph: "Pressure becomes power, transforming defense into attack.",
-        conflict: "Strain of resistance creates growing weaknesses.",
-        disaster: "Critical pressure causes catastrophic collapse."
-    },
-    29: {
-        triumph: "The Sentient masters treacherous conditions to achieve victory.",
-        conflict: "Dangerous situation forces costly defensive stance.",
-        disaster: "The abyss claims the Sentient's power completely."
-    },
-    30: {
-        triumph: "Brilliant technique illuminates the path to victory.",
-        conflict: "Maintaining power creates increasing inner strain.",
-        disaster: "Inner fire burns out at a crucial moment."
-    },
-    31: {
-        triumph: "Subtle influence transforms combat into effortless dance.",
-        conflict: "Delicate technique proves difficult to maintain.",
-        disaster: "Attempt at influence reveals fatal weakness."
-    },
-    32: {
-        triumph: "Unwavering stance becomes unshakeable power.",
-        conflict: "Consistency creates predictable patterns.",
-        disaster: "Rigid defense shatters under precise strike."
-    },
-    33: {
-        triumph: "Strategic retreat becomes surprising counterattack.",
-        conflict: "Withdrawal allows enemy to seize crucial ground.",
-        disaster: "Retreat cuts off path to essential resources."
-    },
-    34: {
-        triumph: "Great power flows naturally into unstoppable force.",
-        conflict: "Raw strength proves difficult to direct precisely.",
-        disaster: "Uncontrolled power turns back upon itself."
-    },
-    35: {
-        triumph: "Swift progress overwhelms enemy defenses completely.",
-        conflict: "Rapid advance outpaces defensive coverage.",
-        disaster: "Aggressive progress leads into perfect ambush."
-    },
-    36: {
-        triumph: "Inner light becomes weapon and shield combined.",
-        conflict: "Maintaining power in darkness drains vital energy.",
-        disaster: "Light fails, leaving the Sentient vulnerable."
-    },
-    37: {
-        triumph: "Proper form channels power into perfect effect.",
-        conflict: "Traditional techniques limit adaptive response.",
-        disaster: "Rigid forms shatter under unexpected attack."
-    },
-    38: {
-        triumph: "Opposition becomes source of transformative power.",
-        conflict: "Conflicting forces create tactical uncertainty.",
-        disaster: "Internal opposition prevents effective defense."
-    },
-    39: {
-        triumph: "The Sentient turns impediment into unexpected advantage.",
-        conflict: "Obstacles force costly expenditure of power.",
-        disaster: "Insurmountable barrier leads to total defeat."
-    },
-    40: {
-        triumph: "Liberation of power creates overwhelming force.",
-        conflict: "Freedom of movement sacrifices defensive position.",
-        disaster: "Released power escapes all control."
-    },
-    41: {
-        triumph: "Diminishing resources refine into concentrated power.",
-        conflict: "Conservation of force limits tactical options.",
-        disaster: "Critical resources fail at decisive moment."
-    },
-    42: {
-        triumph: "Increasing power flows naturally into victory.",
-        conflict: "Growing force becomes difficult to direct.",
-        disaster: "Unchecked increase bursts all bounds."
-    },
-    43: {
-        triumph: "Decisive breakthrough shatters all resistance.",
-        conflict: "Resolution requires more force than available.",
-        disaster: "Breaking point reveals structural weakness."
-    },
-    44: {
-        triumph: "Coming force is met and mastered perfectly.",
-        conflict: "Anticipation of danger creates hesitation.",
-        disaster: "The trap springs, leaving no escape."
-    },
-    45: {
-        triumph: "Gathered power unifies into overwhelming force.",
-        conflict: "Maintaining unity disperses combat focus.",
-        disaster: "Collected force scatters at crucial moment."
-    },
-    46: {
-        triumph: "Rising energy becomes unstoppable assault.",
-        conflict: "Upward pressure creates unstable position.",
-        disaster: "Forced advance leads to crushing defeat."
-    },
-    47: {
-        triumph: "Exhaustion becomes source of unexpected strength.",
-        conflict: "Oppression strains remaining resources.",
-        disaster: "Final reserves fail, leaving total defeat."
-    },
-    48: {
-        triumph: "Deep sources replenish power beyond limit.",
-        conflict: "Drawing power reveals bottom of reserves.",
-        disaster: "The well runs dry in desperate moment."
-    },
-    49: {
-        triumph: "Revolution of force creates irresistible change.",
-        conflict: "Transformation strains structural integrity.",
-        disaster: "Change devours its own source completely."
-    },
-    50: {
-        triumph: "Sacred vessel channels power to perfect effect.",
-        conflict: "Container strains to hold gathered force.",
-        disaster: "The vessel breaks, spilling power uselessly."
-    },
-    51: {
-        triumph: "Shocking force becomes perfect striking power.",
-        conflict: "Thunder's power proves difficult to direct.",
-        disaster: "Lightning rebounds upon its source."
-    },
-    52: {
-        triumph: "Perfect stillness explodes into decisive action.",
-        conflict: "Maintained meditation delays crucial response.",
-        disaster: "Stillness becomes paralysis in combat."
-    },
-    53: {
-        triumph: "Gradual advance creates inevitable victory.",
-        conflict: "Slow progress allows enemy preparation.",
-        disaster: "Development fails before technique matures."
-    },
-    54: {
-        triumph: "Proper action transforms disadvantage to victory.",
-        conflict: "Propriety limits effective tactical options.",
-        disaster: "Improper position allows fatal strike."
-    },
-    55: {
-        triumph: "Abundant power flows into perfect technique.",
-        conflict: "Success breeds openings in defense.",
-        disaster: "Peak power burns out, leaving emptiness."
-    },
-    56: {
-        triumph: "Strange circumstances become source of power.",
-        conflict: "Unfamiliar ground limits tactical options.",
-        disaster: "Lost wanderer falls to unknown dangers."
-    },
-    57: {
-        triumph: "Gentle penetration bypasses strongest defense.",
-        conflict: "Subtle approach allows enemy preparation.",
-        disaster: "Wind scatters essential force completely."
-    },
-    58: {
-        triumph: "Joyous energy transforms into combat mastery.",
-        conflict: "Pleasant technique proves ineffective in crisis.",
-        disaster: "Light heart misses mortal danger."
-    },
-    59: {
-        triumph: "Dispersed power reunites with devastating effect.",
-        conflict: "Scattered force proves difficult to gather.",
-        disaster: "Essential power disperses beyond recall."
-    },
-    60: {
-        triumph: "Limited force finds perfect application.",
-        conflict: "Restriction creates exploitable patterns.",
-        disaster: "Artificial limits prevent vital action."
-    },
-    61: {
-        triumph: "Inner truth becomes perfect combat clarity.",
-        conflict: "Sincerity creates predictable responses.",
-        disaster: "Truth realized comes far too late."
-    },
-    62: {
-        triumph: "Small advantage produces decisive victory.",
-        conflict: "Minor details distract from major threats.",
-        disaster: "Precision fails when power is needed."
-    },
-    63: {
-        triumph: "Perfected technique achieves effortless victory.",
-        conflict: "Completion breeds dangerous overconfidence.",
-        disaster: "Apparent mastery masks fatal flaw."
-    },
-    64: {
-        triumph: "Unformed chaos becomes source of power.",
-        conflict: "Uncertainty clouds tactical judgment.",
-        disaster: "Not-yet-complete crumbles under pressure."
-    }
+        const hexagramNarratives = {
+    1: {
+        triumph: "The Sentient channels raw creative force into devastating effect, reshaping the battlefield.",
+        conflict: "Primal energies surge wildly, threatening to overwhelm the Sentient's control.",
+        disaster: "Unleashed power rebounds catastrophically upon the Sentient."
+    },
+    2: {
+        triumph: "The Sentient yields perfectly to turn an opponent's force against them.",
+        conflict: "Defensive posture limits offensive opportunities, prolonging the encounter.",
+        disaster: "Pure receptivity leaves the Sentient unable to mount any defense."
+    },
+    3: {
+        triumph: "Initial chaos becomes the Sentient's weapon, creating unexpected victory.",
+        conflict: "Difficulty focusing power leads to scattered, ineffective attacks.",
+        disaster: "Chaotic forces spiral beyond control, endangering the Sentient."
+    },
+    4: {
+        triumph: "The Sentient's inexperience becomes an advantage, producing unpredictable success.",
+        conflict: "Uncertainty in technique causes hesitation at crucial moments.",
+        disaster: "Foolish mistakes leave the Sentient critically exposed."
+    },
+    5: {
+        triumph: "Perfect timing transforms the Sentient's strike into an unstoppable force.",
+        conflict: "Awaiting the perfect moment causes missed opportunities.",
+        disaster: "Fatal hesitation allows the enemy to seize initiative."
+    },
+    6: {
+        triumph: "The Sentient resolves internal conflict into harmonious, effective action.",
+        conflict: "Divided focus splits power between attack and defense.",
+        disaster: "Inner contradiction paralyzes the Sentient at a crucial moment."
+    },
+    7: {
+        triumph: "The Sentient marshals inner forces to overwhelm all opposition.",
+        conflict: "Maintaining battlefield control drains vital energy reserves.",
+        disaster: "The army turns upon its general as control slips away."
+    },
+    8: {
+        triumph: "Natural unity with martial forces creates effortless victory.",
+        conflict: "Forced techniques fail to achieve their intended effect.",
+        disaster: "Disharmony with chosen methods leads to self-defeat."
+    },
+    9: {
+        triumph: "Small advantages accumulate into overwhelming combat superiority.",
+        conflict: "Minor setbacks threaten to unravel carefully built momentum.",
+        disaster: "Accumulated tactical errors result in strategic failure."
+    },
+    10: {
+        triumph: "The Sentient steps precisely through danger, turning threat to advantage.",
+        conflict: "Each careful move limits options for the next attack.",
+        disaster: "A single misstep in deadly territory proves fatal."
+    },
+    11: {
+        triumph: "Perfect harmony between offense and defense creates unbreakable position.",
+        conflict: "Balance between attack and protection becomes increasingly unstable.",
+        disaster: "Apparent harmony shatters, leaving critical vulnerabilities."
+    },
+    12: {
+        triumph: "The Sentient turns stagnant energy into an unexpected offensive.",
+        conflict: "Blocked chi creates increasing pressure with no release.",
+        disaster: "Complete stagnation renders the Sentient defenseless."
+    },
+    13: {
+        triumph: "Unity between warrior and weapon achieves extraordinary effect.",
+        conflict: "Disharmony between intention and action weakens strikes.",
+        disaster: "Discord between spirit and body prevents effective action."
+    },
+    14: {
+        triumph: "Abundance of power flows naturally into devastating technique.",
+        conflict: "Excessive force threatens to overwhelm precise control.",
+        disaster: "Too much power shatters the vessel containing it."
+    },
+    15: {
+        triumph: "The Sentient's humble technique bypasses all defense.",
+        conflict: "Reserved power fails to overcome immediate threats.",
+        disaster: "Excessive modesty allows a fatal blow to land."
+    },
+    16: {
+        triumph: "Enthusiastic energy transforms into unstoppable combat momentum.",
+        conflict: "Excitement causes overextension and tactical errors.",
+        disaster: "Reckless enthusiasm leads to devastating counterattack."
+    },
+    17: {
+        triumph: "Perfect adaptation allows victory over superior force.",
+        conflict: "Following the enemy's movement causes loss of initiative.",
+        disaster: "Blind reaction leads into a fatal trap."
+    },
+    18: {
+        triumph: "The Sentient transmutes corruption into purifying flame.",
+        conflict: "The work of cleansing leaves temporary vulnerabilities.",
+        disaster: "Attempt to cure poison spreads it instead."
+    },
+    19: {
+        triumph: "Approaching power gathers into an irresistible assault.",
+        conflict: "Growing strength reveals new weaknesses to address.",
+        disaster: "Power approaches its breaking point unnoticed."
+    },
+    20: {
+        triumph: "Clear perception reveals the perfect moment to strike.",
+        conflict: "Deep observation delays necessary immediate action.",
+        disaster: "Lost in contemplation, the Sentient fails to defend."
+    },
+    21: {
+        triumph: "The Sentient's force bites through all resistance.",
+        conflict: "Breaking through defense costs more than expected.",
+        disaster: "The attempt to breach shatters offensive power."
+    },
+    22: {
+        triumph: "Grace of movement creates openings in any defense.",
+        conflict: "Beautiful technique sacrifices practical effectiveness.",
+        disaster: "Focus on form over function proves fatal."
+    },
+    23: {
+        triumph: "Strategic withdrawal preserves power for the killing blow.",
+        conflict: "Necessary retreat allows enemy advancement.",
+        disaster: "Retreat becomes rout as defenses collapse."
+    },
+    24: {
+        triumph: "Return to fundamental techniques produces unexpected victory.",
+        conflict: "The path back to balance leaves temporary weakness.",
+        disaster: "Failed restoration leaves critical vulnerabilities."
+    },
+    25: {
+        triumph: "Innocent movement becomes unexpected devastating technique.",
+        conflict: "Unconscious habits create exploitable patterns.",
+        disaster: "Naivety allows a lethal trap to spring."
+    },
+    26: {
+        triumph: "Contained power releases with perfect timing and effect.",
+        conflict: "The strain of holding power creates growing instability.",
+        disaster: "Accumulated force explodes uncontrollably."
+    },
+    27: {
+        triumph: "The Sentient's technique provides perfect nourishment for victory.",
+        conflict: "Maintaining power depletes essential reserves.",
+        disaster: "Exhausted resources leave no energy for defense."
+    },
+    28: {
+        triumph: "Pressure becomes power, transforming defense into attack.",
+        conflict: "Strain of resistance creates growing weaknesses.",
+        disaster: "Critical pressure causes catastrophic collapse."
+    },
+    29: {
+        triumph: "The Sentient masters treacherous conditions to achieve victory.",
+        conflict: "Dangerous situation forces costly defensive stance.",
+        disaster: "The abyss claims the Sentient's power completely."
+    },
+    30: {
+        triumph: "Brilliant technique illuminates the path to victory.",
+        conflict: "Maintaining power creates increasing inner strain.",
+        disaster: "Inner fire burns out at a crucial moment."
+    },
+    31: {
+        triumph: "Subtle influence transforms combat into effortless dance.",
+        conflict: "Delicate technique proves difficult to maintain.",
+        disaster: "Attempt at influence reveals fatal weakness."
+    },
+    32: {
+        triumph: "Unwavering stance becomes unshakeable power.",
+        conflict: "Consistency creates predictable patterns.",
+        disaster: "Rigid defense shatters under precise strike."
+    },
+    33: {
+        triumph: "Strategic retreat becomes surprising counterattack.",
+        conflict: "Withdrawal allows enemy to seize crucial ground.",
+        disaster: "Retreat cuts off path to essential resources."
+    },
+    34: {
+        triumph: "Great power flows naturally into unstoppable force.",
+        conflict: "Raw strength proves difficult to direct precisely.",
+        disaster: "Uncontrolled power turns back upon itself."
+    },
+    35: {
+        triumph: "Swift progress overwhelms enemy defenses completely.",
+        conflict: "Rapid advance outpaces defensive coverage.",
+        disaster: "Aggressive progress leads into perfect ambush."
+    },
+    36: {
+        triumph: "Inner light becomes weapon and shield combined.",
+        conflict: "Maintaining power in darkness drains vital energy.",
+        disaster: "Light fails, leaving the Sentient vulnerable."
+    },
+    37: {
+        triumph: "Proper form channels power into perfect effect.",
+        conflict: "Traditional techniques limit adaptive response.",
+        disaster: "Rigid forms shatter under unexpected attack."
+    },
+    38: {
+        triumph: "Opposition becomes source of transformative power.",
+        conflict: "Conflicting forces create tactical uncertainty.",
+        disaster: "Internal opposition prevents effective defense."
+    },
+    39: {
+        triumph: "The Sentient turns impediment into unexpected advantage.",
+        conflict: "Obstacles force costly expenditure of power.",
+        disaster: "Insurmountable barrier leads to total defeat."
+    },
+    40: {
+        triumph: "Liberation of power creates overwhelming force.",
+        conflict: "Freedom of movement sacrifices defensive position.",
+        disaster: "Released power escapes all control."
+    },
+    41: {
+        triumph: "Diminishing resources refine into concentrated power.",
+        conflict: "Conservation of force limits tactical options.",
+        disaster: "Critical resources fail at decisive moment."
+    },
+    42: {
+        triumph: "Increasing power flows naturally into victory.",
+        conflict: "Growing force becomes difficult to direct.",
+        disaster: "Unchecked increase bursts all bounds."
+    },
+    43: {
+        triumph: "Decisive breakthrough shatters all resistance.",
+        conflict: "Resolution requires more force than available.",
+        disaster: "Breaking point reveals structural weakness."
+    },
+    44: {
+        triumph: "Coming force is met and mastered perfectly.",
+        conflict: "Anticipation of danger creates hesitation.",
+        disaster: "The trap springs, leaving no escape."
+    },
+    45: {
+        triumph: "Gathered power unifies into overwhelming force.",
+        conflict: "Maintaining unity disperses combat focus.",
+        disaster: "Collected force scatters at crucial moment."
+    },
+    46: {
+        triumph: "Rising energy becomes unstoppable assault.",
+        conflict: "Upward pressure creates unstable position.",
+        disaster: "Forced advance leads to crushing defeat."
+    },
+    47: {
+        triumph: "Exhaustion becomes source of unexpected strength.",
+        conflict: "Oppression strains remaining resources.",
+        disaster: "Final reserves fail, leaving total defeat."
+    },
+    48: {
+        triumph: "Deep sources replenish power beyond limit.",
+        conflict: "Drawing power reveals bottom of reserves.",
+        disaster: "The well runs dry in desperate moment."
+    },
+    49: {
+        triumph: "Revolution of force creates irresistible change.",
+        conflict: "Transformation strains structural integrity.",
+        disaster: "Change devours its own source completely."
+    },
+    50: {
+        triumph: "Sacred vessel channels power to perfect effect.",
+        conflict: "Container strains to hold gathered force.",
+        disaster: "The vessel breaks, spilling power uselessly."
+    },
+    51: {
+        triumph: "Shocking force becomes perfect striking power.",
+        conflict: "Thunder's power proves difficult to direct.",
+        disaster: "Lightning rebounds upon its source."
+    },
+    52: {
+        triumph: "Perfect stillness explodes into decisive action.",
+        conflict: "Maintained meditation delays crucial response.",
+        disaster: "Stillness becomes paralysis in combat."
+    },
+    53: {
+        triumph: "Gradual advance creates inevitable victory.",
+        conflict: "Slow progress allows enemy preparation.",
+        disaster: "Development fails before technique matures."
+    },
+    54: {
+        triumph: "Proper action transforms disadvantage to victory.",
+        conflict: "Propriety limits effective tactical options.",
+        disaster: "Improper position allows fatal strike."
+    },
+    55: {
+        triumph: "Abundant power flows into perfect technique.",
+        conflict: "Success breeds openings in defense.",
+        disaster: "Peak power burns out, leaving emptiness."
+    },
+    56: {
+        triumph: "Strange circumstances become source of power.",
+        conflict: "Unfamiliar ground limits tactical options.",
+        disaster: "Lost wanderer falls to unknown dangers."
+    },
+    57: {
+        triumph: "Gentle penetration bypasses strongest defense.",
+        conflict: "Subtle approach allows enemy preparation.",
+        disaster: "Wind scatters essential force completely."
+    },
+    58: {
+        triumph: "Joyous energy transforms into combat mastery.",
+        conflict: "Pleasant technique proves ineffective in crisis.",
+        disaster: "Light heart misses mortal danger."
+    },
+    59: {
+        triumph: "Dispersed power reunites with devastating effect.",
+        conflict: "Scattered force proves difficult to gather.",
+        disaster: "Essential power disperses beyond recall."
+    },
+    60: {
+        triumph: "Limited force finds perfect application.",
+        conflict: "Restriction creates exploitable patterns.",
+        disaster: "Artificial limits prevent vital action."
+    },
+    61: {
+        triumph: "Inner truth becomes perfect combat clarity.",
+        conflict: "Sincerity creates predictable responses.",
+        disaster: "Truth realized comes far too late."
+    },
+    62: {
+        triumph: "Small advantage produces decisive victory.",
+        conflict: "Minor details distract from major threats.",
+        disaster: "Precision fails when power is needed."
+    },
+    63: {
+        triumph: "Perfected technique achieves effortless victory.",
+        conflict: "Completion breeds dangerous overconfidence.",
+        disaster: "Apparent mastery masks fatal flaw."
+    },
+    64: {
+        triumph: "Unformed chaos becomes source of power.",
+        conflict: "Uncertainty clouds tactical judgment.",
+        disaster: "Not-yet-complete crumbles under pressure."
+    }
 };
 
-export default hexagramNarratives;
 
 const hexagramLookup = {
-    1: '111111', 2: '000000', 3: '010010', 4: '001001', 5: '100110', 6: '011011',
-    7: '101101', 8: '010101', 9: '111010', 10: '010111', 11: '100001', 12: '001000',
-    13: '110110', 14: '001111', 15: '111000', 16: '000111', 17: '010100', 18: '001010',
-    19: '101011', 20: '110001', 21: '110100', 22: '001001', 23: '010110', 24: '101110',
-    25: '111001', 26: '100011', 27: '001101', 28: '110010', 29: '100101', 30: '101001',
-    31: '110011', 32: '001110', 33: '111100', 34: '000011', 35: '100010', 36: '010001',
-    37: '101100', 38: '011000', 39: '100000', 40: '000100', 41: '101010', 42: '010011',
-    43: '110000', 44: '000110', 45: '111011', 46: '110101', 47: '001011', 48: '110010',
-    49: '011001', 50: '101111', 51: '111101', 52: '001100', 53: '100011', 54: '011010',
-    55: '101101', 56: '010110', 57: '001011', 58: '110001', 59: '100110', 60: '011011',
-    61: '101001', 62: '110100', 63: '001101', 64: '010101'
-};
+1: '111111', // Qian (The Creative)
+2: '000000', // Kun (The Receptive)
+3: '010010', // Zhun (Difficulty at the Beginning)
+4: '001001', // Meng (Youthful Folly)
+5: '100110', // Xu (Waiting)
+6: '011011', // Song (Conflict 
+
+7: '101101', // Shi (The Army)
+8: '010101', // Xi (Holding Together)
+9: '111010', // Xiao Chu (Small Taming)
+10: '010111', // Lu (Treading)
+11: '100001', // Tai (Peace)
+12: '001000', // Pi (Stagnation)
+13: '110110', // Tong Ren (Fellowship)
+14: '001111', // Da You (Possession in Great Measure)
+15: '111000', // Qian (Modesty)
+16: '000111', // Yu (Enthusiasm)
+17: '010100', // Sui (Following)
+18: '001010', // Gu (Work on the Decayed)
+19: '101011', // Lin (Approach)
+20: '110001', // Guan (Contemplation)
+21: '110100', // Shi He (Biting Through)
+22: '001001', // Bi (Grace)
+23: '010110', // Bo (Splitting Apart)
+24: '101110', // Fu (Return)
+25: '111001', // Wu Wang (Without Embroiling)
+26: '100011', // Da Xu (Great Accumulating)
+27: '001101', // Yi (Nourishment)
+28: '110010', // Da Guo (Great Exceeding)
+29: '100101', // Kan (The Abysmal)
+30: '101001', // Li (The Clinging)
+31: '110011', // Xian (Influence)
+32: '001110', // Heng (Duration)
+33: '111100', // Dun (Retreat)
+34: '000011', // Da Zhuang (Great Strength)
+35: '100010', // Jin (Progress)
+36: '010001', // Ming Yi (Darkening of the Light)
+37: '101100', // Jia Ren (The Family)
+38: '011000', // Kui (Opposition)
+39: '100000', // Jian (Limping)
+40: '000100', // Xie (Deliverance)
+41: '101010', // Sun (Decrease)
+42: '010011', // Yi (Increase)
+43: '110000', // Guai (Break-through)
+44: '000110', // Gou (Coming to Meet)
+45: '111011', // Cui (Gathering Together)
+46: '110101', // Sheng (Pushing Upward)
+47: '001011', // Kun (Oppression)
+48: '110010', // Jing (The Well)
+49: '011001', // Ge (Change)
+50: '101111', // Ding (The Cauldron)
+51: '111101', // Zhen (The Arousing)
+52: '001100', // Gen (Keeping Still)
+53: '100011', // Jian (Gradual Progress 
+
+54: '011010', // Guimei (The Marrying Maiden)
+55: '101101', // Feng (Abundance)
+56: '010110', // Lu (Wandering)
+57: '001011', // Sun (Penetration)
+58: '110001', // Dui (The Joyous)
+59: '100110', // Huan (Dispersion)
+60: '011011', // Jie (Limitation)
+61: '101001', // Zhong Fu (Inner Truth)
+62: '110100', // Xiao Guo (Small Exceeding)
+63: '001101', // Ji Ji (Completion)
+64: '010101' // Wei Ji (Before Completion)
+}; 
 
 // Determine outcome based on roll and thresholds
 function getOutcome(dieRoll, dieType) {
-    const thresholds = outcomeThresholds[dieType];
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
-}
+    const thresholds = outcomeThresholds[dieType];
+    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+    return 'Disaster';
+} 
 
 // Apply step-down mechanic
 function applyStepDown(currentDieType) {
-    const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
-    return { newDieType: reducedDie, hexagramReduction: hexReduction };
-}
+    const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
+    return { newDieType: reducedDie, hexagramReduction: hexReduction };
+} 
 
 // Telegram integration
 const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-const chatId = '-1002185533073';
+const chatId = '-1002185533073'; 
 
 function sendToTelegram(message) {
-    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    fetch(url).catch(error => console.log('Telegram message not sent:', error));
-}
+    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+    fetch(url).catch(error => console.log('Telegram message not sent:', error));
+} 
 
 // Roll function
 function rollDiceAndHexagram() {
-    const dcValue = parseInt(document.getElementById('dc').value) || 0;
-    let dieType = parseInt(document.getElementById('dieType').value);
-    const modifier = parseInt(document.getElementById('modifier').value) || 0;
+    const dcValue = parseInt(document.getElementById('dc').value) || 0;
+    let dieType = parseInt(document.getElementById('dieType').value);
+    const modifier = parseInt(document.getElementById('modifier').value) || 0; 
 
-    const stepDown = applyStepDown(dieType);
-    dieType = stepDown.newDieType;
+    const stepDown = applyStepDown(dieType);
+    dieType = stepDown.newDieType; 
 
-    const originalHexagram = Math.floor(Math.random() * 64) + 1;
-    const adjustedHexagram = Math.max(1, originalHexagram - stepDown.hexagramReduction);
+    const originalHexagram = Math.floor(Math.random() * 64) + 1;
+    const adjustedHexagram = Math.max(1, originalHexagram - stepDown.hexagramReduction); 
 
-    const dieRoll = Math.floor(Math.random() * dieType) + 1;
-    const outcome = getOutcome(dieRoll, dieType);
+    const dieRoll = Math.floor(Math.random() * dieType) + 1;
+    const outcome = getOutcome(dieRoll, dieType); 
 
-    const totalValue = adjustedHexagram + dieRoll + modifier;
-    const outcomeMessage = hexagramNarratives[originalHexagram]?.[outcome.toLowerCase()] || 'No narrative available';
+    const totalValue = adjustedHexagram + dieRoll + modifier;
+    const outcomeMessage = hexagramNarratives[originalHexagram]?.[outcome.toLowerCase()] || 'No narrative available'; 
 
-    const resultElement = document.getElementById('result');
-    resultElement.innerHTML = `
-        <strong>Original Hexagram:</strong> ${originalHexagram}<br>
-        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram}<br>
-        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
-        <strong>Modifier:</strong> ${modifier}<br>
-        <strong>Total:</strong> ${totalValue}<br>
-        <strong>Outcome:</strong> ${outcome}<br>
-        <strong>Narrative:</strong> ${outcomeMessage}
-    `;
+    const resultElement = document.getElementById('result');
+    resultElement.innerHTML = `
+        <strong>Original Hexagram:</strong> ${originalHexagram}<br>
+        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram}<br>
+        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
+        <strong>Modifier:</strong> ${modifier}<br>
+        <strong>Total:</strong> ${totalValue}<br>
+        <strong>Outcome:</strong> ${outcome}<br>
+        <strong>Narrative:</strong> ${outcomeMessage}
+    `; 
 
-    // Send formatted result to Telegram
-    if (telegramBotToken && chatId) {
-        const telegramMessage = 
-            `🎲 *New Roll Result* 🎲\n` +
-            `✨ *Hexagram*: ${originalHexagram}\n` +
-            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
-            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
-            `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
-        
-        sendToTelegram(telegramMessage);
-    }
+    // Send formatted result to Telegram
+    if (telegramBotToken && chatId) {
+        const telegramMessage = 
+            `💫 *Cast & Roll Result* 💫\n` +
+            `✨ *Hexagram*: ${originalHexagram}\n` +
+            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
+            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
+            `📜 *Outcome*: ${outcome}\n` +
+            `🔮 ${outcomeMessage.substring(0, 100)}...`;
+        
+        sendToTelegram(telegramMessage);
+    }
 }
 </script>
 </body>
-</html>
+    </html>
