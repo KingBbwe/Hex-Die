@@ -605,13 +605,25 @@ function rollDiceAndHexagram() {
     // Add hexagram lines
     displayHexagramLines();
 
-    // Telegram integration (will work after you add credentials)
-    if(telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
-        const telegramMessage = `New Roll:\nHex: ${currentHexagramNumber}\nDie: d${dieTypeValue} → ${dieRoll}\nMod: ${modifierValue}\nTotal: ${totalValue}\nOutcome: ${outcomeType}`;
+    // Telegram Integration (YOU ONLY NEED TO REPLACE THESE TWO VALUES)
+    const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with your token
+    const chatId = '-1002185533073'; // Replace with your chat ID
+    
+    if(telegramBotToken && chatId) {
+        const telegramMessage = 
+            `New Roll Result:\n` +
+            `✨ Hexagram: ${currentHexagramNumber}\n` +
+            `🎲 Die: d${dieTypeValue} → ${dieRoll}\n` +
+            `📊 Total: ${totalValue} (DC: ${dcValue})\n` +
+            `📜 Outcome: ${outcomeType}\n` +
+            `🔮 ${outcomeMessage.substring(0, 100)}...`;
+
         const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMessage)}`;
-        fetch(url).catch(error => console.log('Telegram notification skipped'));
+        
+        fetch(url).catch(error => console.log('Telegram message not sent (normal if credentials not set)'));
     }
 }
+
         function oraclizeFunction() {
             const changingLines = determineChangingLines();
             const resultElement = document.getElementById('result');
