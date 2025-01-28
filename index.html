@@ -42,29 +42,6 @@ button { background-color: #0f3460; color: #eaeaea; }
 </section>
 </main>
 
-<script>
-// Corrected Outcome Thresholds for Each Die Type
-const outcomeThresholds = {
-    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] }, // d6
-    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] }, // d8
-    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] }, // d12
-    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] }, // d20
-    100: {
-        triumph: Array.from({ length: 20 }, (_, i) => 100 - i), // 100–81
-        conflict: Array.from({ length: 60 }, (_, i) => 80 - i), // 80–21
-        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)  // 20–1
-    }
-};
-
-// Step-Down Configuration for Die Types
-const stepDownConfig = {
-    6: [6, 2],
-    8: [6, 4],
-    12: [8, 8],
-    20: [12, 10],
-    100: [20, 20]
-};
-
 // Hexagram-related data
 const hexagramNarratives = {
     1: { 
@@ -404,71 +381,91 @@ const hexagramLookup = {
     61: '101001', 62: '110100', 63: '001101', 64: '010101'
 };
 
+<script>
+// Corrected Outcome Thresholds for Each Die Type
+const outcomeThresholds = {
+    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] }, // d6
+    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] }, // d8
+    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] }, // d12
+    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] }, // d20
+    100: {
+        triumph: Array.from({ length: 20 }, (_, i) => 100 - i), // 100–81
+        conflict: Array.from({ length: 60 }, (_, i) => 80 - i), // 80–21
+        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)  // 20–1
+    }
+}; 
+
+// Step-Down Configuration for Die Types
+const stepDownConfig = {
+    6: [6, 2],
+    8: [6, 4],
+    12: [8, 8],
+    20: [12, 10],
+    100: [20, 20]
+}; 
+
 // Get Outcome Based on Die Roll and Die Type
 function getOutcome(dieRoll, dieType) {
-    const thresholds = outcomeThresholds[dieType];
-    if (!thresholds) return 'Disaster'; // Default to 'Disaster' for invalid die types
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
-}
+    const thresholds = outcomeThresholds[dieType];
+    if (!thresholds) return 'Disaster'; // Default to 'Disaster' for invalid die types
+    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+    return 'Disaster';
+} 
 
 // Apply Step-Down Mechanic
 function applyStepDown(currentDieType) {
-    const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
-    return { newDieType: reducedDie, hexagramReduction: hexReduction };
-}
+    const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
+    return { newDieType: reducedDie, hexagramReduction: hexReduction };
+} 
 
-
-// Telegram integration
+// Telegram Integration
 const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-const chatId = '-1002185533073';
+const chatId = '-1002185533073'; 
 
 function sendToTelegram(message) {
-    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    fetch(url).catch(error => console.log('Telegram message not sent:', error));
-}
+    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+    fetch(url).catch(error => console.log('Telegram message not sent:', error));
+} 
 
 // Roll Dice and Generate Hexagram
 function rollDiceAndHexagram() {
-    const dcValue = parseInt(document.getElementById('dc').value) || 0;
-    let dieType = parseInt(document.getElementById('dieType').value);
-    const modifier = parseInt(document.getElementById('modifier').value) || 0;
+    const dcValue = parseInt(document.getElementById('dc').value) || 0;
+    let dieType = parseInt(document.getElementById('dieType').value);
+    const modifier = parseInt(document.getElementById('modifier').value) || 0; 
 
-    const stepDown = applyStepDown(dieType);
-    dieType = stepDown.newDieType;
+    const stepDown = applyStepDown(dieType);
+    dieType = stepDown.newDieType; 
 
-    const originalHexagram = Math.floor(Math.random() * 64) + 1;
-    const adjustedHexagram = Math.max(1, originalHexagram - stepDown.hexagramReduction);
+    const originalHexagram = Math.floor(Math.random() * 64) + 1;
+    const adjustedHexagram = Math.max(1, originalHexagram - stepDown.hexagramReduction); 
 
-    const dieRoll = Math.floor(Math.random() * dieType) + 1;
-    const outcome = getOutcome(dieRoll, dieType);
+    const dieRoll = Math.floor(Math.random() * dieType) + 1;
+    const outcome = getOutcome(dieRoll, dieType); 
 
-    const totalValue = adjustedHexagram + dieRoll + modifier;
+    const totalValue = adjustedHexagram + dieRoll + modifier; 
 
-    const resultElement = document.getElementById('result');
-    resultElement.innerHTML = `
-        <strong>Original Hexagram:</strong> ${originalHexagram}<br>
-        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram} (Step-down: -${stepDown.hexagramReduction})<br>
-        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
-        <strong>Modifier:</strong> ${modifier}<br>
-        <strong>Total:</strong> ${totalValue}<br>
-        <strong>Outcome:</strong> ${outcome}<br>
-        <strong>DC:</strong> ${dcValue}
-    `;
+    const resultElement = document.getElementById('result');
+    resultElement.innerHTML = `
+        <strong>Original Hexagram:</strong> ${originalHexagram}<br>
+        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram} (Step-down: -${stepDown.hexagramReduction})<br>
+        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
+        <strong>Modifier:</strong> ${modifier}<br>
+        <strong>Total:</strong> ${totalValue}<br>
+        <strong>Outcome:</strong> ${outcome}<br>
+        <strong>DC:</strong> ${dcValue}
+    `; 
 
-    // Send formatted result to Telegram
-    if (telegramBotToken && chatId) {
-        const telegramMessage = 
-            `🎲 *New Roll Result* 🎲\n` +
-            `✨ *Hexagram*: ${originalHexagram}\n` +
-            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
-            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
-            `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
-        
-        sendToTelegram(telegramMessage);
-    }
+    if (telegramBotToken && chatId) {
+        const telegramMessage = 
+            `🎲 *New Roll Result* 🎲\n` +
+            `✨ *Hexagram*: ${originalHexagram}\n` +
+            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
+            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
+            `📜 *Outcome*: ${outcome}\n` +
+            `🔮 Hexagram Adjusted to: ${adjustedHexagram}`;
+        sendToTelegram(telegramMessage);
+    }
 }
 </script>
 </body>
