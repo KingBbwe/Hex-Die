@@ -558,51 +558,41 @@ function rollDiceAndHexagram() {
     const dieTypeInput = document.getElementById('dieType');
     const modifierInput = document.getElementById('modifier');
 
-    // Parse inputs with defaults
-    const dcValue = parseInt(dcInput.value) || 0;
-    const dieTypeValue = parseInt(dieTypeInput.value) || 6;
-    const modifierValue = parseInt(modifierInput.value) || 0;
+    const dcValue = parseInt(dcInput.value);
+    const dieTypeValue = parseInt(dieTypeInput.value);
+    const modifierValue = parseInt(modifierInput.value);
 
-    // Generate random values
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
     const dieRoll = Math.floor(Math.random() * dieTypeValue) + 1;
     const totalValue = currentHexagramNumber + dieRoll + modifierValue;
 
-    // Generate hexagram display
     currentHexagramLines = generateHexagramLines(currentHexagramNumber);
     const changingLines = determineChangingLines();
     applyLineChanges(changingLines);
 
-    // Build result output
     const resultElement = document.getElementById('result');
     resultElement.innerHTML = `
-        <strong>Hexagram:</strong> ${currentHexagramNumber}<br>
-        <strong>Die Roll:</strong> ${dieRoll} (d${dieTypeValue})<br>
-        <strong>Modifier:</strong> ${modifierValue}<br>
-        <strong>Total:</strong> ${totalValue}<br>
-        <strong>DC:</strong> ${dcValue}<br>
+        Hexagram: ${currentHexagramNumber}<br>
+        Die Roll: ${dieRoll}<br>
+        Total Value: ${totalValue}<br>
+        DC: ${dcValue}<br>
     `;
 
-    // Determine outcome
-    let outcomeType, outcomeText;
+    // Outcome determination
+    let outcomeType;
+    let outcomeMessage;
     if (totalValue >= dcValue) {
         outcomeType = 'Triumph';
-        outcomeText = hexagramNarratives[currentHexagramNumber].triumph;
-    } else if (totalValue > dcValue - 10) {
+        outcomeMessage = hexagramNarratives[currentHexagramNumber].triumph;
+    } else if (totalValue < dcValue && totalValue > dcValue - 10) {
         outcomeType = 'Conflict';
-        outcomeText = hexagramNarratives[currentHexagramNumber].conflict;
+        outcomeMessage = hexagramNarratives[currentHexagramNumber].conflict;
     } else {
         outcomeType = 'Disaster';
-        outcomeText = hexagramNarratives[currentHexagramNumber].disaster;
+        outcomeMessage = hexagramNarratives[currentHexagramNumber].disaster;
     }
 
-    // Add outcome to results
-    resultElement.innerHTML += `
-        <strong>Outcome:</strong> ${outcomeType}<br>
-        ${outcomeText}
-    `;
-
-    // Add hexagram lines
+    resultElement.innerHTML += `<strong>Outcome: ${outcomeType}</strong><br>${outcomeMessage}`;
     displayHexagramLines();
 
     // Telegram Integration (YOU ONLY NEED TO REPLACE THESE TWO VALUES)
