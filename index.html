@@ -459,12 +459,11 @@ function rollDiceAndHexagram() {
 
     if (telegramBotToken && chatId) {
         const telegramMessage = 
-            `🎲 *New Roll Result* 🎲\n` +
+            `🎲 *Cast & Roll Result* 🎲\n` +
             `✨ *Hexagram*: ${originalHexagram}\n` +
             `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
             `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
             `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...` +
             `♧ Hexagram Adjusted to: ${adjustedHexagram}`;
         sendToTelegram(telegramMessage);
     }
