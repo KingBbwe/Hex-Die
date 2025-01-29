@@ -39,6 +39,7 @@ button { background-color: #0f3460; color: #eaeaea; }
 <input type="number" id="modifier" value="0">
 <button onclick="rollDiceAndHexagram()">Harmonize</button>
 <div id="result"></div>
+<button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
 </section>
 </main> 
 
@@ -478,17 +479,29 @@ function sendToTelegram(message) {
     fetch(url).catch(error => console.log('Telegram message not sent:', error));
 } 
 
-// Ensure device supports motion events
-if (window.DeviceMotionEvent) {
-    window.addEventListener('devicemotion', handleShake);
+// Ensures Device Motion Permission is Requested (Required on iOS and Chrome)
+function enableShakeDetection() {
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+        DeviceMotionEvent.requestPermission().then(permissionState => {
+            if (permissionState === "granted") {
+                window.addEventListener('devicemotion', handleShake);
+                document.getElementById("enableMotion").style.display = "none"; // Hide button after enabling
+            } else {
+                alert("Shake detection requires motion access!");
+            }
+        }).catch(console.error);
+    } else {
+        // If no permission request is needed, just enable motion detection
+        window.addEventListener('devicemotion', handleShake);
+        document.getElementById("enableMotion").style.display = "none"; // Hide button
+    }
 } 
 
 // Shake Detection Variables
-let shakeThreshold = 12; // Sensitivity: Lower is more sensitive
-let shakeDurationMin = 2000; // Minimum 2s
-let shakeDurationMax = 5000; // Maximum 5s
+let shakeThreshold = 12;
+let shakeDurationMin = 2000;
+let shakeDurationMax = 5000;
 let shakeStartTime = 0;
-let lastShakeTime = 0;
 let shakeActive = false; 
 
 // Shake Detection Function
@@ -499,30 +512,27 @@ function handleShake(event) {
     if (shakeStrength > shakeThreshold) {
         let currentTime = Date.now(); 
 
-        // Start tracking shake time
         if (!shakeActive) {
             shakeStartTime = currentTime;
             shakeActive = true;
         } 
 
-        // If shaking time is within limits, trigger the roll
         if (shakeActive && (currentTime - shakeStartTime >= shakeDurationMin) && (currentTime - shakeStartTime <= shakeDurationMax)) {
             shakeActive = false;
             triggerShakeRoll();
         }
     } else {
-        shakeActive = false; // Reset shake detection when motion stops
+        shakeActive = false;
     }
 } 
 
-// Trigger Shake-to-Roll Execution
+// Trigger Shake Roll
 function triggerShakeRoll() {
     if ("vibrate" in navigator) {
-        navigator.vibrate([200, 100, 200]); // Vibrate on roll
+        navigator.vibrate([200, 100, 200]);
     }
     rollDiceAndHexagram();
-} 
-
+}
 // Dice Roll Logic
 function rollDiceAndHexagram() {
     const dcValue = parseInt(document.getElementById('dc').value) || 0;
