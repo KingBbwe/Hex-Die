@@ -366,23 +366,39 @@
             }
         }
 
-        function rollDiceAndHexagram() {
-            const dieTypeInput = parseInt(document.getElementById('dieType').value);
-            let dieType = dieTypeInput;
-            const dc = parseInt(document.getElementById('dc').value) || 0;
-            const mod = parseInt(document.getElementById('modifier').value) || 0;
-            const stepDown = document.getElementById('stepDownToggle').checked;
+// ======== FIXED STEP-DOWN IMPLEMENTATION ========
+function rollDiceAndHexagram() {
+    const dieTypeInput = parseInt(document.getElementById('dieType').value);
+    let [dieType, hexagramReduction] = [dieTypeInput, 0]; // Initialize with original values 
 
+    // Apply step-down FIRST before other calculations
+    if (document.getElementById('stepDownToggle').checked) {
+        // FIX 1: Use Object.entries for safer lookup
+        const stepDown = Object.entries(stepDownConfig).find(([key]) => key == dieTypeInput);
+        if (stepDown) {
+            [dieType, hexagramReduction] = stepDown[1];
+        }
+    }
             // Generate hexagram (1-3 for test data)
             currentHexagramNumber = Math.floor(Math.random() * 3) + 1;
             currentHexagramLines = generateHexagramLines(currentHexagramNumber);
 
-            // Apply step-down
-            let hexagramReduction = 0;
-            if (stepDown) {
-                [dieType, hexagramReduction] = stepDownConfig[dieTypeInput];
-            }
+// ======== UPDATED STEP-DOWN CONFIG ========
+const stepDownConfig = {
+    // Key: Original Die | Value: [New Die, Reduction]
+    6: [6, 2],   // No change for d6
+    20: [12, 5]  // Now properly references outcomeThresholds for d12
+}; 
 
+// ======== ADD MISSING d12 THRESHOLDS ========
+const outcomeThresholds = {
+    // ... existing entries ...
+    12: { // Added for stepped-down d20
+        triumph: [12, 11, 10], // Top 25%
+        conflict: [9, 8, 7, 6, 5], // Middle 41.6%
+        disaster: [4, 3, 2, 1] // Bottom 33.3%
+    }
+};
             // Roll die
             const dieRoll = Math.floor(Math.random() * dieType) + 1;
             const outcome = getOutcome(dieRoll, dieType);
