@@ -1,78 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Chronicles of Auld Ewe</title>
-<link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
-<style>
-body { background-color: #1a1a2e; color: #eaeaea; text-align: center; font-size: 0.9rem; }
-nav { background-color: #16213e; }
-h1 { font-size: 1.5rem; margin-bottom: 0.3rem; }
-h2 { font-size: 1.2rem; margin-bottom: 0.3rem; }
-h3 { font-size: 1rem; margin-bottom: 1rem; }
-button { background-color: #0f3460; color: #eaeaea; }
-#result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.8rem; }
-label { margin-bottom: 0.5rem; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Chronicles of Auld Ewe</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #eaeaea;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        nav {
+            background-color: #16213e;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: #0f3460;
+            color: #eaeaea;
+        }
+        .oraclize-btn {
+            background-color: #21bf73;
+            color: #fff;
+        }
+        #result {
+            white-space: pre-wrap;
+            background-color: #16213e;
+            padding: 5px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+        #howToPlayContent {
+            display: none;
+            padding: 5px;
+            background-color: #16213e;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        .grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label, input, select {
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
-<nav class="container-fluid">
-<ul><li><strong>The Chronicles of Auld Ewe</strong></li></ul>
-<ul><li><a href="#" id="howToPlayBtn">How to Play</a></li></ul>
-</nav>
-<main class="container">
-<section>
-<h1>The Chronicles of Auld Ewe</h1>
-<h2>Harmonized Hex & Die System</h2>
-<h3>Cast a Hexagram and Roll your Die to Play</h3> 
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>The Chronicles of Auld Ewe</strong></li>
+        </ul>
+        <ul>
+            <li><a href="#" id="howToPlayBtn">How to Play</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <div class="grid">
+            <section>
+                <h1>The Chronicles of Auld Ewe</h1>
+                <h2>Harmonized Hex & Die System</h2>
+                <h3>Cast a Hexagram and Roll your Die to Play</h3>
+                
+                <label for="dc">Set Difficulty Class (DC):</label>
+                <input type="number" id="dc" placeholder="Enter DC value">
+                
+                <label for="dieType">Select Die Type:</label>
+                <select id="dieType">
+                    <option value="6">d6</option>
+                    <option value="8">d8</option>
+                    <option value="10">d10</option>
+                    <option value="12">d12</option>
+                    <option value="20">d20</option>
+                    <option value="100">d100</option>
+                </select>
 
-<label for="dc">Set Difficulty Class (DC):</label>
-<input type="number" id="dc" placeholder="Enter DC value"> 
+                <label for="modifier">Apply Modifier (+/-):</label>
+                <input type="number" id="modifier" value="0">
 
-<label for="dieType">Select Die Type:</label>
-<select id="dieType">
-<option value="6">d6</option>
-<option value="8">d8</option>
-<option value="12">d12</option>
-<option value="20">d20</option>
-<option value="100">d100</option>
-</select> 
+                <button onclick="rollDiceAndHexagram()">Harmonize</button>
+                <button onclick="analyzeResult()">Analyze Outcome</button>
+                <button class="oraclize-btn" onclick="oraclizeFunction()">Oraclize</button>
 
-<label for="modifier">Apply Modifier (+/-):</label>
-<input type="number" id="modifier" value="0"> 
+                <div id="result"></div>
+            </section>
+        </div>
+    </main>
 
-<label for="stepDownToggle">Step Down:</label>
-<input type="checkbox" id="stepDownToggle"> 
+    <footer class="container">
+        <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
+    </footer>
 
-<button onclick="rollDiceAndHexagram()">Harmonize</button>
-<div id="result"></div>
-</section>
-</main> 
+    <div id="howToPlayContent">
+        <h3>How to Play: One-Click Hex & Die App</h3>
+        <p>Weave Fate and Choice in Auld Ewe’s Cosmos</p>
+        <h4>Cast & Roll (One Tap):</h4>
+        <p>Tap the Harmonize button to simultaneously:</p>
+        <ul>
+            <li><strong>Cast a Hexagram:</strong> The app generates one of 64 l-Ching archetypes (e.g., Hexagram 29: The Abysmal for danger).</li>
+            <li><strong>Roll Your Die:</strong> Automatically uses your selected die type (d6 to d100).</li>
+        </ul>
+        <h4>Add Modifiers (Optional):</h4>
+        <p>Input bonuses/penalties. The app calculates your Total Value (Hexagram + Die Roll + Modifier).</p>
+        <h4>Interpret the Cosmic Threads:</h4>
+        <p><strong>Triumph/Conflict/Disaster:</strong> Determined by your die roll.</p>
+        <p><strong>DC Met/Exceeded?</strong> The hexagram’s lines shape consequences (e.g., Line 5 = peak success, Line 6 = cosmic irony).</p>
+        <h4>Example Playthrough:</h4>
+        <p>Tap Harmonize → Casts Hexagram 29 (The Abysmal) + Rolls d20 (Triumph: 18) + Modifier +2 = Total 49 (DC 29 Exceeded).</p>
+        <p>Outcome: Leap the chasm with feral grace (Line 5), but trigger a rockslide (Line 6).</p>
+        <h4>Begin Your Saga:</h4>
+        <p>One tap. Infinite stories. What will the cosmos reveal?</p>
+        <p><strong>[Harmonize Now]</strong></p>
+        <p>Simplicity meets mysticism—forge legends in seconds.</p>
+    </div>
 
-<script>
-// Corrected Outcome Thresholds for Each Die Type
-const outcomeThresholds = {
-    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] }, // d6
-    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] }, // d8
-    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] }, // d12
-    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] }, // d20
-    100: {
-        triumph: Array.from({ length: 20 }, (_, i) => 100 - i), // 100–81
-        conflict: Array.from({ length: 60 }, (_, i) => 80 - i), // 80–21
-        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)  // 20–1
-    }
-}; 
+    <script>
+        // Telegram Configuration (REPLACE THESE VALUES)
+        const telegramBotToken = 'YOUR_TELEGRAM_BOT_TOKEN';
+        const chatId = 'YOUR_CHAT_ID';
 
-// Step-Down Configuration for Die Types
-const stepDownConfig = {
-    6: [6, 2],
-    8: [6, 4],
-    12: [8, 8],
-    20: [12, 10],
-    100: [20, 20]
-}; 
+        // Game Configuration
+        const outcomeThresholds = {
+            6:  { triumph: [6],       conflict: [5,4],   disaster: [3,2,1] },
+            8:  { triumph: [8,7],     conflict: [6,5,4], disaster: [3,2,1] },
+            12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
+            20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
+            100: { 
+                triumph: Array.from({length: 20}, (_, i) => 100 - i),
+                conflict: Array.from({length: 60}, (_, i) => 80 - i),
+                disaster: Array.from({length: 20}, (_, i) => 20 - i)
+            }
+        };
 
+        const stepDownConfig = {
+            6:  [6, 2],
+            8:  [6, 4],
+            12: [8, 8],
+            20: [12, 10],
+            100: [20, 20]
+        };
+
+        let currentHexagramNumber;
+        let currentHexagramLines = [];
+      
 // Hexagram-related data
 const hexagramNarratives = {
     1: { 
@@ -467,77 +553,102 @@ const hexagramLookup = {
 64: '010101' // Wei Ji (Before Completion)
 }; 
 
-// Get Outcome Based on Die Roll and Die Type
-function getOutcome(dieRoll, dieType) {
-    const thresholds = outcomeThresholds[dieType];
-    if (!thresholds) return 'Disaster'; // Default to 'Disaster' for invalid die types
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
-} 
+       function generateHexagramLines(hexagramNumber) {
+            const binary = hexagramLookup[hexagramNumber];
+            return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
+        }
 
-// Apply Step-Down Mechanic
-function applyStepDown(currentDieType) {
-    const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
-    return { newDieType: reducedDie, hexagramReduction: hexReduction };
-} 
+        function determineChangingLines() {
+            return Array.from({length: 6}, (_, i) => 
+                Math.random() < 0.25 ? i+1 : null
+            ).filter(Boolean);
+        }
 
-// Telegram Integration
-const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-const chatId = '-1002185533073'; 
+        function applyLineChanges(lines) {
+            lines.forEach(line => {
+                const idx = line - 1;
+                currentHexagramLines[idx] = currentHexagramLines[idx] === 'Solid' ? 'Broken' : 'Solid';
+            });
+        }
 
-function sendToTelegram(message) {
-    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    fetch(url).catch(error => console.log('Telegram message not sent:', error));
-} 
+        function getOutcome(dieRoll, dieType) {
+            const thresholds = outcomeThresholds[dieType] || {triumph: [], conflict: [], disaster: []};
+            if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+            if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+            return 'Disaster';
+        }
 
-// Roll Dice and Generate Hexagram
-function rollDiceAndHexagram() {
-    const dcValue = parseInt(document.getElementById('dc').value) || 0;
-    let dieType = parseInt(document.getElementById('dieType').value);
-    const modifier = parseInt(document.getElementById('modifier').value) || 0;
-    const stepDownEnabled = document.getElementById('stepDownToggle').checked; 
+        function applyStepDown(currentDie) {
+            const [newDie, reduction] = stepDownConfig[currentDie] || [currentDie, 0];
+            return { newDieType: newDie, hexagramReduction: reduction };
+        }
 
-    let originalHexagram = Math.floor(Math.random() * 64) + 1;
-    let adjustedHexagram = originalHexagram;
-    let hexagramReduction = 0; 
+        function rollDiceAndHexagram() {
+            const dc = parseInt(document.getElementById('dc').value) || 0;
+            let dieType = parseInt(document.getElementById('dieType').value);
+            const mod = parseInt(document.getElementById('modifier').value) || 0;
 
-    // Apply Step-Down Mechanic Only If Enabled
-    if (stepDownEnabled) {
-        const stepDown = applyStepDown(dieType);
-        dieType = stepDown.newDieType;
-        hexagramReduction = stepDown.hexagramReduction;
-        adjustedHexagram = Math.max(1, originalHexagram - hexagramReduction);
-    } 
+            // Apply step-down mechanics
+            const { newDieType, hexagramReduction } = applyStepDown(dieType);
+            dieType = newDieType;
 
-    const dieRoll = Math.floor(Math.random() * dieType) + 1;
-    const outcome = getOutcome(dieRoll, dieType); 
+            // Generate hexagram
+            currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
+            currentHexagramLines = generateHexagramLines(currentHexagramNumber);
+            const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
 
-    const outcomeMessage = hexagramNarratives[originalHexagram]?.[outcome.toLowerCase()] || 'No narrative available';
-    const totalValue = adjustedHexagram + dieRoll + modifier; 
+            // Roll die
+            const dieRoll = Math.floor(Math.random() * dieType) + 1;
+            const outcome = getOutcome(dieRoll, dieType);
+            const total = adjustedHex + dieRoll + mod;
 
-    const resultElement = document.getElementById('result');
-    resultElement.innerHTML = `
-        <strong>Original Hexagram:</strong> ${originalHexagram}<br>
-        <strong>Adjusted Hexagram:</strong> ${adjustedHexagram} ${stepDownEnabled ? `(Step-down: -${hexagramReduction})` : "(No Step-down)"}<br>
-        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
-        <strong>Modifier:</strong> ${modifier}<br>
-        <strong>Total:</strong> ${totalValue}<br>
-        <strong>Outcome:</strong> ${outcome}<br>
-        <strong>Narrative:</strong> ${outcomeMessage}<br>
-    `; 
+            // Determine changing lines
+            const changingLines = determineChangingLines();
+            applyLineChanges(changingLines);
 
-    if (telegramBotToken && chatId) {
-        const telegramMessage = 
-            `🎲 *New Roll Result* 🎲\n` +
-            `✨ *Hexagram*: ${originalHexagram}\n` +
-            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
-            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
-            `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
-        sendToTelegram(telegramMessage);
-    }
-}
-</script>
+            // Display results
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                Original Hexagram: ${currentHexagramNumber}<br>
+                Adjusted Hexagram: ${adjustedHex} (-${hexagramReduction})<br>
+                Die Roll: d${dieType} → ${dieRoll}<br>
+                Modifier: ${mod}<br>
+                Total: ${total} vs DC ${dc}<br>
+                Outcome: ${outcome}<br>
+                ${hexagramNarratives[currentHexagramNumber][outcome.toLowerCase()]}
+            `;
+            displayHexagramLines();
+
+            // Telegram notification
+            if (telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
+                const msg = `New Roll:\nHex: ${currentHexagramNumber} (Adj: ${adjustedHex})\nDie: d${dieType} → ${dieRoll}\nTotal: ${total}\nOutcome: ${outcome}`;
+                fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
+            }
+        }
+
+        function displayHexagramLines() {
+            const result = document.getElementById('result');
+            result.innerHTML += `<br>Hexagram Lines:<br>${currentHexagramLines.join('<br>')}`;
+        }
+
+        function analyzeResult() {
+            document.getElementById('result').innerHTML += "<br>Analysis: The threads of fate reveal hidden consequences...";
+        }
+
+        function oraclizeFunction() {
+            const changing = determineChangingLines();
+            document.getElementById('result').innerHTML += `<br>Oraclize: Changing Lines ${changing.join(', ')}`;
+        }
+
+        document.getElementById('howToPlayBtn').addEventListener('click', () => {
+            document.getElementById('howToPlayContent').style.display = 
+                document.getElementById('howToPlayContent').style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Initialize defaults
+        document.getElementById('dieType').value = '20';
+        document.getElementById('dc').value = '35';
+    </script>
 </body>
-</html>7
+</html>
+
