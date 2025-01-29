@@ -604,9 +604,42 @@ const hexagramLookup = {
 63: '001101', // Ji Ji (Completion)
 64: '010101' // Wei Ji (Before Completion)
 };
-        - outcomeThresholds  
-        - stepDownConfig
-        */
+// ======== GAME BALANCE CONFIGURATION ========
+const outcomeThresholds = {
+    6: { 
+        triumph: [6],
+        conflict: [5, 4],
+        disaster: [3, 2, 1]
+    },
+    8: {
+        triumph: [8, 7],
+        conflict: [6, 5, 4],
+        disaster: [3, 2, 1]
+    },
+    12: {
+        triumph: [12, 11, 10],
+        conflict: [9, 8, 7, 6, 5],
+        disaster: [4, 3, 2, 1]
+    },
+    20: {
+        triumph: [20, 19, 18, 17, 16],
+        conflict: [15, 14, 13, 12, 11, 10],
+        disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    },
+    100: {
+        triumph: Array.from({length: 20}, (_, i) => 100 - i), // 100-81
+        conflict: Array.from({length: 60}, (_, i) => 80 - i), // 80-21
+        disaster: Array.from({length: 20}, (_, i) => 20 - i)  // 20-1
+    }
+};
+
+const stepDownConfig = {
+    6: [6, 2],   // [newDieType, hexagramReduction]
+    8: [6, 4],
+    12: [8, 8],
+    20: [12, 10],
+    100: [20, 20]
+};
 
         // Game State
         let currentHexagramNumber;
