@@ -268,28 +268,46 @@
         const shakeThreshold = 15;
         const shakeCooldown = 1000;
 
-        // Test Data
-        const generalNarratives = {
-            1: {
-                triumph: "Test triumph narrative",
-                conflict: "Test conflict narrative",
-                disaster: "Test disaster narrative"
-            }
-        };
+    // ======== COMPLETE TEST DATA ========
+    const generalNarratives = {
+        1: {
+            triumph: "General Triumph: The party unites under strong leadership",
+            conflict: "General Conflict: Allies question the leader's motives",
+            disaster: "General Disaster: Trust erodes completely"
+        }
+    }; 
 
-        const hexagramLookup = {
-            1: '111111'
-        };
+    const personalNarratives = {
+        1: {
+            triumph: "Personal Triumph: You find inner strength",
+            conflict: "Personal Conflict: Self-doubt creeps in",
+            disaster: "Personal Disaster: You lose self-confidence"
+        }
+    }; 
 
-        const outcomeThresholds = {
-            6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
-            20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
-        };
+    const actionNarratives = {
+        1: {
+            triumph: "Action Triumph: Perfectly executed maneuver",
+            conflict: "Action Conflict: Move leaves you exposed",
+            disaster: "Action Disaster: Critical failure in execution"
+        }
+    }; 
 
-        const stepDownConfig = {
-            6: [6, 2],
-            20: [12, 5]
-        };
+    const hexagramLookup = {
+        1: '111111',  // Qian (The Creative)
+        2: '000000',  // Kun (The Receptive)
+        3: '010010'   // Zhun (Difficulty)
+    }; 
+
+    const outcomeThresholds = {
+        6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
+        20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
+    }; 
+
+    const stepDownConfig = {
+        6: [6, 2],
+        20: [12, 5]
+    };
 
         // Game State
         let currentHexagramNumber;
@@ -298,6 +316,68 @@
         let shakeEnabled = false;
         let lastShake = 0;
         let inactivityTimer;
+
+    // ======== IMPLEMENT MISSING FUNCTIONS ========
+    function getActiveNarratives() {
+        const activeMode = document.querySelector('.mode-button.active').id;
+        return {
+            personalMode: personalNarratives,
+            generalMode: generalNarratives,
+            actionMode: actionNarratives
+        }[activeMode];
+    } 
+
+    function determineChangingLines() {
+        return Array.from({length: 6}, (_, i) => 
+            Math.random() < 0.25 ? i + 1 : null
+        ).filter(Boolean);
+    } 
+
+    function showChangingLines() {
+        const fatePoints = parseInt(document.getElementById('fatePoints').value);
+        if (fatePoints < 1) return alert("Need 1 Fate Point!");
+        
+        if (confirm("Spend 1 Fate Point to reveal changing lines?")) {
+            document.getElementById('fatePoints').value = fatePoints - 1;
+            document.getElementById('changingLines').style.display = 'block';
+            document.getElementById('changingLines').innerHTML = `
+                <strong>Changing Lines:</strong> 
+                ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
+            `;
+        }
+    } 
+
+    // ======== ENHANCED ROLL FUNCTION ========
+
+        // Apply step-down
+        let hexagramReduction = 0;
+        if (stepDown) {
+            [dieType, hexagramReduction] = stepDownConfig[dieType];
+        } 
+
+        // Roll die
+        const dieRoll = Math.floor(Math.random() * dieType) + 1;
+        const outcome = getOutcome(dieRoll, dieType);
+        const total = currentHexagramNumber + dieRoll + mod - hexagramReduction; 
+
+        // Get narrative
+        const narratives = getActiveNarratives();
+        const narrative = narratives[currentHexagramNumber][outcome.toLowerCase()]; 
+
+        // Determine changing lines
+        currentChangingLines = determineChangingLines(); 
+
+        // Display results
+        document.getElementById('result').innerHTML = `
+            <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
+            <strong>Hexagram:</strong> ${currentHexagramNumber}<br>
+            ${stepDown ? `<strong>Step Down:</strong> -${hexagramReduction}<br>` : ''}
+            <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
+            <strong>Total:</strong> ${total} vs DC ${dc}<br>
+            <strong>Outcome:</strong> ${outcome}<br>
+            <strong>Narrative:</strong> ${narrative}
+        `;
+    }
 
         // Core Functions
         function initializeFatePoints() {
@@ -314,20 +394,18 @@
             }
         }
 
-        function rollDiceAndHexagram() {
-            const dieType = parseInt(document.getElementById('dieType').value);
-            const dc = parseInt(document.getElementById('dc').value) || 0;
-            const mod = parseInt(document.getElementById('modifier').value) || 0;
-            
-            // Generate random hexagram
-            currentHexagramNumber = 1; // Fixed for demo
-            currentHexagramLines = ['Solid','Solid','Solid','Solid','Solid','Solid'];
-            
-            // Roll die
-            const dieRoll = Math.floor(Math.random() * dieType) + 1;
-            const outcome = getOutcome(dieRoll, dieType);
-            const total = currentHexagramNumber + dieRoll + mod;
+function rollDiceAndHexagram() {
+        // Get inputs
+        const dieType = parseInt(document.getElementById('dieType').value);
+        const dc = parseInt(document.getElementById('dc').value) || 0;
+        const mod = parseInt(document.getElementById('modifier').value) || 0;
+        const stepDown = document.getElementById('stepDownToggle').checked; 
 
+  
+          // Generate hexagram
+        currentHexagramNumber = Math.floor(Math.random() * 3) + 1; // 1-3 for testing
+        currentHexagramLines = generateHexagramLines(currentHexagramNumber);
+        
             // Display results
             document.getElementById('result').innerHTML = `
                 <strong>Hexagram:</strong> ${currentHexagramNumber}<br>
