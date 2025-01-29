@@ -99,7 +99,7 @@
             <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
         </ul>
     </nav> 
-            
+
     <main class="container">
         <section>
             <h1>The Chronicles of Auld Ewe</h1>
@@ -140,7 +140,7 @@
             
             <div id="result"></div>
         </section>
-    </main>
+    </main>
 
     <script>
         // 1️⃣ PLACE YOUR HEXAGRAM ARRAYS HERE
@@ -466,7 +466,6 @@ const generalNarratives = {
         disaster: "Unfinished business leaves the party adrift, unable to move forward."
     }
 };
-
 
 const personalNarratives = { 
     1: {
@@ -1134,79 +1133,78 @@ const actionNarratives = {
         } 
 
         // 3️⃣ SHAKE DETECTION (New UI's Logic)
-        let shakeStartTime = 0;
-        function enableShakeDetection() {
-            if (typeof DeviceMotionEvent.requestPermission === "function") {
-                DeviceMotionEvent.requestPermission()
-                    .then(permission => {
-                        if (permission === "granted") {
-                            window.addEventListener("devicemotion", handleShake);
-                        }
-                    })
-                    .catch(console.error);
-            } else {
-                window.addEventListener("devicemotion", handleShake);
-            }
-            document.getElementById("shakeStatus").textContent = "Shake enabled!";
-        } 
+let lastShakeTime = 0;
+function enableShakeDetection() {
+    if (typeof DeviceMotionEvent.requestPermission === "function") {
+        DeviceMotionEvent.requestPermission()
+            .then(permission => {
+                if (permission === "granted") {
+                    window.addEventListener("devicemotion", handleShake);
+                    document.getElementById("shakeStatus").textContent = "Shake enabled!";
+                }
+            })
+            .catch(console.error);
+    } else {
+        window.addEventListener("devicemotion", handleShake);
+        document.getElementById("shakeStatus").textContent = "Shake enabled!";
+    }
+}
 
-        function handleShake(event) {
-            const acceleration = event.accelerationIncludingGravity;
-            const threshold = 15;
-            const now = Date.now(); 
+function handleShake(event) {
+    const acc =
+ 
 
-            if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
-                if (shakeStartTime === 0) {
-                    shakeStartTime = now;
-                } else if (now - shakeStartTime >= 2000 && now - shakeStartTime <= 5000) {
-                    shakeStartTime = 0;
-                    rollDiceAndHexagram();
-                }
-            }
-        } 
+function getActiveMode() {
+    if (document.getElementById('personalMode').classList.contains('active')) return 'personal';
+    if (document.getElementById('actionMode').classList.contains('active')) return 'action';
+    return 'general'; // Default mode
+}
 
-     // 4️⃣ MAIN FUNCTION TO ROLL DICE & SEND TELEGRAM MESSAGE
-    function rollDiceAndHexagram() {
-        const dcValue = parseInt(document.getElementById('dc').value) || 0;
-        let dieType = parseInt(document.getElementById('dieType').value);
-        const modifier = parseInt(document.getElementById('modifier').value) || 0;
-        const stepDown = document.getElementById('stepDownToggle').checked;
-        
-        let dieRoll = Math.floor(Math.random() * dieType) + 1;
-        if (stepDown && dieRoll > 1) dieRoll -= 1; 
+// Fix mode buttons
+document.querySelectorAll('.mode-button').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    });
+});
 
-        const hexagramNumber = Math.floor(Math.random() * 64) + 1;
-        const hexagramData = getActiveNarratives()[hexagramNumber];
-        
-        // Determine outcome based on DC
-        const totalValue = hexagramNumber + dieRoll + modifier;
-        const outcome = totalValue >= dcValue ? "Success 🎉" : "Failure 💥";
-        const outcomeType = totalValue >= dcValue ? "triumph" : 
-                          (totalValue >= dcValue - 5 ? "conflict" : "disaster");
-        const outcomeMessage = hexagramData[outcomeType]; 
-
-        // Update UI
-        document.getElementById('result').innerHTML = `
-            <strong>Hexagram:</strong> ${hexagramNumber}<br>
-            <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
-            <strong>Total:</strong> ${totalValue} (DC: ${dcValue})<br>
-            <strong>Outcome:</strong> ${outcome}<br>
-            <strong>Narrative:</strong> ${outcomeMessage}
-        `; 
-
-        // Send formatted result to Telegram
-        if (telegramBotToken && chatId) {
-            const telegramMessage = 
-                `💫 *Cast & Roll Result* 💫\n` +
-                `✨ *Hexagram*: ${hexagramNumber}\n` +
-                `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
-                `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
-                `📜 *Outcome*: ${outcome}\n` +
-                `🔮 ${outcomeMessage.substring(0, 100)}...`;
+        // 4️⃣ MAIN FUNCTION TO ROLL DICE & SEND TELEGRAM MESSAGE
+        function rollDiceAndHexagram() {
+            const dcValue = parseInt(document.getElementById('dc').value) || 0;
+            let dieType = parseInt(document.getElementById('dieType').value);
+            const modifier = parseInt(document.getElementById('modifier').value) || 0;
+            const stepDown = document.getElementById('stepDownToggle').checked;
             
-            sendToTelegram(telegramMessage);
-        }
-    } // Fixed missing closing brace
+            let dieRoll = Math.floor(Math.random() * dieType) + 1;
+            if (stepDown && dieRoll > 1) dieRoll -= 1; 
+
+            const hexagramNumber = Math.floor(Math.random() * 64) + 1;
+            const hexagramData = getActiveNarratives()[hexagramNumber];
+            const hexagramMessage = hexagramData ? `🔮 ${hexagramData.triumph}` : `Hexagram ${hexagramNumber}`; 
+
+            const totalValue = hexagramNumber + dieRoll + modifier; 
+
+      document.getElementById('result').innerHTML = `
+        <strong>Hexagram:</strong> ${originalHexagram}<br>
+        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
+        <strong>Total:</strong> ${totalValue} (DC: ${dcValue})<br>
+        <strong>Outcome:</strong> ${outcome}
+    `;
+  } 
+
+    // Send formatted result to Telegram
+    if (telegramBotToken && chatId) {
+        const telegramMessage = 
+            `💫 *Cast & Roll Result* 💫\n` +
+            `✨ *Hexagram*: ${originalHexagram}\n` +
+            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
+            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
+            `📜 *Outcome*: ${outcome}\n` +
+            `🔮 ${outcomeMessage.substring(0, 100)}...`;
+        
+        sendToTelegram(telegramMessage);
+    }
+}
 </script>
 </body>
 </html>
