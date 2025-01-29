@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Auld Ewe Demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+    <title>Functional Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet>
     <style>
-        /* [KEEP ALL CSS FROM PREVIOUS VERSION] */
-        /* Full CSS included in case styling was the issue */
         :root {
             --primary: #6b46c1;
             --primary-hover: #553c9a;
@@ -46,15 +44,160 @@
             padding: 0 1rem;
         }
 
-        /* [REMAINING CSS IDENTICAL TO PREVIOUS VERSION] */
-        /* ... (all other CSS styles remain exactly the same) ... */
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background-color: var(--bg-darker);
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+        }
+
+        .mode-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-button {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background-color: transparent;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-button.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .mode-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .oraclize-btn {
+            background-color: #21bf73;
+        }
+
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+        }
+
+        #result strong {
+            color: #a78bfa;
+        }
+
+        #changingLines {
+            text-align: left;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+            display: none;
+        }
+
+        .fate-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .fate-points {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        #fatePoints {
+            width: 60px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .add-fate {
+            background-color: #21bf73 !important;
+            width: auto !important;
+            padding: 0.5rem 1rem !important;
+        }
     </style>
 </head>
 <body>
-    <!-- [KEEP HTML STRUCTURE UNCHANGED] -->
     <nav>
         <ul>
-            <li><strong style="color: #fff;">Demo Version</strong></li>
+            <li><strong style="color: #fff;">Working Demo</strong></li>
             <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
         </ul>
     </nav>
@@ -69,14 +212,47 @@
                 <button class="add-fate" onclick="addFatePoint()">Add +1</button>
             </div>
 
-            <h1>Demo System</h1>
-            <h2>Test Interface</h2>
-            <h3>Press Harmonize to test!</h3>
+            <h1>The Chronicles of Auld Ewe</h1>
+            <h2>Functional Demo</h2>
+            <h3>Shake device or click Harmonize!</h3>
 
             <div id="shakeStatus"></div>
 
-            <!-- [KEEP ALL INPUT FIELDS AND BUTTONS] -->
-            <!-- ... (all HTML form elements remain the same) ... -->
+            <div class="input-group">
+                <label for="dc">Difficulty Class (DC)</label>
+                <input type="number" id="dc" placeholder="Enter DC" value="15">
+            </div>
+
+            <div class="input-group">
+                <label for="dieType">Die Type</label>
+                <select id="dieType">
+                    <option value="6">d6</option>
+                    <option value="20">d20</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="modifier">Modifier (+/-)</label>
+                <input type="number" id="modifier" value="0">
+            </div>
+
+            <div class="toggle-group">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="stepDownToggle">
+                    <label for="stepDownToggle" style="margin: 0;">Step Down</label>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
+            <div class="mode-group">
+                <button class="mode-button" id="personalMode">Personal</button>
+                <button class="mode-button active" id="generalMode">General</button>
+                <button class="mode-button" id="actionMode">Action</button>
+            </div>
+
+            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
+            <button onclick="rollDiceAndHexagram()">Harmonize</button>
+            <button class="oraclize-btn" onclick="showChangingLines()">Oraclize</button>
             
             <div id="result"></div>
             <div id="changingLines"></div>
@@ -84,7 +260,27 @@
     </main>
 
     <script>
-        // TEST CONFIGURATION
+        // Configuration
+        const FATE_STORAGE_KEY = 'demoFatePoints';
+        const MAX_FATE_POINTS = 5;
+        const BASE_FATE_POINTS = 3;
+        const INACTIVITY_TIMEOUT = 180000;
+        const shakeThreshold = 15;
+        const shakeCooldown = 1000;
+
+        // Test Data
+        const generalNarratives = {
+            1: {
+                triumph: "Test triumph narrative",
+                conflict: "Test conflict narrative",
+                disaster: "Test disaster narrative"
+            }
+        };
+
+        const hexagramLookup = {
+            1: '111111'
+        };
+
         const outcomeThresholds = {
             6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
             20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
@@ -95,25 +291,6 @@
             20: [12, 5]
         };
 
-        const hexagramLookup = {
-            1: '111111',
-            2: '000000',
-            // Add more if needed for testing
-        };
-
-        // TEST NARRATIVES
-        const generalNarratives = {
-            1: {
-                triumph: "Test triumph narrative",
-                conflict: "Test conflict narrative",
-                disaster: "Test disaster narrative"
-            }
-        };
-
-        // [KEEP ALL CORE FUNCTIONS FROM PREVIOUS VERSION]
-        // ... (all JavaScript functions remain exactly the same) ...
-        // Full working functions below:
-
         // Game State
         let currentHexagramNumber;
         let currentHexagramLines = [];
@@ -122,49 +299,50 @@
         let lastShake = 0;
         let inactivityTimer;
 
-        // Fate Points System
+        // Core Functions
         function initializeFatePoints() {
-            const storedData = localStorage.getItem('fateDemo');
-            document.getElementById('fatePoints').value = storedData || 3;
+            const stored = localStorage.getItem(FATE_STORAGE_KEY);
+            document.getElementById('fatePoints').value = stored || BASE_FATE_POINTS;
         }
 
         function addFatePoint() {
             const current = parseInt(document.getElementById('fatePoints').value);
-            if (current < 5) {
-                document.getElementById('fatePoints').value = current + 1;
-                localStorage.setItem('fateDemo', current + 1);
+            if (current < MAX_FATE_POINTS) {
+                const newValue = current + 1;
+                document.getElementById('fatePoints').value = newValue;
+                localStorage.setItem(FATE_STORAGE_KEY, newValue);
             }
         }
 
-        // Core Game Logic
         function rollDiceAndHexagram() {
             const dieType = parseInt(document.getElementById('dieType').value);
             const dc = parseInt(document.getElementById('dc').value) || 0;
             const mod = parseInt(document.getElementById('modifier').value) || 0;
             
-            // Simplified test logic
-            const dieRoll = Math.floor(Math.random() * dieType) + 1;
-            const outcome = dieRoll > (dieType/2) ? "Success" : "Failure";
+            // Generate random hexagram
+            currentHexagramNumber = 1; // Fixed for demo
+            currentHexagramLines = ['Solid','Solid','Solid','Solid','Solid','Solid'];
             
+            // Roll die
+            const dieRoll = Math.floor(Math.random() * dieType) + 1;
+            const outcome = getOutcome(dieRoll, dieType);
+            const total = currentHexagramNumber + dieRoll + mod;
+
+            // Display results
             document.getElementById('result').innerHTML = `
+                <strong>Hexagram:</strong> ${currentHexagramNumber}<br>
                 <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
-                <strong>Total:</strong> ${dieRoll + mod} vs DC ${dc}<br>
-                <strong>Outcome:</strong> ${outcome}
+                <strong>Total:</strong> ${total} vs DC ${dc}<br>
+                <strong>Outcome:</strong> ${outcome}<br>
+                <strong>Narrative:</strong> ${generalNarratives[1][outcome.toLowerCase()]}
             `;
         }
 
-        // Shake Detection
-        function handleShake(event) {
-            const now = Date.now();
-            if (now - lastShake < 1000) return;
-            
-            const acc = event.accelerationIncludingGravity;
-            const magnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
-            
-            if (magnitude > 15) {
-                lastShake = now;
-                rollDiceAndHexagram();
-            }
+        function getOutcome(dieRoll, dieType) {
+            const thresholds = outcomeThresholds[dieType];
+            if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+            if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+            return 'Disaster';
         }
 
         function enableShakeDetection() {
@@ -182,12 +360,29 @@
             }
         }
 
+        function handleShake(event) {
+            const now = Date.now();
+            if (now - lastShake < shakeCooldown) return;
+
+            const acc = event.accelerationIncludingGravity;
+            const magnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+
+            if (magnitude > shakeThreshold) {
+                lastShake = now;
+                rollDiceAndHexagram();
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initializeFatePoints();
-            document.getElementById('dieType').value = '20';
-            document.getElementById('dc').value = '15';
+            document.querySelectorAll('.mode-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
         });
     </script>
 </body>
-</html>
+    </html>
