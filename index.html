@@ -235,8 +235,8 @@
 
     <script>
         // Telegram Configuration (REPLACE THESE VALUES)
-        const telegramBotToken = 'YOUR_TELEGRAM_BOT_TOKEN';
-        const chatId = 'YOUR_CHAT_ID';
+        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
+        const chatId = '-1002185533073';
 
         // Game Configuration
         const outcomeThresholds = {
@@ -1388,7 +1388,7 @@ const hexagramLookup = {
             `;
 
             // Telegram notification
-            if (telegramBotToken && chatId && telegramBotToken !== 'YOUR_TELEGRAM_BOT_TOKEN') {
+            if (telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
                 const msg = `New Roll:\nHex: ${currentHexagramNumber}\nMode: ${mode}\nDie: d${dieType} → ${dieRoll}\nTotal: ${total}\nOutcome: ${outcome}`;
                 fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
             }
