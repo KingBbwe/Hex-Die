@@ -8,24 +8,14 @@
 <style>
 body { background-color: #1a1a2e; color: #eaeaea; text-align: center; font-size: 0.9rem; }
 nav { background-color: #16213e; }
-h1 { font-size: 1.4rem; margin-bottom: 0.3rem; }
-h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
-h3 { font-size: 0.95rem; margin-bottom: 0.8rem; }
-button { background-color: #0f3460; color: #eaeaea; width: 90%; max-width: 300px; margin-top: 12px; }
-#result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; overflow-x: auto; }
-label { margin-bottom: 0.4rem; font-size: 0.9rem; } 
-
-/* Optimized Layout for Mobile */
-.container section input,
-.container section select { width: 90%; max-width: 300px; } 
-
-/* Compact Step Down Toggle */
-.step-down-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; } 
-
-/* Compact Mode Toggles */
-.mode-container { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; max-width: 300px; margin: auto; margin-bottom: 12px; }
-.mode-container label { min-width: 80px; text-align: right; font-size: 0.85rem; }
-.mode-container input { margin-left: 5px; transform: scale(0.9); } /* Smaller toggle size for compactness */
+h1 { font-size: 1.5rem; margin-bottom: 0.3rem; }
+h2 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+h3 { font-size: 1rem; margin-bottom: 1rem; }
+button { background-color: #0f3460; color: #eaeaea; }
+#result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.8rem; }
+label { margin-bottom: 0.5rem; }
+.step-down-container, .mode-container { margin-bottom: 15px; } /* Vertical spacing */
+.mode-container { display: flex; justify-content: center; align-items: center; gap: 10px; } /* Keep labels & toggles aligned */
 </style>
 </head>
 <body>
@@ -69,8 +59,8 @@ label { margin-bottom: 0.4rem; font-size: 0.9rem; }
     <input type="checkbox" id="actionModeToggle">
 </div> 
 
-<!-- Compact Harmonize Button -->
-<button onclick="rollDiceAndHexagram()">Harmonize</button>
+<!-- Add space before Harmonize button -->
+<button style="margin-top: 15px;" onclick="rollDiceAndHexagram()">Harmonize</button>
 <div id="result"></div>
 </section>
 </main>
