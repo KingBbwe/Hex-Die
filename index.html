@@ -222,15 +222,7 @@
     </main>
 
     <script>
-        // Your existing JavaScript code here
-        // Mode buttons functionality
-        const modeButtons = document.querySelectorAll('.mode-button');
-        modeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                modeButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            });
-        });
+
 
 <script>
 // Mode-Specific Hexagram Narratives
@@ -1306,6 +1298,15 @@ function rollDiceAndHexagram() {
         sendToTelegram(telegramMessage);
     }
 }
+        
+        // Mode buttons functionality
+        const modeButtons = document.querySelectorAll('.mode-button');
+        modeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                modeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
 </script>
 </body>
 </html>
