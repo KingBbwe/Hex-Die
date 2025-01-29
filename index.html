@@ -1165,43 +1165,48 @@ const actionNarratives = {
             }
         } 
 
-        // 4️⃣ MAIN FUNCTION TO ROLL DICE & SEND TELEGRAM MESSAGE
-        function rollDiceAndHexagram() {
-            const dcValue = parseInt(document.getElementById('dc').value) || 0;
-            let dieType = parseInt(document.getElementById('dieType').value);
-            const modifier = parseInt(document.getElementById('modifier').value) || 0;
-            const stepDown = document.getElementById('stepDownToggle').checked;
-            
-            let dieRoll = Math.floor(Math.random() * dieType) + 1;
-            if (stepDown && dieRoll > 1) dieRoll -= 1; 
-
-            const hexagramNumber = Math.floor(Math.random() * 64) + 1;
-            const hexagramData = getActiveNarratives()[hexagramNumber];
-            const hexagramMessage = hexagramData ? `🔮 ${hexagramData.triumph}` : `Hexagram ${hexagramNumber}`; 
-
-            const totalValue = hexagramNumber + dieRoll + modifier; 
-
-      document.getElementById('result').innerHTML = `
-        <strong>Hexagram:</strong> ${originalHexagram}<br>
-        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
-        <strong>Total:</strong> ${totalValue} (DC: ${dcValue})<br>
-        <strong>Outcome:</strong> ${outcome}
-    `;
-  } 
-
-    // Send formatted result to Telegram
-    if (telegramBotToken && chatId) {
-        const telegramMessage = 
-            `💫 *Cast & Roll Result* 💫\n` +
-            `✨ *Hexagram*: ${originalHexagram}\n` +
-            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
-            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
-            `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
+     // 4️⃣ MAIN FUNCTION TO ROLL DICE & SEND TELEGRAM MESSAGE
+    function rollDiceAndHexagram() {
+        const dcValue = parseInt(document.getElementById('dc').value) || 0;
+        let dieType = parseInt(document.getElementById('dieType').value);
+        const modifier = parseInt(document.getElementById('modifier').value) || 0;
+        const stepDown = document.getElementById('stepDownToggle').checked;
         
-        sendToTelegram(telegramMessage);
-    }
-}
+        let dieRoll = Math.floor(Math.random() * dieType) + 1;
+        if (stepDown && dieRoll > 1) dieRoll -= 1; 
+
+        const hexagramNumber = Math.floor(Math.random() * 64) + 1;
+        const hexagramData = getActiveNarratives()[hexagramNumber];
+        
+        // Determine outcome based on DC
+        const totalValue = hexagramNumber + dieRoll + modifier;
+        const outcome = totalValue >= dcValue ? "Success 🎉" : "Failure 💥";
+        const outcomeType = totalValue >= dcValue ? "triumph" : 
+                          (totalValue >= dcValue - 5 ? "conflict" : "disaster");
+        const outcomeMessage = hexagramData[outcomeType]; 
+
+        // Update UI
+        document.getElementById('result').innerHTML = `
+            <strong>Hexagram:</strong> ${hexagramNumber}<br>
+            <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
+            <strong>Total:</strong> ${totalValue} (DC: ${dcValue})<br>
+            <strong>Outcome:</strong> ${outcome}<br>
+            <strong>Narrative:</strong> ${outcomeMessage}
+        `; 
+
+        // Send formatted result to Telegram
+        if (telegramBotToken && chatId) {
+            const telegramMessage = 
+                `💫 *Cast & Roll Result* 💫\n` +
+                `✨ *Hexagram*: ${hexagramNumber}\n` +
+                `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
+                `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
+                `📜 *Outcome*: ${outcome}\n` +
+                `🔮 ${outcomeMessage.substring(0, 100)}...`;
+            
+            sendToTelegram(telegramMessage);
+        }
+    } // Fixed missing closing brace
 </script>
 </body>
 </html>
