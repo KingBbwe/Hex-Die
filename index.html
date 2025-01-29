@@ -14,10 +14,24 @@ h3 { font-size: 1rem; margin-bottom: 1rem; }
 button { background-color: #0f3460; color: #eaeaea; }
 #result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.8rem; } 
 
-/* Layout Fixes */
-.container section input, .container section select { width: 90%; max-width: 300px; }
-.step-down-container, .mode-container { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; max-width: 300px; margin: auto; margin-bottom: 12px; }
-.mode-container label { min-width: 80px; text-align: right; font-size: 0.85rem; }
+/* Center Alignment Fix */
+.step-down-container, .mode-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    max-width: 300px;
+    margin: auto;
+    margin-bottom: 12px;
+}
+.mode-container {
+    flex-direction: column; /* Stack labels & checkboxes vertically */
+}
+.mode-container label {
+    font-size: 1rem;
+    text-align: center;
+}
 </style>
 </head>
 <body>
@@ -70,7 +84,6 @@ button { background-color: #0f3460; color: #eaeaea; }
 <div id="result"></div>
 </section>
 </main>
- 
 
 <script>
 // Outcome thresholds for each die type
