@@ -249,6 +249,47 @@
         // Telegram Configuration
         const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
         const chatId = '-1002185533073';
+        // Fate Point Management
+        const FATE_STORAGE_KEY = 'auldEweFatePoints';
+        const MAX_FATE_POINTS = 5;
+        const BASE_FATE_POINTS = 3;
+
+        function initializeFatePoints() {
+            const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+            const now = Date.now();
+            let fatePoints = BASE_FATE_POINTS;
+            
+            if(storedData) {
+                const { points, timestamp } = JSON.parse(storedData);
+                const hoursSince = (now - timestamp) / (1000 * 60 * 60);
+                
+                if(hoursSince >= 24) {
+                    // Reset cycle - carry over up to BASE_FATE_POINTS
+                    fatePoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+                } else {
+                    fatePoints = points;
+                }
+            }
+            
+            document.getElementById('fatePoints').value = Math.min(fatePoints, MAX_FATE_POINTS);
+            updateFateStorage();
+        }
+
+        function updateFateStorage() {
+            const storageData = {
+                points: parseInt(document.getElementById('fatePoints').value),
+                timestamp: Date.now()
+            };
+            localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
+        }
+
+        function addFatePoint() {
+            const current = parseInt(document.getElementById('fatePoints').value);
+            if(current < MAX_FATE_POINTS) {
+                document.getElementById('fatePoints').value = current + 1;
+                updateFateStorage();
+            }
+        }
 
         // Game Configuration
         const outcomeThresholds = {
@@ -1379,6 +1420,25 @@ const hexagramLookup = {
             const activeNarratives = getActiveNarratives();
             const narrative = activeNarratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
+            // After calculating results:
+            const outcomeMessage = activeNarratives[currentHexagramNumber]?.[outcome.toLowerCase()] || '';
+            sendToTelegram(
+                currentHexagramNumber,
+                dieType,
+                dieRoll,
+                total,
+                dc,
+                outcome,
+                outcomeMessage
+            );
+
+            // Update fate points storage on roll
+            updateFateStorage();
+        }
+
+        // Initialize on load
+        initializeFatePoints();
+
             // Display results
             const result = document.getElementById('result');
             result.innerHTML = `
@@ -1392,29 +1452,44 @@ const hexagramLookup = {
                 <strong>Narrative:</strong> ${narrative}
             `;
 
-            // Telegram notification
-            if (telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
-                const msg = `New Roll:\nHex: ${currentHexagramNumber}\nMode: ${mode}\nDie: d${dieType} → ${dieRoll}\nTotal: ${total}\nOutcome: ${outcome}`;
-                fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
+         // Modified Telegram Notification
+        async function sendToTelegram(originalHexagram, dieType, dieRoll, totalValue, dcValue, outcome, outcomeMessage) {
+            if(!telegramBotToken || !chatId || telegramBotToken === '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') return;
+
+            const telegramMessage = 
+                `✨ *Hexagram Cast & Roll* ✨\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `🌌 *Hexagram*: ${originalHexagram}\n` +
+                `🎲 *Die Roll*: d${dieType} → ${dieRoll}\n` +
+                `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
+                `🔮 *Outcome*: ${outcome}\n` +
+                `📜 *Narrative*: ${outcomeMessage.substring(0, 100)}...\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `#AuldEwe #FateCast`;
+
+            try {
+                const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: telegramMessage,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                
+                if(!response.ok) {
+                    console.error('Telegram API error:', await response.text());
+                }
+            } catch (error) {
+                console.error('Failed to send Telegram message:', error);
             }
         }
 
-        function showChangingLines() {
-            const fatePoints = parseInt(document.getElementById('fatePoints').value);
-            if (fatePoints < 1) {
-                alert("Not enough Fate Points!");
-                return;
-            }
 
-            const confirmResult = confirm("This action costs 1 Fate Point\nProceed?");
-            if (confirmResult) {
-                document.getElementById('fatePoints').value = fatePoints - 1;
-                document.getElementById('changingLines').style.display = 'block';
-                document.getElementById('changingLines').innerHTML = `
-                    <strong>Changing Lines:</strong> ${currentChangingLines.join(', ')}
-                `;
-            }
-        }
 
         // Shake detection functions
         function enableShakeDetection() {
