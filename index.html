@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Auld Ewe Working Demo</title>
+    <title>Auld Ewe Complete</title>
     <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
     <style>
         :root {
@@ -197,7 +197,7 @@
 <body>
     <nav>
         <ul>
-            <li><strong style="color: #fff;">Working Demo</strong></li>
+            <li><strong style="color: #fff;">Chronicles of Auld Ewe</strong></li>
             <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
         </ul>
     </nav>
@@ -213,7 +213,7 @@
             </div>
 
             <h1>The Chronicles of Auld Ewe</h1>
-            <h2>Functional Demo</h2>
+            <h2>Harmonized Hex & Die System</h2>
             <h3>Shake device or click Harmonize!</h3>
 
             <div id="shakeStatus"></div>
@@ -261,14 +261,14 @@
 
     <script>
         // Configuration
-        const FATE_STORAGE_KEY = 'demoFatePoints';
+        const FATE_STORAGE_KEY = 'auldEweFatePoints';
         const MAX_FATE_POINTS = 5;
         const BASE_FATE_POINTS = 3;
         const INACTIVITY_TIMEOUT = 180000;
         const shakeThreshold = 15;
         const shakeCooldown = 1000;
 
-        // Test Data
+        // Game Data
         const generalNarratives = {
             1: {
                 triumph: "General Triumph: The party unites under strong leadership",
@@ -301,12 +301,13 @@
 
         const outcomeThresholds = {
             6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
+            12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
             20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
         };
 
         const stepDownConfig = {
-            6: [6, 2],
-            20: [12, 5]
+            6: [6, 2],   // Original d6 stays d6, reduces hexagram by 2
+            20: [12, 5]  // Original d20 becomes d12, reduces hexagram by 5
         };
 
         // Game State
@@ -320,7 +321,12 @@
         // Core Functions
         function initializeFatePoints() {
             const stored = localStorage.getItem(FATE_STORAGE_KEY);
-            document.getElementById('fatePoints').value = stored || BASE_FATE_POINTS;
+            if (stored) {
+                document.getElementById('fatePoints').value = stored;
+            } else {
+                document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+                localStorage.setItem(FATE_STORAGE_KEY, BASE_FATE_POINTS);
+            }
         }
 
         function addFatePoint() {
@@ -366,43 +372,31 @@
             }
         }
 
-// ======== FIXED STEP-DOWN IMPLEMENTATION ========
-function rollDiceAndHexagram() {
-    const dieTypeInput = parseInt(document.getElementById('dieType').value);
-    let [dieType, hexagramReduction] = [dieTypeInput, 0]; // Initialize with original values 
+        function rollDiceAndHexagram() {
+            // Get base values
+            const originalDie = parseInt(document.getElementById('dieType').value);
+            let dieType = originalDie;
+            let hexagramReduction = 0;
 
-    // Apply step-down FIRST before other calculations
-    if (document.getElementById('stepDownToggle').checked) {
-        // FIX 1: Use Object.entries for safer lookup
-        const stepDown = Object.entries(stepDownConfig).find(([key]) => key == dieTypeInput);
-        if (stepDown) {
-            [dieType, hexagramReduction] = stepDown[1];
-        }
-    }
-            // Generate hexagram (1-3 for test data)
-            currentHexagramNumber = Math.floor(Math.random() * 3) + 1;
+            // Apply step-down first
+            if (document.getElementById('stepDownToggle').checked) {
+                const config = stepDownConfig[originalDie];
+                if (config) {
+                    dieType = config[0];
+                    hexagramReduction = config[1];
+                }
+            }
+
+            // Generate hexagram
+            currentHexagramNumber = Math.floor(Math.random() * 3) + 1; // 1-3 for testing
+            const baseHexagram = currentHexagramNumber;
+            const adjustedHexagram = Math.max(1, baseHexagram - hexagramReduction);
             currentHexagramLines = generateHexagramLines(currentHexagramNumber);
 
-// ======== UPDATED STEP-DOWN CONFIG ========
-const stepDownConfig = {
-    // Key: Original Die | Value: [New Die, Reduction]
-    6: [6, 2],   // No change for d6
-    20: [12, 5]  // Now properly references outcomeThresholds for d12
-}; 
-
-// ======== ADD MISSING d12 THRESHOLDS ========
-const outcomeThresholds = {
-    // ... existing entries ...
-    12: { // Added for stepped-down d20
-        triumph: [12, 11, 10], // Top 25%
-        conflict: [9, 8, 7, 6, 5], // Middle 41.6%
-        disaster: [4, 3, 2, 1] // Bottom 33.3%
-    }
-};
             // Roll die
             const dieRoll = Math.floor(Math.random() * dieType) + 1;
             const outcome = getOutcome(dieRoll, dieType);
-            const total = currentHexagramNumber + dieRoll + mod - hexagramReduction;
+            const total = adjustedHexagram + dieRoll + parseInt(document.getElementById('modifier').value);
 
             // Get narrative
             const narratives = getActiveNarratives();
@@ -414,10 +408,11 @@ const outcomeThresholds = {
             // Display results
             document.getElementById('result').innerHTML = `
                 <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
-                <strong>Hexagram:</strong> ${currentHexagramNumber}<br>
-                ${stepDown ? `<strong>Step Down:</strong> -${hexagramReduction} (d${dieType})<br>` : ''}
+                <strong>Original Hexagram:</strong> ${baseHexagram}<br>
+                ${hexagramReduction > 0 ? `<strong>Step Down Reduction:</strong> -${hexagramReduction}<br>` : ''}
+                <strong>Adjusted Hexagram:</strong> ${adjustedHexagram}<br>
                 <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
-                <strong>Total:</strong> ${total} vs DC ${dc}<br>
+                <strong>Total:</strong> ${total} vs DC ${document.getElementById('dc').value}<br>
                 <strong>Outcome:</strong> ${outcome}<br>
                 <strong>Narrative:</strong> ${narrative}
             `;
@@ -461,13 +456,14 @@ const outcomeThresholds = {
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initializeFatePoints();
+            
             document.querySelectorAll('.mode-button').forEach(button => {
                 button.addEventListener('click', function() {
                     document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                 });
             });
-            
+
             document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 alert(`How to Play:
