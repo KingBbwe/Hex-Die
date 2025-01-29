@@ -14,11 +14,8 @@ h3 { font-size: 1rem; margin-bottom: 1rem; }
 button { background-color: #0f3460; color: #eaeaea; }
 #result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.8rem; }
 label { margin-bottom: 0.5rem; }
-.container section label,
-.container section input { display: block; margin-bottom: 10px; }
-.container section .mode-label { margin-top: 20px; margin-bottom: 10px; }
-.container section #mode-options label { margin-right: 10px; }
-.container section #mode-options { margin-bottom: 20px; }
+.step-down-container, .mode-container { margin-bottom: 15px; } /* Vertical spacing */
+.mode-container { display: flex; justify-content: center; align-items: center; gap: 10px; } /* Keep labels & toggles aligned */
 </style>
 </head>
 <body>
@@ -47,22 +44,23 @@ label { margin-bottom: 0.5rem; }
 <label for="modifier">Apply Modifier (+/-):</label>
 <input type="number" id="modifier" value="0"> 
 
-<label for="stepDownToggle">Step Down:</label>
-<input type="checkbox" id="stepDownToggle"> 
+<!-- Step Down Toggle -->
+<div class="step-down-container">
+    <label for="stepDownToggle">Step Down:</label>
+    <input type="checkbox" id="stepDownToggle">
+</div> 
 
-<!-- Space between Step Down toggle and Mode label -->
-<h3 class="mode-label">Mode</h3> 
-
-<!-- Mode Options -->
-<div id="mode-options">
+<!-- Mode Selection -->
+<h3>Mode</h3>
+<div class="mode-container">
     <label for="personalModeToggle">Personal</label>
     <input type="checkbox" id="personalModeToggle">
     <label for="actionModeToggle">Action</label>
     <input type="checkbox" id="actionModeToggle">
 </div> 
 
-<!-- Space between toggle buttons and Harmonize -->
-<button onclick="rollDiceAndHexagram()">Harmonize</button>
+<!-- Add space before Harmonize button -->
+<button style="margin-top: 15px;" onclick="rollDiceAndHexagram()">Harmonize</button>
 <div id="result"></div>
 </section>
 </main>
