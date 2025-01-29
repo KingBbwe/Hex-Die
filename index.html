@@ -144,34 +144,39 @@
             background-color: var(--primary-hover);
         }
 
+        .oraclize-btn {
+            background-color: #21bf73;
+        }
+
         #result {
             margin-top: 1.5rem;
             padding: 1rem;
             background-color: var(--bg-darker);
             border-radius: 0.375rem;
-            white-space: pre-wrap;
         }
 
         #result strong {
             color: #a78bfa;
         }
 
-        .checkbox-wrapper {
+        #changingLines {
+            text-align: left;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+            display: none;
+        }
+
+        .fate-points {
             display: flex;
-            align-items: center;
             gap: 0.5rem;
-        }
-
-        .checkbox-wrapper input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-
-        #shakeStatus {
-            color: #a78bfa;
-            font-size: 0.9rem;
-            text-align: center;
+            align-items: center;
             margin-bottom: 1rem;
+        }
+
+        .fate-points input {
+            width: 60px;
         }
     </style>
 </head>
@@ -188,6 +193,11 @@
             <h1>The Chronicles of Auld Ewe</h1>
             <h2>Harmonized Hex & Die System</h2>
             <h3>Shake your phone or press Harmonize to roll!</h3>
+
+            <div class="fate-points">
+                <label for="fatePoints">Fate Points:</label>
+                <input type="number" id="fatePoints" value="3" min="0">
+            </div>
 
             <div id="shakeStatus"></div>
 
@@ -228,20 +238,22 @@
 
             <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
             <button onclick="rollDiceAndHexagram()">Harmonize</button>
+            <button class="oraclize-btn" onclick="showChangingLines()">Oraclize</button>
             
             <div id="result"></div>
+            <div id="changingLines"></div>
         </section>
     </main>
 
     <script>
-        // Telegram Configuration (REPLACE THESE VALUES)
+        // Telegram Configuration
         const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
         const chatId = '-1002185533073';
 
         // Game Configuration
         const outcomeThresholds = {
-            6:  { triumph: [6],       conflict: [5,4],   disaster: [3,2,1] },
-            8:  { triumph: [8,7],     conflict: [6,5,4], disaster: [3,2,1] },
+            6:  { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
+            8:  { triumph: [8,7], conflict: [6,5,4], disaster: [3,2,1] },
             12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
             20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
             100: { 
@@ -252,14 +264,10 @@
         };
 
         const stepDownConfig = {
-            6:  [6, 2],
-            8:  [6, 4],
-            12: [8, 8],
-            20: [12, 10],
-            100: [20, 20]
+            6:  [6, 2], 8:  [6, 4], 12: [8, 8], 20: [12, 10], 100: [20, 20]
         };
 
-        // Mode-Specific Narratives
+        // Mode-Specific Narratives (truncated for space - paste full arrays here)
 const generalNarratives = {
     1: { 
         triumph: "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose.",
@@ -1297,10 +1305,10 @@ const hexagramLookup = {
 63: '001101', // Ji Ji (Completion)
 64: '010101' // Wei Ji (Before Completion)
 }; 
- 
 
         let currentHexagramNumber;
         let currentHexagramLines = [];
+        let currentChangingLines = [];
         let shakeEnabled = false;
         let lastShake = 0;
         const shakeThreshold = 15;
@@ -1363,8 +1371,8 @@ const hexagramLookup = {
             const total = adjustedHex + dieRoll + mod;
 
             // Determine changing lines
-            const changingLines = determineChangingLines();
-            applyLineChanges(changingLines);
+            currentChangingLines = determineChangingLines();
+            applyLineChanges(currentChangingLines);
 
             // Get active mode and narratives
             const mode = document.querySelector('.mode-button.active').id.replace('Mode', '').toLowerCase();
@@ -1381,16 +1389,30 @@ const hexagramLookup = {
                 <strong>Modifier:</strong> ${mod}<br>
                 <strong>Total:</strong> ${total} vs DC ${dc}<br>
                 <strong>Outcome:</strong> ${outcome}<br>
-                <strong>Narrative:</strong> ${narrative}<br>
-                <strong>Hexagram Lines:</strong><br>
-                ${currentHexagramLines.join('<br>')}
-                ${changingLines.length ? `<br><strong>Changing Lines:</strong> ${changingLines.join(', ')}` : ''}
+                <strong>Narrative:</strong> ${narrative}
             `;
 
             // Telegram notification
             if (telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
                 const msg = `New Roll:\nHex: ${currentHexagramNumber}\nMode: ${mode}\nDie: d${dieType} → ${dieRoll}\nTotal: ${total}\nOutcome: ${outcome}`;
                 fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
+            }
+        }
+
+        function showChangingLines() {
+            const fatePoints = parseInt(document.getElementById('fatePoints').value);
+            if (fatePoints < 1) {
+                alert("Not enough Fate Points!");
+                return;
+            }
+
+            const confirmResult = confirm("This action costs 1 Fate Point\nProceed?");
+            if (confirmResult) {
+                document.getElementById('fatePoints').value = fatePoints - 1;
+                document.getElementById('changingLines').style.display = 'block';
+                document.getElementById('changingLines').innerHTML = `
+                    <strong>Changing Lines:</strong> ${currentChangingLines.join(', ')}
+                `;
             }
         }
 
@@ -1449,7 +1471,7 @@ const hexagramLookup = {
 
         document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!');
+            alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
         });
 
         // Set initial values
