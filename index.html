@@ -14,6 +14,11 @@ h3 { font-size: 1rem; margin-bottom: 1rem; }
 button { background-color: #0f3460; color: #eaeaea; }
 #result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.8rem; }
 label { margin-bottom: 0.5rem; }
+.container section label,
+.container section input { display: block; margin-bottom: 10px; }
+.container section .mode-label { margin-top: 20px; margin-bottom: 10px; }
+.container section #mode-options label { margin-right: 10px; }
+.container section #mode-options { margin-bottom: 20px; }
 </style>
 </head>
 <body>
@@ -45,16 +50,22 @@ label { margin-bottom: 0.5rem; }
 <label for="stepDownToggle">Step Down:</label>
 <input type="checkbox" id="stepDownToggle"> 
 
-<h3>Mode</h3>
-<label for="personalModeToggle">Personal</label>
-<input type="checkbox" id="personalModeToggle">
-<label for="actionModeToggle">Action</label>
-<input type="checkbox" id="actionModeToggle"> 
+<!-- Space between Step Down toggle and Mode label -->
+<h3 class="mode-label">Mode</h3> 
 
+<!-- Mode Options -->
+<div id="mode-options">
+    <label for="personalModeToggle">Personal</label>
+    <input type="checkbox" id="personalModeToggle">
+    <label for="actionModeToggle">Action</label>
+    <input type="checkbox" id="actionModeToggle">
+</div> 
+
+<!-- Space between toggle buttons and Harmonize -->
 <button onclick="rollDiceAndHexagram()">Harmonize</button>
 <div id="result"></div>
 </section>
-</main> 
+</main>
 
 <script>
 // Mode-Specific Hexagram Narratives
