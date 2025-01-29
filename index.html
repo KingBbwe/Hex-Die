@@ -1,231 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Chronicles of Auld Ewe</title>
-    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6b46c1;
-            --primary-hover: #553c9a;
-            --bg-dark: #1a1a2e;
-            --bg-darker: #16213e;
-            --text-light: #e2e8f0;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Chronicles of Auld Ewe</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6b46c1;
+            --primary-hover: #553c9a;
+            --bg-dark: #1a1a2e;
+            --bg-darker: #16213e;
+            --text-light: #e2e8f0;
+        } 
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
-        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        } 
 
-        nav {
-            background-color: var(--bg-darker);
-            padding: 1rem;
-            margin-bottom: 2rem;
-        }
+        nav {
+            background-color: var(--bg-darker);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        } 
 
-        nav ul {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        } 
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+        h1, h2, h3 {
+            text-align: center;
+        } 
 
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            color: #fff;
-            text-align: center;
-        }
+        .toggle-group, .mode-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        } 
 
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
-            color: #cbd5e1;
-            text-align: center;
-        }
+        .mode-button {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background-color: transparent;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        } 
 
-        h3 {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            color: #94a3b8;
-            text-align: center;
-        }
+        .mode-button.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        } 
 
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+            margin-bottom: 0.5rem;
+        } 
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-        }
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+            white-space: pre-wrap;
+        } 
 
-        input, select {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid var(--primary);
-            border-radius: 0.375rem;
-            background-color: var(--bg-darker);
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-hover);
-            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
-        }
-
-        .toggle-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 0.75rem;
-            background-color: var(--bg-darker);
-            border-radius: 0.375rem;
-        }
-
-        .mode-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .mode-button {
-            flex: 1;
-            padding: 0.6rem;
-            border: 1px solid var(--primary);
-            border-radius: 0.375rem;
-            background-color: transparent;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .mode-button.active {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .mode-button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        #result {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: var(--bg-darker);
-            border-radius: 0.375rem;
-            white-space: pre-wrap;
-        }
-
-        #result strong {
-            color: #a78bfa;
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .checkbox-wrapper input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-    </style>
+        #shakeStatus {
+            color: #a78bfa;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
-            <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
-        </ul>
-    </nav>
+    <nav>
+        <ul>
+            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
+            <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
+        </ul>
+    </nav> 
 
-    <main class="container">
-        <section>
-            <h1>The Chronicles of Auld Ewe</h1>
-            <h2>Harmonized Hex & Die System</h2>
-            <h3>Cast a Hexagram and Roll your Die to Play</h3>
+    <main class="container">
+        <section>
+            <h1>The Chronicles of Auld Ewe</h1>
+            <h2>Harmonized Hex & Die System</h2>
+            <h3>Shake your phone or press Harmonize to roll!</h3> 
 
-            <div class="input-group">
-                <label for="dc">Difficulty Class (DC)</label>
-                <input type="number" id="dc" placeholder="Enter DC value">
-            </div>
+            <div id="shakeStatus"></div> 
 
-            <div class="input-group">
-                <label for="dieType">Die Type</label>
-                <select id="dieType">
-                    <option value="6">d6</option>
-                    <option value="8">d8</option>
-                    <option value="12">d12</option>
-                    <option value="20">d20</option>
-                    <option value="100">d100</option>
-                </select>
-            </div>
+            <label for="dc">Difficulty Class (DC)</label>
+            <input type="number" id="dc" placeholder="Enter DC value"> 
 
-            <div class="input-group">
-                <label for="modifier">Modifier (+/-)</label>
-                <input type="number" id="modifier" value="0">
-            </div>
+            <label for="dieType">Die Type</label>
+            <select id="dieType">
+                <option value="6">d6</option>
+                <option value="8">d8</option>
+                <option value="12">d12</option>
+                <option value="20">d20</option>
+                <option value="100">d100</option>
+            </select> 
 
-            <div class="toggle-group">
-                <div class="checkbox-wrapper">
-                    <input type="checkbox" id="stepDownToggle">
-                    <label for="stepDownToggle" style="margin: 0;">Step Down</label>
-                </div>
-            </div>
+            <label for="modifier">Modifier (+/-)</label>
+            <input type="number" id="modifier" value="0"> 
 
-            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
-            <div class="mode-group">
-                <button class="mode-button" id="personalMode">Personal</button>
-                <button class="mode-button active" id="generalMode">General</button>
-                <button class="mode-button" id="actionMode">Action</button>
-            </div>
+            <div class="toggle-group">
+                <label for="stepDownToggle">Step Down:</label>
+                <input type="checkbox" id="stepDownToggle">
+            </div> 
 
-            <button onclick="rollDiceAndHexagram()">Harmonize</button>
-            <div id="result"></div>
-        </section>
-    </main>
+            <h3>Mode</h3>
+            <div class="mode-group">
+                <button class="mode-button" id="personalMode">Personal</button>
+                <button class="mode-button active" id="generalMode">General</button>
+                <button class="mode-button" id="actionMode">Action</button>
+            </div> 
 
-    <script>
+            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
+            <button onclick="rollDiceAndHexagram()">Harmonize</button>
+            
+            <div id="result"></div>
+        </section>
+    </main> 
 
-
-<script>
-// Mode-Specific Hexagram Narratives
+    <script>
+        // 1️⃣ PLACE YOUR HEXAGRAM ARRAYS HERE
 const generalNarratives = {
     1: { 
         triumph: "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose.",
@@ -856,7 +774,7 @@ const personalNarratives = {
         conflict: "Maintaining truth requires facing uncomfortable realities.",
         disaster: "Truth revealed destroys necessary illusions."
     },
-    62: {
+        62: {
         triumph: "The Sentient maintains balance while paying attention to details.",
         conflict: "Small matters consume energy needed for larger concerns.",
         disaster: "Focus on details leads to missing critical overview."
@@ -1196,117 +1114,78 @@ const actionNarratives = {
     }
 }; 
 
-// Outcome Thresholds for Each Die Type
-const outcomeThresholds = {
-    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] },
-    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] },
-    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] },
-    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] },
-    100: {
-        triumph: Array.from({ length: 20 }, (_, i) => 100 - i),
-        conflict: Array.from({ length: 60 }, (_, i) => 80 - i),
-        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)
-    }
-}; 
+        function getActiveNarratives() {
+            return document.getElementById('personalMode').classList.contains('active') ? personalNarratives 
+                 : document.getElementById('actionMode').classList.contains('active') ? actionNarratives 
+                 : generalNarratives;
+        } 
 
-// Step-Down Configuration for Die Types
-const stepDownConfig = {
-    6: [6, 2],
-    8: [6, 4],
-    12: [8, 8],
-    20: [12, 10],
-    100: [20, 20]
-}; 
+        // 2️⃣ TELEGRAM CONFIGURATION
+        const telegramBotToken = "7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso";
+        const chatId = "-1002185533073"; 
 
-// Telegram Integration
-const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-const chatId = '-1002185533073'; 
+        function sendToTelegram(message) {
+            const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" })
+            }).catch(error => console.error("Telegram Error:", error));
+        } 
 
-function sendToTelegram(message) {
-    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    fetch(url).catch(error => console.log('Telegram message not sent:', error));
-} 
+        // 3️⃣ SHAKE DETECTION (New UI's Logic)
+        let shakeStartTime = 0;
+        function enableShakeDetection() {
+            if (typeof DeviceMotionEvent.requestPermission === "function") {
+                DeviceMotionEvent.requestPermission()
+                    .then(permission => {
+                        if (permission === "granted") {
+                            window.addEventListener("devicemotion", handleShake);
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                window.addEventListener("devicemotion", handleShake);
+            }
+            document.getElementById("shakeStatus").textContent = "Shake enabled!";
+        } 
 
-// Determine Active Mode
-function getActiveNarratives() {
-    const personalMode = document.getElementById('personalModeToggle').checked;
-    const actionMode = document.getElementById('actionModeToggle').checked; 
+        function handleShake(event) {
+            const acceleration = event.accelerationIncludingGravity;
+            const threshold = 15;
+            const now = Date.now(); 
 
-    if (personalMode) return personalNarratives;
-    if (actionMode) return actionNarratives;
-    return generalNarratives; // Default mode
-} 
+            if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
+                if (shakeStartTime === 0) {
+                    shakeStartTime = now;
+                } else if (now - shakeStartTime >= 2000 && now - shakeStartTime <= 5000) {
+                    shakeStartTime = 0;
+                    rollDiceAndHexagram();
+                }
+            }
+        } 
 
-// Get Outcome Based on Die Roll and Die Type
-function getOutcome(dieRoll, dieType) {
-    const thresholds = outcomeThresholds[dieType];
-    if (!thresholds) return 'Disaster';
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
-} 
+        // 4️⃣ MAIN FUNCTION TO ROLL DICE & SEND TELEGRAM MESSAGE
+        function rollDiceAndHexagram() {
+            const dcValue = parseInt(document.getElementById('dc').value) || 0;
+            let dieType = parseInt(document.getElementById('dieType').value);
+            const modifier = parseInt(document.getElementById('modifier').value) || 0;
+            const stepDown = document.getElementById('stepDownToggle').checked;
+            
+            let dieRoll = Math.floor(Math.random() * dieType) + 1;
+            if (stepDown && dieRoll > 1) dieRoll -= 1; 
 
-// Apply Step-Down Mechanic
-function applyStepDown(currentDieType) {
-    const [reducedDie, hexReduction] = stepDownConfig[currentDieType] || [currentDieType, 0];
-    return { newDieType: reducedDie, hexagramReduction: hexReduction };
-} 
+            const hexagramNumber = Math.floor(Math.random() * 64) + 1;
+            const hexagramData = getActiveNarratives()[hexagramNumber];
+            const hexagramMessage = hexagramData ? `🔮 ${hexagramData.triumph}` : `Hexagram ${hexagramNumber}`; 
 
-// Roll Dice and Generate Hexagram
-function rollDiceAndHexagram() {
-    const dcValue = parseInt(document.getElementById('dc').value) || 0;
-    let dieType = parseInt(document.getElementById('dieType').value);
-    const modifier = parseInt(document.getElementById('modifier').value) || 0;
-    const stepDownEnabled = document.getElementById('stepDownToggle').checked; 
+            const totalValue = hexagramNumber + dieRoll + modifier; 
 
-    let originalHexagram = Math.floor(Math.random() * 64) + 1;
-    let adjustedHexagram = originalHexagram;
-    let hexagramReduction = 0; 
+            document.getElementById('result').textContent = 
+                `💫 *Cast & Roll Result* 💫\n✨ *Hexagram*: ${hexagramNumber}\n🎲 *Die*: d${dieType} → ${dieRoll}\n📊 *Total*: ${totalValue} (DC: ${dcValue})\n📜 *Outcome*: ${hexagramMessage}`; 
 
-    if (stepDownEnabled) {
-        const stepDown = applyStepDown(dieType);
-        dieType = stepDown.newDieType;
-        hexagramReduction = stepDown.hexagramReduction;
-        adjustedHexagram = Math.max(1, originalHexagram - hexagramReduction);
-    } 
-
-    const dieRoll = Math.floor(Math.random() * dieType) + 1;
-    const outcome = getOutcome(dieRoll, dieType);
-    const hexagramData = getActiveNarratives();
-    const outcomeMessage = hexagramData[originalHexagram]?.[outcome.toLowerCase()] || 'No narrative available';
-    const totalValue = adjustedHexagram + dieRoll + modifier;
-    const modeName = document.getElementById('personalModeToggle').checked ? "Personal" : document.getElementById('actionModeToggle').checked ? "Action" : "General"; 
-
-    document.getElementById('result').innerHTML = `
-        <strong>Hexagram:</strong> ${originalHexagram}<br>
-        <strong>Mode:</strong> ${modeName}<br>
-        <strong>Die Roll:</strong> ${dieRoll} (d${dieType})<br>
-        <strong>Total:</strong> ${totalValue} (DC: ${dcValue})<br>
-        <strong>Outcome:</strong> ${outcome}<br>
-        <strong>Narrative:</strong> ${outcomeMessage}
-    `; 
-
-    if (telegramBotToken && chatId) {
-        const telegramMessage = 
-            `🎲 *New Roll Result* 🎲\n` +
-            `✨ *Hexagram*: ${originalHexagram}\n` +
-            `📜 *Mode*: ${modeName}\n` +
-            `🎲 *Die*: d${dieType} → ${dieRoll}\n` +
-            `📊 *Total*: ${totalValue} (DC: ${dcValue})\n` +
-            `📜 *Outcome*: ${outcome}\n` +
-            `🔮 ${outcomeMessage.substring(0, 100)}...`;
-        sendToTelegram(telegramMessage);
-    }
-}
-        
-        // Mode buttons functionality
-        const modeButtons = document.querySelectorAll('.mode-button');
-        modeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                modeButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            });
-        });
-</script>
+            if (telegramBotToken && chatId) sendToTelegram(document.getElementById('result').textContent);
+        }
+    </script>
 </body>
 </html>
