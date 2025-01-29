@@ -481,33 +481,37 @@ function sendToTelegram(message) {
 // Shake Detection Variables
 let lastShakeTime = 0;
 let shakeStartTime = 0;
-let shakeThreshold = 15; // Acceleration required
+let shakeThreshold = 15; // Minimum acceleration change to count as a shake
 let shakeDurationMin = 2000; // 2 seconds min
 let shakeDurationMax = 5000; // 5 seconds max
 let shakeActive = false; 
 
-// Detect Device Shake
+// Listen for device motion
 window.addEventListener('devicemotion', function(event) {
     let acceleration = event.accelerationIncludingGravity;
-    let shakeStrength = Math.sqrt(acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2); 
+    let shakeStrength = Math.sqrt(acceleration.x * acceleration.x + acceleration.y * acceleration.y + acceleration.z * acceleration.z); 
 
+    // Detect strong enough shake
     if (shakeStrength > shakeThreshold) {
-        let currentTime = Date.now();
+        let currentTime = Date.now(); 
+
+        // If shake just started, record start time
         if (!shakeActive) {
             shakeStartTime = currentTime;
             shakeActive = true;
         } 
 
+        // If shake duration meets criteria, trigger roll
         if (shakeActive && (currentTime - shakeStartTime >= shakeDurationMin) && (currentTime - shakeStartTime <= shakeDurationMax)) {
             shakeActive = false;
             triggerShakeRoll();
         }
     } else {
-        shakeActive = false;
+        shakeActive = false; // Reset if shake stops
     }
 }); 
 
-// Shake-to-Roll Execution
+// Trigger roll with vibration feedback
 function triggerShakeRoll() {
     if ("vibrate" in navigator) {
         navigator.vibrate([200, 100, 200]); // Vibration feedback
@@ -517,10 +521,10 @@ function triggerShakeRoll() {
 
 // Determine Active Mode
 function getActiveNarratives() {
-    return document.getElementById('personalModeToggle').checked ? personalNarratives 
-         : document.getElementById('actionModeToggle').checked ? actionNarratives 
-         : generalNarratives;
-}  
+    const personalMode = document.getElementById('personalModeToggle').checked;
+    const actionMode = document.getElementById('actionModeToggle').checked;
+    return personalMode ? personalNarratives : actionMode ? actionNarratives : generalNarratives;
+  } 
   
 // Roll function
 function rollDiceAndHexagram() {
