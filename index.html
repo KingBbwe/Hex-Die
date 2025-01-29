@@ -13,9 +13,15 @@ h2 { font-size: 1.2rem; margin-bottom: 0.3rem; }
 h3 { font-size: 1rem; margin-bottom: 1rem; }
 button { background-color: #0f3460; color: #eaeaea; }
 #result { white-space: pre-wrap; background-color: #16213e; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.8rem; }
-label { margin-bottom: 0.5rem; }
-.step-down-container, .mode-container { margin-bottom: 15px; } /* Vertical spacing */
-.mode-container { display: flex; justify-content: center; align-items: center; gap: 10px; } /* Keep labels & toggles aligned */
+label { margin-bottom: 0.5rem; } 
+
+/* Added Spacing */
+.step-down-container { margin-bottom: 15px; }
+.mode-container { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 15px; } 
+
+/* Ensuring Proper Alignment */
+.mode-container label { min-width: 80px; text-align: right; } /* Aligns text properly */
+.mode-container input { margin-left: 5px; } /* Ensures checkboxes are properly aligned */
 </style>
 </head>
 <body>
