@@ -478,6 +478,50 @@ function sendToTelegram(message) {
     fetch(url).catch(error => console.log('Telegram message not sent:', error));
 } 
 
+// Shake Detection Variables
+let lastShakeTime = 0;
+let shakeStartTime = 0;
+let shakeThreshold = 15; // Acceleration required
+let shakeDurationMin = 2000; // 2 seconds min
+let shakeDurationMax = 5000; // 5 seconds max
+let shakeActive = false; 
+
+// Detect Device Shake
+window.addEventListener('devicemotion', function(event) {
+    let acceleration = event.accelerationIncludingGravity;
+    let shakeStrength = Math.sqrt(acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2); 
+
+    if (shakeStrength > shakeThreshold) {
+        let currentTime = Date.now();
+        if (!shakeActive) {
+            shakeStartTime = currentTime;
+            shakeActive = true;
+        } 
+
+        if (shakeActive && (currentTime - shakeStartTime >= shakeDurationMin) && (currentTime - shakeStartTime <= shakeDurationMax)) {
+            shakeActive = false;
+            triggerShakeRoll();
+        }
+    } else {
+        shakeActive = false;
+    }
+}); 
+
+// Shake-to-Roll Execution
+function triggerShakeRoll() {
+    if ("vibrate" in navigator) {
+        navigator.vibrate([200, 100, 200]); // Vibration feedback
+    }
+    rollDiceAndHexagram();
+} 
+
+// Determine Active Mode
+function getActiveNarratives() {
+    return document.getElementById('personalModeToggle').checked ? personalNarratives 
+         : document.getElementById('actionModeToggle').checked ? actionNarratives 
+         : generalNarratives;
+}  
+  
 // Roll function
 function rollDiceAndHexagram() {
     const dcValue = parseInt(document.getElementById('dc').value) || 0;
