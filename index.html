@@ -1279,6 +1279,15 @@
             57: '001011', 58: '110001', 59: '100110', 60: '011011',
             61: '101001', 62: '110100', 63: '001101', 64: '010101'
         };
+
+// Add this right after your other constants
+const dieTypes = [
+    { type: 'd4', max: 4, thresholds: [4, 2, 1] },
+    { type: 'd6', max: 6, thresholds: [6, 4, 2] },
+    { type: 'd8', max: 8, thresholds: [8, 6, 3] },
+    { type: 'd10', max: 10, thresholds: [10, 7, 4] },
+    { type: 'd12', max: 12, thresholds: [12, 8, 5] }
+];
         // ⚠️→ UPDATED OUTCOME THRESHOLDS FOR ALL DICE
         const outcomeThresholds = {
             6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
