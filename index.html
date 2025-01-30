@@ -1327,6 +1327,17 @@
                         break;
                 }
 
+            case 'stepdown':
+                telegramMessage = 
+                    `⚡ *Step Down Applied*\n` +
+                    `Original Die: d${data.originalDie}\n` +
+                    `Reduced Die: d${data.reducedDie}\n` +
+                    `Hexagram Reduction: -${data.hexagramReduction}\n` +
+                    `New Hexagram: ${data.adjustedHex} (${hexagramNames[data.adjustedHex]})`;
+                break;
+        }
+
+
                 const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1353,13 +1364,21 @@
             let hexagramReduction = 0;
             const stepDownUsed = document.getElementById('stepDownToggle').checked;
 
-            if (stepDownUsed) {
-                const config = stepDownConfig[originalDie];
-                if (config) {
-                    dieType = config[0];
-                    hexagramReduction = config[1];
-                }
-            }
+    if (stepDownUsed) {
+        const config = stepDownConfig[originalDie];
+        if (config) {
+            dieType = config[0];
+            hexagramReduction = config[1];
+            
+            // ⚠️→ ADD TELEGRAM NOTIFICATION HERE
+            sendToTelegram('stepdown', {
+                originalDie: originalDie,
+                reducedDie: dieType,
+                hexagramReduction: hexagramReduction,
+                adjustedHex: Math.max(1, currentHexagramNumber - hexagramReduction)
+            });
+        }
+    }
 
             currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
             const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
