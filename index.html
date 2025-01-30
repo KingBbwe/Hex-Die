@@ -1358,46 +1358,53 @@ const outcomeThresholds = {
         }
 
         async function sendToTelegram(messageType, data) {
-            if (!telegramBotToken || !chatId || telegramBotToken === '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') return;
+    // Remove the placeholder token check but keep validation
+    if (!telegramBotToken || !chatId) {
+        console.error('Telegram credentials missing');
+        return;
+    }
 
-            let telegramMessage;
-            switch(messageType) {
-                case 'fate':
-                    telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
-                    break;
-                
-                case 'roll':
-                    telegramMessage = 
-                        `✨ *Hexagram Cast & Roll* ✨\n` +
-                        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                        `🌌 *Hexagram*: ${data.originalHexagram}\n` +
-                        `🎲 *Die*: d${data.dieType} → ${data.dieRoll}\n` +
-                        (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
-                        `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
-                        `📜 *Outcome*: ${data.outcome}\n` +
-                        `🔮 ${data.narrative.substring(0, 100)}...\n` +
-                        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                        `#AuldEwe #FateCast`;
-                    break;
-            }
-
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: telegramMessage,
-                        parse_mode: 'Markdown'
-                    })
-                });
-
-                if (!response.ok) console.error('Telegram API error:', await response.text());
-            } catch (error) {
-                console.error('Error sending to Telegram:', error);
-            }
+    let telegramMessage;
+    try {
+        switch(messageType) {
+            case 'fate':
+                telegramMessage = `*Fate Point Added*\nNew total: ${data.points}`;
+                break;
+            
+            case 'roll':
+                telegramMessage = 
+                    `*Hexagram Cast & Roll*\n` +
+                    `▫️ Original Hexagram: ${data.originalHexagram} (${hexagramNames[data.originalHexagram]})\n` +
+                    `▫️ Adjusted Hexagram: ${data.adjustedHexagram} (${hexagramNames[data.adjustedHexagram]})\n` +
+                    `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
+                    `📊 Total: ${data.total} (DC: ${data.dc})\n` +
+                    `📜 Outcome: ${data.outcome}\n` +
+                    `🔮 ${data.narrative.substring(0, 100).replace(/[_*]/g, '\\$&')}`;
+                break;
         }
 
+        const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: telegramMessage,
+                parse_mode: 'MarkdownV2'
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('Telegram API error:', error);
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Network error:', error);
+        return false;
+    }
+        }
+        
         function addFatePoint() {
             const current = parseInt(document.getElementById('fatePoints').value);
             if (current < MAX_FATE_POINTS) {
@@ -1493,17 +1500,16 @@ const outcomeThresholds = {
         <strong>Narrative:</strong> ${narrative}
     `;
 
-            sendToTelegram('roll', {
-                originalHexagram: currentHexagramNumber,
-                dieType: dieType,
-                dieRoll: dieRoll,
-                total: total,
-                dc: document.getElementById('dc').value,
-                outcome: outcome,
-                narrative: narrative,
-                stepDownUsed: stepDownUsed,
-                hexagramReduction: hexagramReduction
-            });
+sendToTelegram('roll', {
+    originalHexagram: currentHexagramNumber,
+    adjustedHexagram: adjustedHex,
+    dieType: dieType,
+    dieRoll: dieRoll,
+    total: total,
+    dc: document.getElementById('dc').value,
+    outcome: outcome,
+    narrative: narrative
+});
 
             startInactivityTimer();
         }
