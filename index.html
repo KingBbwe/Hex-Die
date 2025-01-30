@@ -1306,33 +1306,57 @@
         // Core Functions
         // ⚠️→ UPDATED TELEGRAM FUNCTION
   async function sendToTelegram(messageType, data) {
-    if (!telegramBotToken || !chatId) return;
+    if (!telegramBotToken || !chatId) {
+        console.error('Telegram credentials missing');
+        return false;
+    }
 
-    let telegramMessage;
     try {
+        let telegramMessage;
         switch(messageType) {
             case 'stepdown':
                 telegramMessage = 
-                    `⚡ *Step Down Validation*\n` +
+                    `⚡ *STEP DOWN VERIFICATION*\n` +
                     `▫️ Original Die: d${data.originalDie}\n` +
                     `▫️ Reduced Die: d${data.reducedDie}\n` +
                     `▫️ Hex Reduction: \\-${data.hexagramReduction}\n` +
-                    `▫️ Original Hex: ${data.originalHex} (${hexagramNames[data.originalHex]})\n` +
-                    `▫️ New Hex: ${data.adjustedHex} (${hexagramNames[data.adjustedHex]})`;
+                    `▫️ Original Hex: ${data.originalHex} (${data.originalHexName})\n` +
+                    `▫️ New Hex: ${data.adjustedHex} (${data.adjustedHexName})`;
                 break;
 
             case 'roll':
                 telegramMessage = 
-                    `✨ *Hexagram Cast & Roll*\n` +
+                    `✨ *FINAL RESULT*\n` +
                     `▫️ Mode: ${document.querySelector('.mode-button.active').textContent}\n` +
-                    `▫️ Final Hex: ${currentHexagramNumber - (data.hexagramReduction || 0)} (${hexagramNames[currentHexagramNumber - (data.hexagramReduction || 0)]})\n` +
+                    `▫️ Final Hex: ${data.adjustedHex} (${hexagramNames[data.adjustedHex]})\n` +
                     `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
                     `📊 Total: ${data.total} (DC: ${data.dc})\n` +
                     `📜 Outcome: ${data.outcome}\n` +
                     `🔮 ${data.narrative.substring(0, 100).replace(/[_*[\]()~>#+=|{}.!-]/g, '\\$&')}`;
                 break;
-            
-                }
+        }
+
+        const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: telegramMessage,
+                parse_mode: 'MarkdownV2'
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('Telegram error:', error);
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Telegram failed:', error);
+        return false;
+    }
+}
 
             case 'stepdown':
                 telegramMessage = 
@@ -1374,27 +1398,23 @@
     if (stepDownUsed) {
         const config = stepDownConfig[originalDie];
         if (config) {
-            dieType = config[0];
-            hexagramReduction = config[1];
-            
-            // Send Step Down notification FIRST
-            sendToTelegram('stepdown', {
+            const stepDownData = {
                 originalDie: originalDie,
                 reducedDie: dieType,
                 hexagramReduction: hexagramReduction,
                 originalHex: currentHexagramNumber,
-                adjustedHex: Math.max(1, currentHexagramNumber - hexagramReduction)
-            });
+                adjustedHex: adjustedHex,
+                originalHexName: hexagramNames[currentHexagramNumber],
+                adjustedHexName: hexagramNames[adjustedHex]
+            };
+            
+            // Force await to complete before proceeding
+            await sendToTelegram('stepdown', stepDownData);
         }
     }
 
-            currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
-            const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
-            
-            // ... rest of original roll logic ...
-
-     // Then send regular roll results
-    sendToTelegram('roll', {
+    // Then send main roll results
+    const rollData = {
         originalHexagram: currentHexagramNumber,
         dieType: dieType,
         dieRoll: dieRoll,
@@ -1402,9 +1422,15 @@
         dc: document.getElementById('dc').value,
         outcome: outcome,
         narrative: narrative,
-        stepDownUsed: stepDownUsed,
-        hexagramReduction: hexagramReduction
-    });
+        adjustedHex: adjustedHex
+    };
+    
+    await sendToTelegram('roll', rollData);
+            currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
+            const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
+            
+            // ... rest of original roll logic ...
+
 
         // ⚠️→ UPDATE DIE SELECTOR IN HTML
         // Change the dieType <select> to:
