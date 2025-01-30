@@ -1260,6 +1260,25 @@
             61: '101001', 62: '110100', 63: '001101', 64: '010101'
         };
 
+        // Add this object after the hexagramLookup configuration
+    const hexagramNames = {
+        1: 'The Creative', 2: 'The Receptive', 3: 'Difficulty at the Beginning', 4: 'Youthful Folly',
+        5: 'Waiting', 6: 'Conflict', 7: 'Army', 8: 'Holding Together',
+        9: 'Small Taming', 10: 'Treading', 11: 'Peace', 12: 'Standstill',
+        13: 'Fellowship', 14: 'Great Possession', 15: 'Modesty', 16: 'Enthusiasm',
+        17: 'Following', 18: 'Work on the Decayed', 19: 'Approach', 20: 'Contemplation',
+        21: 'Biting Through', 22: 'Grace', 23: 'Splitting Apart', 24: 'Return',
+        25: 'Innocence', 26: 'Great Taming', 27: 'Nourishment', 28: 'Great Preponderance',
+        29: 'The Abysmal', 30: 'The Clinging', 31: 'Influence', 32: 'Duration',
+        33: 'Retreat', 34: 'Great Power', 35: 'Progress', 36: 'Darkening of the Light',
+        37: 'Family', 38: 'Opposition', 39: 'Obstruction', 40: 'Deliverance',
+        41: 'Decrease', 42: 'Increase', 43: 'Breakthrough', 44: 'Coming to Meet',
+        45: 'Gathering', 46: 'Pushing Upward', 47: 'Oppression', 48: 'The Well',
+        49: 'Revolution', 50: 'The Cauldron', 51: 'The Arousing', 52: 'Keeping Still',
+        53: 'Development', 54: 'The Marrying Maiden', 55: 'Abundance', 56: 'The Wanderer',
+        57: 'The Gentle', 58: 'The Joyous', 59: 'Dispersion', 60: 'Limitation',
+        61: 'Inner Truth', 62: 'Small Preponderance', 63: 'After Completion', 64: 'Before Completion'
+    };
         const outcomeThresholds = {
             6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
             12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
@@ -1450,16 +1469,16 @@
 
             currentChangingLines = determineChangingLines();
 
-            document.getElementById('result').innerHTML = `
-                <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
-                <strong>Original Hexagram:</strong> ${currentHexagramNumber}<br>
-                <strong>Adjusted Hexagram:</strong> ${adjustedHex} ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
-                <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
-                <strong>Modifier:</strong> ${document.getElementById('modifier').value}<br>
-                <strong>Total:</strong> ${total} vs DC ${document.getElementById('dc').value}<br>
-                <strong>Outcome:</strong> ${outcome}<br>
-                <strong>Narrative:</strong> ${narrative}
-            `;
+                document.getElementById('result').innerHTML = `
+        <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
+        <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
+        <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
+        <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
+        <strong>Modifier:</strong> ${document.getElementById('modifier').value}<br>
+        <strong>Total:</strong> ${total} vs DC ${document.getElementById('dc').value}<br>
+        <strong>Outcome:</strong> ${outcome}<br>
+        <strong>Narrative:</strong> ${narrative}
+    `;
 
             sendToTelegram('roll', {
                 originalHexagram: currentHexagramNumber,
