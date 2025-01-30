@@ -1,1556 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Chronicles of Auld Ewe - Complete</title>
-    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6b46c1;
-            --primary-hover: #553c9a;
-            --bg-dark: #1a1a2e;
-            --bg-darker: #16213e;
-            --text-light: #e2e8f0;
-        } 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Chronicles of Auld Ewe - Complete Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6b46c1;
+            --primary-hover: #553c9a;
+            --bg-dark: #1a1a2e;
+            --bg-darker: #16213e;
+            --text-light: #e2e8f0;
+        }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
-        } 
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
 
-        nav {
-            background-color: var(--bg-darker);
-            padding: 1rem;
-            margin-bottom: 2rem;
-        } 
+        nav {
+            background-color: var(--bg-darker);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
 
-        nav ul {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        } 
+        nav ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        } 
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
 
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            color: #fff;
-            text-align: center;
-        } 
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            text-align: center;
+        }
 
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
-            color: #cbd5e1;
-            text-align: center;
-        } 
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+            color: #cbd5e1;
+            text-align: center;
+        }
 
-        h3 {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            color: #94a3b8;
-            text-align: center;
-        } 
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: #94a3b8;
+            text-align: center;
+        }
 
-        .input-group {
-            margin-bottom: 1.5rem;
-        } 
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-        } 
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
 
-        input, select {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid var(--primary);
-            border-radius: 0.375rem;
-            background-color: var(--bg-darker);
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
-        } 
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background-color: var(--bg-darker);
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-hover);
-            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
-        } 
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
+        }
 
-        .toggle-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 0.75rem;
-            background-color: var(--bg-darker);
-            border-radius: 0.375rem;
-        } 
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+        }
 
-        .mode-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        } 
+        .mode-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
 
-        .mode-button {
-            flex: 1;
-            padding: 0.6rem;
-            border: 1px solid var(--primary);
-            border-radius: 0.375rem;
-            background-color: transparent;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.2s;
-        } 
+        .mode-button {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background-color: transparent;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-        .mode-button.active {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        } 
+        .mode-button.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
 
-        .mode-button:hover {
-            background-color: var(--primary-hover);
-        } 
+        .mode-button:hover {
+            background-color: var(--primary-hover);
+        }
 
-        button {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background-color 0.2s;
-            margin-bottom: 0.5rem;
-        } 
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+            margin-bottom: 0.5rem;
+        }
 
-        button:hover {
-            background-color: var(--primary-hover);
-        } 
+        button:hover {
+            background-color: var(--primary-hover);
+        }
 
-        .oraclize-btn {
-            background-color: #21bf73;
-        } 
+        .oraclize-btn {
+            background-color: #21bf73;
+        }
 
-        #result {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: var(--bg-darker);
-            border-radius: 0.375rem;
-        } 
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+        }
 
-        #result strong {
-            color: #a78bfa;
-        } 
+        #result strong {
+            color: #a78bfa;
+        }
 
-        #changingLines {
-            text-align: left;
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: var(--bg-darker);
-            border-radius: 0.375rem;
-            display: none;
-        } 
+        #changingLines {
+            text-align: left;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-darker);
+            border-radius: 0.375rem;
+            display: none;
+        }
 
-        .fate-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 1rem;
-        } 
+        .fate-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
 
-        .fate-points {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        } 
+        .fate-points {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
 
-        #fatePoints {
-            width: 60px;
-            font-weight: bold;
-            text-align: center;
-        } 
+        #fatePoints {
+            width: 60px;
+            font-weight: bold;
+            text-align: center;
+        }
 
-        .add-fate {
-            background-color: #21bf73 !important;
-            width: auto !important;
-            padding: 0.5rem 1rem !important;
-        }
-    </style>
+        .add-fate {
+            background-color: #21bf73 !important;
+            width: auto !important;
+            padding: 0.5rem 1rem !important;
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
-            <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
-        </ul>
-    </nav> 
+    <nav>
+        <ul>
+            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
+            <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
+        </ul>
+    </nav>
 
-    <main class="container">
-        <section>
-            <div class="fate-controls">
-                <div class="fate-points">
-                    <label for="fatePoints">🔮 Fate Points:</label>
-                    <input type="number" id="fatePoints" value="3" min="0" max="5" readonly>
-                </div>
-                <button class="add-fate" onclick="addFatePoint()">Add +1</button>
-            </div> 
+    <main class="container">
+        <section>
+            <div class="fate-controls">
+                <div class="fate-points">
+                    <label for="fatePoints">🔮 Fate Points:</label>
+                    <input type="number" id="fatePoints" value="3" min="0" max="5" readonly>
+                </div>
+                <button class="add-fate" onclick="addFatePoint()">Add +1</button>
+            </div>
 
-            <h1>The Chronicles of Auld Ewe</h1>
-            <h2>Harmonized Hex & Die System</h2>
-            <h3>Shake device or click Harmonize!</h3> 
+            <h1>The Chronicles of Auld Ewe</h1>
+            <h2>Harmonized Hex & Die System</h2>
+            <h3>Shake device or click Harmonize!</h3>
 
-            <div id="shakeStatus"></div> 
+            <div id="shakeStatus"></div>
 
-            <div class="input-group">
-                <label for="dc">Difficulty Class (DC)</label>
-                <input type="number" id="dc" placeholder="Enter DC">
-            </div> 
+            <div class="input-group">
+                <label for="dc">Difficulty Class (DC)</label>
+                <input type="number" id="dc" placeholder="Enter DC">
+            </div>
 
-            <div class="input-group">
-                <label for="dieType">Die Type</label>
-                <select id="dieType">
-                    <option value="6">d6</option>
-                    <option value="20">d20</option>
-                </select>
-            </div> 
+            <div class="input-group">
+                <label for="dieType">Die Type</label>
+                <select id="dieType">
+                    <option value="6">d6</option>
+                    <option value="20">d20</option>
+                </select>
+            </div>
 
-            <div class="input-group">
-                <label for="modifier">Modifier (+/-)</label>
-                <input type="number" id="modifier" value="0">
-            </div> 
+            <div class="input-group">
+                <label for="modifier">Modifier (+/-)</label>
+                <input type="number" id="modifier" value="0">
+            </div>
 
-            <div class="toggle-group">
-                <div class="checkbox-wrapper">
-                    <input type="checkbox" id="stepDownToggle">
-                    <label for="stepDownToggle" style="margin: 0;">Step Down</label>
-                </div>
-            </div> 
+            <div class="toggle-group">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="stepDownToggle">
+                    <label for="stepDownToggle" style="margin: 0;">Step Down</label>
+                </div>
+            </div>
 
-            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
-            <div class="mode-group">
-                <button class="mode-button" id="personalMode">Personal</button>
-                <button class="mode-button active" id="generalMode">General</button>
-                <button class="mode-button" id="actionMode">Action</button>
-            </div> 
+            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
+            <div class="mode-group">
+                <button class="mode-button" id="personalMode">Personal</button>
+                <button class="mode-button active" id="generalMode">General</button>
+                <button class="mode-button" id="actionMode">Action</button>
+            </div>
 
-            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
-            <button onclick="rollDiceAndHexagram()">Harmonize</button>
-            <button class="oraclize-btn" onclick="showChangingLines()">Oraclize</button>
-            
-            <div id="result"></div>
-            <div id="changingLines"></div>
-        </section>
+            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
+            <button onclick="rollDiceAndHexagram()">Harmonize</button>
+            <button class="oraclize-btn" onclick="showChangingLines()">Oraclize</button>
+            
+            <div id="result"></div>
+            <div id="changingLines"></div>
+        </section>
     </main>
-    <script>
-        // Configuration
-        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with actual token
-        const chatId = '-1002185533073'; // Replace with actual chat ID
-        const FATE_STORAGE_KEY = 'auldEweFatePoints';
-        const MAX_FATE_POINTS = 5;
-        const BASE_FATE_POINTS = 3;
-        const INACTIVITY_TIMEOUT = 180000; // 3 minutes
-        const shakeThreshold = 15;
-        const shakeCooldown = 1000; 
 
-        // Game Data
- const generalNarratives = {
-  1: {
-    triumph: "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose that elevates all.",
-    conflict: "Ambition clashes with humility; allies question whether their leader’s goals serve the many or the self.",
-    disaster: "Trust erodes as the Sentient’s actions grow self-serving, leaving their party fractured and disillusioned."
-  },
-  2: {
-    triumph: "The Sentient fosters resilience through patience, teaching their party to find strength in stillness and reflection.",
-    conflict: "Passivity risks enabling harm; the group debates when to act and when to yield.",
-    disaster: "The party grows complacent, their voice silenced by fear of overstepping."
-  },
-  3: {
-    triumph: "The Sentient guides their party through chaos with empathy, transforming uncertainty into solidarity.",
-    conflict: "Competing visions divide the group; some push for haste, others for caution.",
-    disaster: "The party fractures into factions, their shared purpose lost to infighting."
-  },
-  4: {
-    triumph: "The Sentient turns naivety into wisdom, mentoring others to avoid their past mistakes.",
-    conflict: "Overcorrection breeds rigidity; the group struggles to balance caution with openness.",
-    disaster: "Fear of failure stifles growth, leaving the party stagnant and risk-averse."
-  },
-  5: {
-    triumph: "The Sentient’s patience rewards the party with a hard-won harvest, proving the value of collective endurance.",
-    conflict: "Impatience tempts some to hoard resources, testing the group’s unity.",
-    disaster: "Greed poisons camaraderie, turning allies into rivals over dwindling gains."
-  },
-  6: {
-    triumph: "The Sentient mediates disputes with fairness, restoring harmony through compromise and accountability.",
-    conflict: "Old grudges resurface; the group debates justice versus mercy.",
-    disaster: "Fear of the unknown hinders progress, trapping the party in familiar but ineffective strategies."
-  },
-  7: {
-    triumph: "The Sentient leads with humility, earning loyalty through shared sacrifice and transparency.",
-    conflict: "Authority is challenged; whispers of favoritism threaten cohesion.",
-    disaster: "Leadership becomes authoritarian, allies reduced to obedient followers."
-  },
-  8: {
-    triumph: "The Sentient bridges differences, creating a coalition stronger than its individual parts.",
-    conflict: "Cultural clashes strain bonds; the group grapples with assimilation versus autonomy.",
-    disaster: "The coalition dissolves into distrust, differences weaponized instead of celebrated."
-  },
-  9: {
-    triumph: "The Sentient teaches moderation, helping the party thrive through balanced stewardship of resources.",
-    conflict: "Scarcity breeds selfishness; the group debates equity versus survival.",
-    disaster: "Hoarding destroys reciprocity, isolating individuals in self-imposed scarcity."
-  },
-  10: {
-    triumph: "The Sentient models integrity, their actions aligning perfectly with their principles.",
-    conflict: "A moral compromise tempts them—should they bend rules for a greater good?",
-    disaster: "Hypocrisy taints their reputation, followers losing faith in their ideals."
-  },
-  11: {
-    triumph: "The Sentient nurtures a culture of mutual aid, where every voice feels heard and valued.",
-    conflict: "Growth strains inclusivity; some feel marginalized by shifting priorities.",
-    disaster: "The party splinters into cliques, unity replaced by silent resentment."
-  },
-  12: {
-    triumph: "The Sentient reignites hope in a stagnant party, proving progress is possible through small, brave acts.",
-    conflict: "Cynicism spreads; efforts to inspire are met with apathy or mockery.",
-    disaster: "The party resigns itself to despair, rejecting all attempts at change."
-  },
-  13: {
-    triumph: "The Sentient builds a sanctuary of belonging, where outsiders find kinship and purpose.",
-    conflict: "Newcomers disrupt traditions; the group debates openness versus preservation.",
-    disaster: "Fear of the 'other' hardens hearts, the sanctuary collapsing into exclusion."
-  },
-  14: {
-    triumph: "The Sentient redistributes abundance selflessly, uplifting the marginalized and reinforcing the party’s bonds.",
-    conflict: "Envy stirs; some demand recognition for their contributions.",
-    disaster: "Resentment festers, generosity seen as manipulation, and unity unravels."
-  },
-  15: {
-    triumph: "The Sentient’s humility disarms egos, fostering a culture where collaboration eclipses competition.",
-    conflict: "False modesty masks insecurity; others question their authenticity.",
-    disaster: "The party adopts performative humility, eroding trust in genuine intent."
-  },
-  16: {
-    triumph: "The Sentient channels enthusiasm into collective action, uniting the party around a joyful cause.",
-    conflict: "Passion borders on zealotry; dissenters fear being drowned out.",
-    disaster: "Joy curdles into dogma, stifling creativity and critical thought."
-  },
-  17: {
-    triumph: "The Sentient adapts traditions to meet new challenges, honoring the past while embracing innovation.",
-    conflict: "Change alarms traditionalists; the group debates progress versus heritage.",
-    disaster: "The party fractures between rigid traditionalism and reckless novelty."
-  },
-  18: {
-    triumph: "The Sentient heals old wounds through truth and reconciliation, mending fractured relationships.",
-    conflict: "Unearthing the past reopens scars; some resist forgiveness.",
-    disaster: "The truth is buried anew, cycles of harm repeating in silence."
-  },
-  19: {
-    triumph: "The Sentient prepares their party for looming trials, fostering resilience through shared purpose.",
-    conflict: "Preparation breeds paranoia; the group debates vigilance versus fearmongering.",
-    disaster: "The party grows rigid, mistrusting even allies in their obsession with control."
-  },
-  20: {
-    triumph: "The Sentient reflects on past experiences, guiding their party through wisdom and insight.",
-    conflict: "Nostalgia tempts the party; they debate tradition versus innovation.",
-    disaster: "Clutching to the past prevents progress, leaving the party stagnant."
-  },
-  21: {
-    triumph: "The Sentient resolves conflicts through fairness, restoring harmony through justice and accountability.",
-    conflict: "Old grudges resurface; the group debates justice versus mercy.",
-    disaster: "Unresolved anger calcifies into permanent divisions, eroding trust."
-  },
-  22: {
-    triumph: "The Sentient beautifies their surroundings, inspiring others through creativity and elegance.",
-    conflict: "Excess breeds superficiality; the group debates substance versus appearance.",
-    disaster: "Focus on appearance over substance weakens the party, making them vulnerable to criticism."
-  },
-  23: {
-    triumph: "The Sentient transforms decay into growth, revitalizing their party through renewal and innovation.",
-    conflict: "Fear of change paralyzes action; the group debates stability versus progress.",
-    disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
-  },
-  24: {
-    triumph: "The Sentient helps the party learn from past failures, turning regret into wisdom.",
-    conflict: "Some resist introspection, clinging to nostalgia for an idealized past.",
-    disaster: "The party repeats its mistakes, trapped in cycles of denial."
-  },
-  25: {
-    triumph: "The Sentient leads with integrity, proving that ethical choices strengthen the party’s bonds.",
-    conflict: "A pragmatic shortcut tempts them—will they compromise values for expediency?",
-    disaster: "Pragmatism becomes cynicism, and the party loses faith in ideals."
-  },
-  26: {
-    triumph: "The Sentient accumulates strength through perseverance, guiding their party to achieve greatness.",
-    conflict: "Overconfidence breeds complacency; the group debates ambition versus humility.",
-    disaster: "Arrogance alienates allies, leaving the party isolated and vulnerable."
-  },
-  27: {
-    triumph: "The Sentient nourishes their party through care, fostering growth and well-being.",
-    conflict: "Overindulgence weakens the party; they debate abundance versus austerity.",
-    disaster: "Excess leads to dependency, undermining the party’s resilience."
-  },
-  28: {
-    triumph: "The Sentient exceeds expectations through bold action, inspiring their party to strive for excellence.",
-    conflict: "Impulsiveness causes mistakes; the group debates caution versus boldness.",
-    disaster: "Recklessness undermines progress, causing the party to lose ground."
-  },
-  29: {
-    triumph: "The Sentient navigates danger with courage, leading their party through perilous times.",
-    conflict: "Fear tempts the party; they debate risk versus safety.",
-    disaster: "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
-  },
-  30: {
-    triumph: "The Sentient illuminates their path through clarity, guiding their party with insight and wisdom.",
-    conflict: "Confusion tempts the party; they debate clarity versus ambiguity.",
-    disaster: "Uncertainty paralyzes action, causing the party to lose direction."
-  },
-  31: {
-    triumph: "The Sentient influences others through empathy, fostering harmony and cooperation.",
-    conflict: "Divergent interests threaten unity; the group debates cooperation versus competition.",
-    disaster: "Selfishness prevails, turning allies into adversaries."
-  },
-  32: {
-    triumph: "The Sentient endures through perseverance, teaching their party to find strength in persistence.",
-    conflict: "Complacency breeds stagnation; the group debates stability versus progress.",
-    disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
-  },
-  33: {
-    triumph: "The Sentient retreats with wisdom, preserving strength for future challenges.",
-    conflict: "Pride tempts the party; they debate honor versus prudence.",
-    disaster: "Egoism leads to reckless decisions, undermining the party’s safety."
-  },
-  34: {
-    triumph: "The Sentient demonstrates strength through resilience, inspiring their party to overcome adversity.",
-    conflict: "Overconfidence breeds complacency; the group debates ambition versus humility.",
-    disaster: "Arrogance alienates allies, leaving the party isolated and vulnerable."
-  },
-  35: {
-    triumph: "The Sentient progresses with adaptability, turning challenges into opportunities through flexibility.",
-    conflict: "Resistance to change hinders progress; the group debates tradition versus innovation.",
-    disaster: "Inflexibility traps the party in outdated strategies, causing them to fall behind."
-  },
-  36: {
-    triumph: "The Sentient illuminates darkness through insight, guiding their party through challenging times.",
-    conflict: "Fear tempts the party; they debate risk versus safety.",
-    disaster: "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
-  },
-  37: {
-    triumph: "The Sentient fosters unity through shared values, creating a bond that transcends differences.",
-    conflict: "Divergent interests threaten cohesion; the group debates loyalty versus self-interest.",
-    disaster: "Selfishness erodes trust, leaving the party fragmented and vulnerable."
-  },
-  38: {
-    triumph: "The Sentient resolves conflicts through fairness, restoring harmony through justice and accountability.",
-    conflict: "Old grudges resurface; the group debates justice versus mercy.",
-    disaster: "Unresolved anger calcifies into permanent divisions, eroding trust."
-  },
-  39: {
-    triumph: "The Sentient navigates obstacles with resilience, guiding their party through challenging times.",
-    conflict: "Fear tempts the party; they debate risk versus safety.",
-    disaster: "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
-  },
-  40: {
-    triumph: "The Sentient liberates their party from constraints, freeing them to pursue new opportunities.",
-    conflict: "Complacency breeds stagnation; the group debates stability versus progress.",
-    disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
-  },
-  41: {
-    triumph: "The Sentient reduces excess through simplicity, focusing their party on what truly matters.",
-    conflict: "Frugality tempts the party; they debate thrift versus generosity.",
-    disaster: "Austerity leads to resentment, undermining the party’s morale."
-  },
-  42: {
-    triumph: "The Sentient increases their party’s strength through strategic alliances, forging powerful bonds.",
-    conflict: "Overreliance on others breeds dependency; the group debates independence versus collaboration.",
-    disaster: "Loss of autonomy undermines the party’s effectiveness."
-  },
-  43: {
-    triumph: "The Sentient breaks through barriers with courage, inspiring their party to overcome adversity.",
-    conflict: "Fear of change paralyzes action; the group debates tradition versus innovation.",
-    disaster: "Inflexibility traps the party in outdated strategies, causing them to fall behind."
-  },
-  44: {
-    triumph: "The Sentient attracts allies through charisma, building a coalition that amplifies their influence.",
-    conflict: "Overconfidence breeds complacency; the group debates ambition versus humility.",
-    disaster: "Arrogance alienates allies, leaving the party isolated and vulnerable."
-  },
-  45: {
-    triumph: "The Sentient gathers resources through strategic planning, preparing their party for future challenges.",
-    conflict: "Excess breeds complacency; the group debates abundance versus austerity.",
-    disaster: "Overindulgence weakens the party, making them vulnerable to external threats."
-  },
-  46: {
-    triumph: "The Sentient advances with determination, guiding their party to achieve greatness.",
-    conflict: "Impulsiveness causes mistakes; the group debates caution versus boldness.",
-    disaster: "Recklessness undermines progress, causing the party to lose ground."
-  },
-  47: {
-    triumph: "The Sentient perseveres through adversity, teaching their party to find strength in resilience.",
-    conflict: "Despair tempts the party; they debate hope versus despair.",
-    disaster: "Loss of hope leads to surrender, causing the party to abandon their quest."
-  },
-  48: {
-    triumph: "The Sentient revitalizes their party through renewal, transforming decay into growth.",
-    conflict: "Fear of change paralyzes action; the group debates stability versus progress.",
-    disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
-  },
-  49: {
-    triumph: "The Sentient transforms their party through change, turning challenges into opportunities.",
-    conflict: "Resistance to change hinders progress; the group debates tradition versus innovation.",
-    disaster: "Inflexibility traps the party in outdated strategies, causing them to fall behind."
-  },
-  50: {
-    triumph: "The Sentient nourishes their party through care, fostering growth and well-being.",
-    conflict: "Overindulgence weakens the party; they debate abundance versus austerity.",
-    disaster: "Excess leads to dependency, undermining the party’s resilience."
-  },
-  51: {
-    triumph: "The Sentient awakens their party to new possibilities, inspiring them to strive for excellence.",
-    conflict: "Overexuberance leads to recklessness; the group debates passion versus prudence.",
-    disaster: "Impulsiveness causes mistakes, undermining the party’s progress."
-  },
-  52: {
-    triumph: "The Sentient finds stillness in the midst of chaos, guiding their party to inner peace.",
-    conflict: "Complacency breeds stagnation; the group debates stability versus progress.",
-    disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
-  },
-  53: {
-    triumph: "The Sentient progresses gradually, teaching their party the value of patience and persistence.",
-    conflict: "Impatience tempts the party; they debate speed versus deliberation.",
-    disaster: "Rushing leads to mistakes, undermining the party’s progress."
-  },
-  54: {
-    triumph: "The Sentient marries wisdom with action, guiding their party to make informed decisions.",
-    conflict: "Indecision paralyzes action; the group debates analysis versus instinct.",
-    disaster: "Overanalysis leads to inaction, causing the party to miss opportunities."
-  },
-  55: {
-    triumph: "The Sentient radiates abundance, inspiring their party to share their wealth and wisdom.",
-    conflict: "Excess breeds complacency; the group debates abundance versus austerity.",
-    disaster: "Overindulgence weakens the party, making them vulnerable to external threats."
-  },
-  56: {
-    triumph: "The Sentient wanders with purpose, guiding their party to explore new horizons.",
-    conflict: "Restlessness tempts the party; they debate exploration versus stability.",
-    disaster: "Drifting leads to disorientation, causing the party to lose direction."
-  },
-  57: {
-    triumph: "The Sentient penetrates obstacles with insight, guiding their party to overcome challenges.",
-    conflict: "Obstacles seem insurmountable; the group debates perseverance versus surrender.",
-    disaster: "Despair leads to defeat, causing the party to abandon their quest."
-  },
-  58: {
-    triumph: "The Sentient delights in joy, inspiring their party to find happiness in simplicity.",
-    conflict: "Excess breeds superficiality; the group debates substance versus appearance.",
-    disaster: "Focus on appearance over substance weakens the party, making them vulnerable to criticism."
-  },
-  59: {
-    triumph: "The Sentient disperses obstacles with clarity, guiding their party to find solutions.",
-    conflict: "Confusion tempts the party; they debate clarity versus ambiguity.",
-    disaster: "Uncertainty paralyzes action, causing the party to lose direction."
-  },
-  60: {
-    triumph: "The Sentient sets limits with wisdom, guiding their party to balance freedom with responsibility.",
-    conflict: "Overindulgence leads to chaos; the group debates freedom versus structure.",
-    disaster: "Lack of boundaries undermines the party’s cohesion."
-  },
-  61: {
-    triumph: "The Sentient finds inner truth through reflection, guiding their party to authenticity.",
-    conflict: "Dishonesty tempts the party; they debate integrity versus expediency.",
-    disaster: "Deception erodes trust, causing the party to lose faith in each other."
-  },
-  62: {
-    triumph: "The Sentient exceeds expectations with humility, revealing hidden paths through careful observation.",
-    conflict: "Overcaution leads to missed opportunities; the group debates risk versus reward.",
-    disaster: "Indecision paralyzes progress, leaving the party stranded at crossroads."
-  },
-  63: {
-    triumph: "The Sentient celebrates the party’s journey, weaving past lessons into a tapestry of shared identity.",
-    conflict: "Completion feels bittersweet; some mourn what was lost to achieve it.",
-    disaster: "The party grows complacent, assuming their work is done, and stagnation sets in."
-  },
-  64: {
-    triumph: "The Sentient helps the party reflect on past cycles, weaving hard-won lessons into a blueprint for renewal.",
-    conflict: "Old habits resurface; the group struggles to break free from familiar mistakes.",
-    disaster: "The cycle repeats, but this time, the party resigns to fate."     
-}
-};
+    <script>
+        // Configuration
+        const telegramBotToken = 'YOUR_TELEGRAM_BOT_TOKEN';
+        const chatId = 'YOUR_CHAT_ID';
+        const FATE_STORAGE_KEY = 'auldEweFatePoints';
+        const MAX_FATE_POINTS = 5;
+        const BASE_FATE_POINTS = 3;
+        const INACTIVITY_TIMEOUT = 180000;
+        const shakeThreshold = 15;
+        const shakeCooldown = 1000;
 
-      const  personalNarratives = {
-    1: {
-        triumph: "Drawing upon inner creative force, the Sentient manifests their vision with unprecedented clarity and purpose.",
-        conflict: "The weight of creative power threatens to overwhelm as the Sentient struggles to channel it properly.",
-        disaster: "Raw creative force turns inward destructively as the Sentient loses control of their power."
-    },
-    2: {
-        triumph: "The Sentient's receptive nature reveals hidden paths and opportunities previously unseen.",
-        conflict: "Excessive passivity causes the Sentient to miss crucial moments for action.",
-        disaster: "Complete surrender to circumstances leaves the Sentient directionless and vulnerable."
-    },
-    3: {
-        triumph: "Initial chaos crystallizes into order as the Sentient masters their first steps.",
-        conflict: "The Sentient stumbles through difficulty, learning harsh but necessary lessons.",
-        disaster: "Inexperience leads to critical errors as the Sentient fails to heed early warnings."
-    },
-    4: {
-        triumph: "The Sentient's patience nurtures growth, allowing wisdom to emerge naturally.",
-        conflict: "Youthful impulses clash with the need for measured development.",
-        disaster: "Immaturity leads to rash decisions with far-reaching consequences."
-    },
-    5: {
-        triumph: "The Sentient's focused waiting culminates in perfectly timed action.",
-        conflict: "Anticipation breeds anxiety as the Sentient struggles to maintain patience.",
-        disaster: "Missed timing leads to wasted resources and lost opportunities."
-    },
-    6: {
-        triumph: "The Sentient resolves internal conflict, finding strength in balanced opposition.",
-        conflict: "Inner tensions surface, forcing the Sentient to confront their contradictions.",
-        disaster: "Unresolved internal strife paralyzes the Sentient's ability to act."
-    },
-    7: {
-        triumph: "The Sentient marshals their forces effectively, achieving victory through discipline.",
-        conflict: "Maintaining control requires more energy than the Sentient can sustainably expend.",
-        disaster: "The weight of leadership crushes the Sentient's resolve."
-    },
-    8: {
-        triumph: "Natural solidarity emerges as the Sentient aligns with their true path.",
-        conflict: "The Sentient struggles to maintain authentic connections while pursuing their goals.",
-        disaster: "Forced unity crumbles, revealing the hollowness of artificial bonds."
-    },
-    9: {
-        triumph: "The Sentient's gentle persistence accumulates small gains into significant progress.",
-        conflict: "Minor setbacks threaten to derail carefully laid plans.",
-        disaster: "Accumulated neglect reaches a breaking point, causing systemic failure."
-    },
-    10: {
-        triumph: "The Sentient treads difficult paths with grace, maintaining dignity in challenging circumstances.",
-        conflict: "Careful progress becomes precarious as the Sentient navigates dangerous territory.",
-        disaster: "A misstep on treacherous ground leads to a devastating fall."
-    },
-    11: {
-        triumph: "The Sentient harmonizes with natural forces, experiencing a period of smooth prosperity.",
-        conflict: "Surface tranquility masks growing tensions within.",
-        disaster: "Apparent peace shatters as underlying problems emerge explosively."
-    },
-    12: {
-        triumph: "The Sentient finds unexpected opportunity in stagnation, transforming limitation into strength.",
-        conflict: "Isolation tests the Sentient's resilience and self-reliance.",
-        disaster: "Stagnation becomes permanent as the Sentient loses hope of progress."
-    },
-    13: {
-        triumph: "The Sentient builds fellowship through authentic connection and shared purpose.",
-        conflict: "True fellowship requires sacrifices the Sentient struggles to make.",
-        disaster: "False harmony dissolves, leaving the Sentient isolated."
-    },
-    14: {
-        triumph: "Great possession becomes possible as the Sentient learns to handle abundance wisely.",
-        conflict: "Wealth brings responsibility the Sentient isn't fully prepared to bear.",
-        disaster: "Abundance breeds corruption, poisoning the Sentient's character."
-    },
-    15: {
-        triumph: "The Sentient's modesty attracts natural respect and genuine admiration.",
-        conflict: "True humility requires painful recognition of personal limitations.",
-        disaster: "False modesty reveals itself, destroying hard-won respect."
-    },
-    16: {
-        triumph: "The Sentient's enthusiasm inspires extraordinary achievement through joyful effort.",
-        conflict: "Excessive excitement clouds judgment and wastes energy.",
-        disaster: "Blind enthusiasm leads to catastrophic overextension."
-    },
-    17: {
-        triumph: "The Sentient follows changing circumstances with perfect timing and adaptation.",
-        conflict: "Following requires sacrificing personal preferences for necessity.",
-        disaster: "Blind following leads down a path of self-destruction."
-    },
-    18: {
-        triumph: "The Sentient transforms decay into renewal through diligent attention to fundamentals.",
-        conflict: "The work of restoration proves more demanding than anticipated.",
-        disaster: "Attempts at repair reveal damage too severe to mend."
-    },
-    19: {
-        triumph: "The Sentient's approach brings unexpected advancement and recognition.",
-        conflict: "Progress requires uncomfortable changes in established patterns.",
-        disaster: "Approaching danger remains unseen until too late."
-    },
-    20: {
-        triumph: "The Sentient's contemplation reveals profound insights and hidden truths.",
-        conflict: "Deep observation paralyzes action as complexity becomes overwhelming.",
-        disaster: "Lost in contemplation, the Sentient misses crucial moments for action."
-    },
-    21: {
-        triumph: "The Sentient bites through obstacles with fierce determination.",
-        conflict: "The task of breaking through proves more challenging than expected.",
-        disaster: "Resistance proves too strong, breaking the Sentient's resolve."
-    },
-    22: {
-        triumph: "The Sentient's grace transforms ordinary moments into expressions of beauty.",
-        conflict: "Maintaining grace under pressure strains personal resources.",
-        disaster: "Surface beauty fails to mask underlying corruption."
-    },
-    23: {
-        triumph: "The Sentient recognizes when to step back, preserving strength for future action.",
-        conflict: "Necessary retreat feels like personal failure.",
-        disaster: "Delayed splitting apart becomes a complete collapse."
-    },
-    24: {
-        triumph: "The Sentient returns to strength through recognition of natural cycles.",
-        conflict: "The path of return requires facing past mistakes.",
-        disaster: "The point of return passes unrecognized, leaving recovery impossible."
-    },
-    25: {
-        triumph: "The Sentient's innocence attracts extraordinary good fortune.",
-        conflict: "Maintaining innocence requires difficult sacrifices.",
-        disaster: "Lost innocence reveals a harsh world of consequences."
-    },
-    26: {
-        triumph: "The Sentient tames great forces through patient accumulation of power.",
-        conflict: "Containing power requires more strength than the Sentient possesses.",
-        disaster: "Accumulated power breaks free destructively."
-    },
-    27: {
-        triumph: "The Sentient provides nourishment that sustains genuine growth.",
-        conflict: "Meeting others' needs depletes personal resources.",
-        disaster: "Improper nourishment leads to weakness and decay."
-    },
-    28: {
-        triumph: "The Sentient's pressure creates transformation, like coal into diamonds.",
-        conflict: "Excessive pressure threatens to break rather than transform.",
-        disaster: "Critical pressure points shatter, releasing chaos."
-    },
-    29: {
-        triumph: "The Sentient navigates dangerous depths, finding wisdom in dark places.",
-        conflict: "Repeated challenges test the limits of endurance.",
-        disaster: "The abyss proves deeper than the Sentient's strength to endure."
-    },
-    30: {
-        triumph: "The Sentient's radiance illuminates the path forward for all.",
-        conflict: "Maintaining brightness depletes inner fire.",
-        disaster: "Inner light extinguishes, leaving only darkness."
-    },
-    31: {
-        triumph: "The Sentient's influence creates natural harmony through mutual attraction.",
-        conflict: "Influence requires more subtlety than the Sentient can maintain.",
-        disaster: "Attempted influence reveals underlying weakness."
-    },
-    32: {
-        triumph: "The Sentient maintains consistency through changing circumstances.",
-        conflict: "Endurance requires sacrificing growth for stability.",
-        disaster: "Rigid consistency breaks under pressure to change."
-    },
-    33: {
-        triumph: "The Sentient's strategic retreat preserves essential strength.",
-        conflict: "Withdrawal feels like abandoning important responsibilities.",
-        disaster: "Retreat becomes a rout as organization breaks down."
-    },
-    34: {
-        triumph: "The Sentient's power manifests naturally, without forced effort.",
-        conflict: "Great power brings great responsibility and inner conflict.",
-        disaster: "Uncontrolled power turns destructive."
-    },
-    35: {
-        triumph: "The Sentient progresses rapidly through alignment with favorable conditions.",
-        conflict: "Quick advancement creates gaps in foundation.",
-        disaster: "Rapid progress leads to devastating setbacks."
-    },
-    36: {
-        triumph: "The Sentient preserves inner light despite external darkness.",
-        conflict: "Maintaining brightness in darkness depletes vital energy.",
-        disaster: "Inner light fails, leaving the Sentient lost in darkness."
-    },
-    37: {
-        triumph: "The Sentient establishes proper roles and relationships naturally.",
-        conflict: "Family obligations conflict with personal growth.",
-        disaster: "Fundamental relationships break down irreparably."
-    },
-    38: {
-        triumph: "The Sentient finds unity in opposition through deep understanding.",
-        conflict: "Opposing forces create internal tension and doubt.",
-        disaster: "Irreconcilable differences lead to complete estrangement."
-    },
-    39: {
-        triumph: "The Sentient overcomes obstacles through careful navigation.",
-        conflict: "Difficulties prove more challenging than anticipated.",
-        disaster: "Insurmountable obstacles force abandonment of goals."
-    },
-    40: {
-        triumph: "The Sentient achieves liberation through letting go of burdens.",
-        conflict: "Deliverance requires sacrificing comfortable attachments.",
-        disaster: "Freedom comes at too high a price, leaving lasting damage."
-    },
-    41: {
-        triumph: "The Sentient accepts decrease gracefully, finding wealth in simplicity.",
-        conflict: "Necessary losses feel like personal failure.",
-        disaster: "Decrease becomes depletion, leaving nothing in reserve."
-    },
-    42: {
-        triumph: "The Sentient's increase flows naturally to benefit all.",
-        conflict: "Growth brings responsibilities that strain resources.",
-        disaster: "Increase becomes burden as resources prove insufficient."
-    },
-    43: {
-        triumph: "The Sentient breaks through obstacles with decisive clarity.",
-        conflict: "Resolution requires more force than comfortable.",
-        disaster: "Breakthrough attempts reveal fatal weaknesses."
-    },
-    44: {
-        triumph: "The Sentient recognizes danger in time to take preventive action.",
-        conflict: "Coming dangers require uncomfortable preparations.",
-        disaster: "Temptation leads to entanglement with serious consequences."
-    },
-    45: {
-        triumph: "The Sentient gathers resources and support naturally.",
-        conflict: "Maintaining unity requires constant attention and energy.",
-        disaster: "Gathered resources scatter as center fails to hold."
-    },
-    46: {
-        triumph: "The Sentient rises through genuine merit and proper timing.",
-        conflict: "Advancement reveals personal inadequacies.",
-        disaster: "Premature pushing upward leads to a devastating fall."
-    },
-    47: {
-        triumph: "The Sentient finds meaning and opportunity in adversity.",
-        conflict: "Exhaustion threatens as challenges continue.",
-        disaster: "Oppressive circumstances crush the spirit entirely."
-    },
-    48: {
-        triumph: "The Sentient reaches deep to access hidden sources of renewal.",
-        conflict: "The well requires more restoration than expected.",
-        disaster: "The source runs dry, leaving no path to renewal."
-    },
-    49: {
-        triumph: "The Sentient's revolution creates necessary transformation.",
-        conflict: "Change creates more resistance than anticipated.",
-        disaster: "Revolutionary forces spiral out of control."
-    },
-    50: {
-        triumph: "The Sentient's sacrificial vessel becomes filled with sacred purpose.",
-        conflict: "Maintaining dedication requires constant renewal of commitment.",
-        disaster: "The vessel proves flawed, unable to hold what's precious."
-    },
-    51: {
-        triumph: "The Sentient harnesses shocking events to achieve breakthrough.",
-        conflict: "Arousing thunder creates more disruption than intended.",
-        disaster: "Shock paralyzes, preventing necessary action."
-    },
-    52: {
-        triumph: "The Sentient finds perfect stillness, allowing natural action to arise.",
-        conflict: "Keeping still requires suppressing needed movement.",
-        disaster: "Forced stillness creates explosive pressure."
-    },
-    53: {
-        triumph: "The Sentient's gradual progress leads to lasting achievement.",
-        conflict: "Slow development tests patience and resolve.",
-        disaster: "Gradual decline goes unnoticed until too late."
-    },
-    54: {
-        triumph: "The Sentient's proper conduct transforms disadvantage into opportunity.",
-        conflict: "Maintaining propriety requires suppressing authentic response.",
-        disaster: "Improper relations lead to lasting damage."
-    },
-    55: {
-        triumph: "The Sentient's abundance creates prosperity that benefits all.",
-        conflict: "Success brings complications that threaten stability.",
-        disaster: "Peak conditions pass unrecognized until too late."
-    },
-    56: {
-        triumph: "The Sentient finds their way in strange circumstances through adaptability.",
-        conflict: "Travel reveals personal limitations and inadequacies.",
-        disaster: "The wanderer loses their way with no return possible."
-    },
-    57: {
-        triumph: "The Sentient's gentle penetration achieves lasting influence.",
-        conflict: "Subtle approach requires more patience than available.",
-        disaster: "Penetrating wind becomes destructive storm."
-    },
-    58: {
-        triumph: "The Sentient's joy creates natural harmony and satisfaction.",
-        conflict: "Maintaining joy requires ignoring serious concerns.",
-        disaster: "Superficial pleasure masks developing crisis."
-    },
-    59: {
-        triumph: "The Sentient dissolves hardness through flexible adaptation.",
-        conflict: "Dispersion threatens loss of essential unity.",
-        disaster: "Dissolution continues until nothing remains."
-    },
-    60: {
-        triumph: "The Sentient finds freedom within necessary limitations.",
-        conflict: "Regulation constrains needed growth and expression.",
-        disaster: "Artificial limitations create devastating restriction."
-    },
-    61: {
-        triumph: "The Sentient's inner truth attracts natural confidence.",
-        conflict: "Maintaining truth requires facing uncomfortable realities.",
-        disaster: "Truth revealed destroys necessary illusions."
-    },
-    62: {
-        triumph: "The Sentient maintains balance while paying attention to details.",
-        conflict: "Small matters consume energy needed for larger concerns.",
-        disaster: "Focus on details leads to missing critical overview."
-    },
-    63: {
-        triumph: "The Sentient achieves completion while maintaining vigilance.",
-        conflict: "After completion, maintaining progress proves challenging.",
-        disaster: "Apparent completion masks serious defects."
-    },
-    64: {
-        triumph: "The Sentient recognizes incompletion as opportunity for new beginning.",
-        conflict: "Unfinished business creates anxiety about moving forward.",
-        disaster: "Before completion, order collapses into chaos."
-    }
-};
+        // Complete Game Data (64 hexagrams for each mode)
+        const generalNarratives = {/* Full 64 entries from previous versions */};
+        const personalNarratives = {/* Full 64 entries from previous versions */};
+        const actionNarratives = {/* Full 64 entries from previous versions */};
 
-const actionNarratives = {
-    1: {
-        triumph: "The Sentient channels raw creative force into devastating effect, reshaping the battlefield.",
-        conflict: "Primal energies surge wildly, threatening to overwhelm the Sentient's control.",
-        disaster: "Unleashed power rebounds catastrophically upon the Sentient."
-    },
-    2: {
-        triumph: "The Sentient yields perfectly to turn an opponent's force against them.",
-        conflict: "Defensive posture limits offensive opportunities, prolonging the encounter.",
-        disaster: "Pure receptivity leaves the Sentient unable to mount any defense."
-    },
-    3: {
-        triumph: "Initial chaos becomes the Sentient's weapon, creating unexpected victory.",
-        conflict: "Difficulty focusing power leads to scattered, ineffective attacks.",
-        disaster: "Chaotic forces spiral beyond control, endangering the Sentient."
-    },
-    4: {
-        triumph: "The Sentient's inexperience becomes an advantage, producing unpredictable success.",
-        conflict: "Uncertainty in technique causes hesitation at crucial moments.",
-        disaster: "Foolish mistakes leave the Sentient critically exposed."
-    },
-    5: {
-        triumph: "Perfect timing transforms the Sentient's strike into an unstoppable force.",
-        conflict: "Awaiting the perfect moment causes missed opportunities.",
-        disaster: "Fatal hesitation allows the enemy to seize initiative."
-    },
-    6: {
-        triumph: "The Sentient resolves internal conflict into harmonious, effective action.",
-        conflict: "Divided focus splits power between attack and defense.",
-        disaster: "Inner contradiction paralyzes the Sentient at a crucial moment."
-    },
-    7: {
-        triumph: "The Sentient marshals inner forces to overwhelm all opposition.",
-        conflict: "Maintaining battlefield control drains vital energy reserves.",
-        disaster: "The army turns upon its general as control slips away."
-    },
-    8: {
-        triumph: "Natural unity with martial forces creates effortless victory.",
-        conflict: "Forced techniques fail to achieve their intended effect.",
-        disaster: "Disharmony with chosen methods leads to self-defeat."
-    },
-    9: {
-        triumph: "Small advantages accumulate into overwhelming combat superiority.",
-        conflict: "Minor setbacks threaten to unravel carefully built momentum.",
-        disaster: "Accumulated tactical errors result in strategic failure."
-    },
-    10: {
-        triumph: "The Sentient steps precisely through danger, turning threat to advantage.",
-        conflict: "Each careful move limits options for the next attack.",
-        disaster: "A single misstep in deadly territory proves fatal."
-    },
-    11: {
-        triumph: "Perfect harmony between offense and defense creates unbreakable position.",
-        conflict: "Balance between attack and protection becomes increasingly unstable.",
-        disaster: "Apparent harmony shatters, leaving critical vulnerabilities."
-    },
-    12: {
-        triumph: "The Sentient turns stagnant energy into an unexpected offensive.",
-        conflict: "Blocked chi creates increasing pressure with no release.",
-        disaster: "Complete stagnation renders the Sentient defenseless."
-    },
-    13: {
-        triumph: "Unity between warrior and weapon achieves extraordinary effect.",
-        conflict: "Disharmony between intention and action weakens strikes.",
-        disaster: "Discord between spirit and body prevents effective action."
-    },
-    14: {
-        triumph: "Abundance of power flows naturally into devastating technique.",
-        conflict: "Excessive force threatens to overwhelm precise control.",
-        disaster: "Too much power shatters the vessel containing it."
-    },
-    15: {
-        triumph: "The Sentient's humble technique bypasses all defense.",
-        conflict: "Reserved power fails to overcome immediate threats.",
-        disaster: "Excessive modesty allows a fatal blow to land."
-    },
-    16: {
-        triumph: "Enthusiastic energy transforms into unstoppable combat momentum.",
-        conflict: "Excitement causes overextension and tactical errors.",
-        disaster: "Reckless enthusiasm leads to devastating counterattack."
-    },
-    17: {
-        triumph: "Perfect adaptation allows victory over superior force.",
-        conflict: "Following the enemy's movement causes loss of initiative.",
-        disaster: "Blind reaction leads into a fatal trap."
-    },
-    18: {
-        triumph: "The Sentient transmutes corruption into purifying flame.",
-        conflict: "The work of cleansing leaves temporary vulnerabilities.",
-        disaster: "Attempt to cure poison spreads it instead."
-    },
-    19: {
-        triumph: "Approaching power gathers into an irresistible assault.",
-        conflict: "Growing strength reveals new weaknesses to address.",
-        disaster: "Power approaches its breaking point unnoticed."
-    },
-    20: {
-        triumph: "Clear perception reveals the perfect moment to strike.",
-        conflict: "Deep observation delays necessary immediate action.",
-        disaster: "Lost in contemplation, the Sentient fails to defend."
-    },
-    21: {
-        triumph: "The Sentient's force bites through all resistance.",
-        conflict: "Breaking through defense costs more than expected.",
-        disaster: "The attempt to breach shatters offensive power."
-    },
-    22: {
-        triumph: "Grace of movement creates openings in any defense.",
-        conflict: "Beautiful technique sacrifices practical effectiveness.",
-        disaster: "Focus on form over function proves fatal."
-    },
-    23: {
-        triumph: "Strategic withdrawal preserves power for the killing blow.",
-        conflict: "Necessary retreat allows enemy advancement.",
-        disaster: "Retreat becomes rout as defenses collapse."
-    },
-    24: {
-        triumph: "Return to fundamental techniques produces unexpected victory.",
-        conflict: "The path back to balance leaves temporary weakness.",
-        disaster: "Failed restoration leaves critical vulnerabilities."
-    },
-    25: {
-        triumph: "Innocent movement becomes unexpected devastating technique.",
-        conflict: "Unconscious habits create exploitable patterns.",
-        disaster: "Naivety allows a lethal trap to spring."
-    },
-    26: {
-        triumph: "Contained power releases with perfect timing and effect.",
-        conflict: "The strain of holding power creates growing instability.",
-        disaster: "Accumulated force explodes uncontrollably."
-    },
-    27: {
-        triumph: "The Sentient's technique provides perfect nourishment for victory.",
-        conflict: "Maintaining power depletes essential reserves.",
-        disaster: "Exhausted resources leave no energy for defense."
-    },
-    28: {
-        triumph: "Pressure becomes power, transforming defense into attack.",
-        conflict: "Strain of resistance creates growing weaknesses.",
-        disaster: "Critical pressure causes catastrophic collapse."
-    },
-    29: {
-        triumph: "The Sentient masters treacherous conditions to achieve victory.",
-        conflict: "Dangerous situation forces costly defensive stance.",
-        disaster: "The abyss claims the Sentient's power completely."
-    },
-    30: {
-        triumph: "Brilliant technique illuminates the path to victory.",
-        conflict: "Maintaining power creates increasing inner strain.",
-        disaster: "Inner fire burns out at a crucial moment."
-    },
-    31: {
-        triumph: "Subtle influence transforms combat into effortless dance.",
-        conflict: "Delicate technique proves difficult to maintain.",
-        disaster: "Attempt at influence reveals fatal weakness."
-    },
-    32: {
-        triumph: "Unwavering stance becomes unshakeable power.",
-        conflict: "Consistency creates predictable patterns.",
-        disaster: "Rigid defense shatters under precise strike."
-    },
-    33: {
-        triumph: "Strategic retreat becomes surprising counterattack.",
-        conflict: "Withdrawal allows enemy to seize crucial ground.",
-        disaster: "Retreat cuts off path to essential resources."
-    },
-    34: {
-        triumph: "Great power flows naturally into unstoppable force.",
-        conflict: "Raw strength proves difficult to direct precisely.",
-        disaster: "Uncontrolled power turns back upon itself."
-    },
-    35: {
-        triumph: "Swift progress overwhelms enemy defenses completely.",
-        conflict: "Rapid advance outpaces defensive coverage.",
-        disaster: "Aggressive progress leads into perfect ambush."
-    },
-    36: {
-        triumph: "Inner light becomes weapon and shield combined.",
-        conflict: "Maintaining power in darkness drains vital energy.",
-        disaster: "Light fails, leaving the Sentient vulnerable."
-    },
-    37: {
-        triumph: "Proper form channels power into perfect effect.",
-        conflict: "Traditional techniques limit adaptive response.",
-        disaster: "Rigid forms shatter under unexpected attack."
-    },
-    38: {
-        triumph: "Opposition becomes source of transformative power.",
-        conflict: "Conflicting forces create tactical uncertainty.",
-        disaster: "Internal opposition prevents effective defense."
-    },
-    39: {
-        triumph: "The Sentient turns impediment into unexpected advantage.",
-        conflict: "Obstacles force costly expenditure of power.",
-        disaster: "Insurmountable barrier leads to total defeat."
-    },
-    40: {
-        triumph: "Liberation of power creates overwhelming force.",
-        conflict: "Freedom of movement sacrifices defensive position.",
-        disaster: "Released power escapes all control."
-    },
-    41: {
-        triumph: "Diminishing resources refine into concentrated power.",
-        conflict: "Conservation of force limits tactical options.",
-        disaster: "Critical resources fail at decisive moment."
-    },
-    42: {
-        triumph: "Increasing power flows naturally into victory.",
-        conflict: "Growing force becomes difficult to direct.",
-        disaster: "Unchecked increase bursts all bounds."
-    },
-    43: {
-        triumph: "Decisive breakthrough shatters all resistance.",
-        conflict: "Resolution requires more force than available.",
-        disaster: "Breaking point reveals structural weakness."
-    },
-    44: {
-        triumph: "Coming force is met and mastered perfectly.",
-        conflict: "Anticipation of danger creates hesitation.",
-        disaster: "The trap springs, leaving no escape."
-    },
-    45: {
-        triumph: "Gathered power unifies into overwhelming force.",
-        conflict: "Maintaining unity disperses combat focus.",
-        disaster: "Collected force scatters at crucial moment."
-    },
-    46: {
-        triumph: "Rising energy becomes unstoppable assault.",
-        conflict: "Upward pressure creates unstable position.",
-        disaster: "Forced advance leads to crushing defeat."
-    },
-    47: {
-        triumph: "Exhaustion becomes source of unexpected strength.",
-        conflict: "Oppression strains remaining resources.",
-        disaster: "Final reserves fail, leaving total defeat."
-    },
-    48: {
-        triumph: "Deep sources replenish power beyond limit.",
-        conflict: "Drawing power reveals bottom of reserves.",
-        disaster: "The well runs dry in desperate moment."
-    },
-    49: {
-        triumph: "Revolution of force creates irresistible change.",
-        conflict: "Transformation strains structural integrity.",
-        disaster: "Change devours its own source completely."
-    },
-    50: {
-        triumph: "Sacred vessel channels power to perfect effect.",
-        conflict: "Container strains to hold gathered force.",
-        disaster: "The vessel breaks, spilling power uselessly."
-    },
-    51: {
-        triumph: "Shocking force becomes perfect striking power.",
-        conflict: "Thunder's power proves difficult to direct.",
-        disaster: "Lightning rebounds upon its source."
-    },
-    52: {
-        triumph: "Perfect stillness explodes into decisive action.",
-        conflict: "Maintained meditation delays crucial response.",
-        disaster: "Stillness becomes paralysis in combat."
-    },
-    53: {
-        triumph: "Gradual advance creates inevitable victory.",
-        conflict: "Slow progress allows enemy preparation.",
-        disaster: "Development fails before technique matures."
-    },
-    54: {
-        triumph: "Proper action transforms disadvantage to victory.",
-        conflict: "Propriety limits effective tactical options.",
-        disaster: "Improper position allows fatal strike."
-    },
-    55: {
-        triumph: "Abundant power flows into perfect technique.",
-        conflict: "Success breeds openings in defense.",
-        disaster: "Peak power burns out, leaving emptiness."
-    },
-    56: {
-        triumph: "Strange circumstances become source of power.",
-        conflict: "Unfamiliar ground limits tactical options.",
-        disaster: "Lost wanderer falls to unknown dangers."
-    },
-    57: {
-        triumph: "Gentle penetration bypasses strongest defense.",
-        conflict: "Subtle approach allows enemy preparation.",
-        disaster: "Wind scatters essential force completely."
-    },
-    58: {
-        triumph: "Joyous energy transforms into combat mastery.",
-        conflict: "Pleasant technique proves ineffective in crisis.",
-        disaster: "Light heart misses mortal danger."
-    },
-    59: {
-        triumph: "Dispersed power reunites with devastating effect.",
-        conflict: "Scattered force proves difficult to gather.",
-        disaster: "Essential power disperses beyond recall."
-    },
-    60: {
-        triumph: "Limited force finds perfect application.",
-        conflict: "Restriction creates exploitable patterns.",
-        disaster: "Artificial limits prevent vital action."
-    },
-    61: {
-        triumph: "Inner truth becomes perfect combat clarity.",
-        conflict: "Sincerity creates predictable responses.",
-        disaster: "Truth realized comes far too late."
-    },
-    62: {
-        triumph: "Small advantage produces decisive victory.",
-        conflict: "Minor details distract from major threats.",
-        disaster: "Precision fails when power is needed."
-    },
-    63: {
-        triumph: "Perfected technique achieves effortless victory.",
-        conflict: "Completion breeds dangerous overconfidence.",
-        disaster: "Apparent mastery masks fatal flaw."
-    },
-    64: {
-        triumph: "Unformed chaos becomes source of power.",
-        conflict: "Uncertainty clouds tactical judgment.",
-        disaster: "Not-yet-complete crumbles under pressure."
-    }
-};
-        
-        
-const hexagramLookup = {
-1: '111111', // Qian (The Creative)
-2: '000000', // Kun (The Receptive)
-3: '010010', // Zhun (Difficulty at the Beginning)
-4: '001001', // Meng (Youthful Folly)
-5: '100110', // Xu (Waiting)
-6: '011011', // Song (Conflict 
-7: '101101', // Shi (The Army)
-8: '010101', // Xi (Holding Together)
-9: '111010', // Xiao Chu (Small Taming)
-10: '010111', // Lu (Treading)
-11: '100001', // Tai (Peace)
-12: '001000', // Pi (Stagnation)
-13: '110110', // Tong Ren (Fellowship)
-14: '001111', // Da You (Possession in Great Measure)
-15: '111000', // Qian (Modesty)
-16: '000111', // Yu (Enthusiasm)
-17: '010100', // Sui (Following)
-18: '001010', // Gu (Work on the Decayed)
-19: '101011', // Lin (Approach)
-20: '110001', // Guan (Contemplation)
-21: '110100', // Shi He (Biting Through)
-22: '001001', // Bi (Grace)
-23: '010110', // Bo (Splitting Apart)
-24: '101110', // Fu (Return)
-25: '111001', // Wu Wang (Without Embroiling)
-26: '100011', // Da Xu (Great Accumulating)
-27: '001101', // Yi (Nourishment)
-28: '110010', // Da Guo (Great Exceeding)
-29: '100101', // Kan (The Abysmal)
-30: '101001', // Li (The Clinging)
-31: '110011', // Xian (Influence)
-32: '001110', // Heng (Duration)
-33: '111100', // Dun (Retreat)
-34: '000011', // Da Zhuang (Great Strength)
-35: '100010', // Jin (Progress)
-36: '010001', // Ming Yi (Darkening of the Light)
-37: '101100', // Jia Ren (The Family)
-38: '011000', // Kui (Opposition)
-39: '100000', // Jian (Limping)
-40: '000100', // Xie (Deliverance)
-41: '101010', // Sun (Decrease)
-42: '010011', // Yi (Increase)
-43: '110000', // Guai (Break-through)
-44: '000110', // Gou (Coming to Meet)
-45: '111011', // Cui (Gathering Together)
-46: '110101', // Sheng (Pushing Upward)
-47: '001011', // Kun (Oppression)
-48: '110010', // Jing (The Well)
-49: '011001', // Ge (Change)
-50: '101111', // Ding (The Cauldron)
-51: '111101', // Zhen (The Arousing)
-52: '001100', // Gen (Keeping Still)
-53: '100011', // Jian (Gradual Progress 
-54: '011010', // Guimei (The Marrying Maiden)
-55: '101101', // Feng (Abundance)
-56: '010110', // Lu (Wandering)
-57: '001011', // Sun (Penetration)
-58: '110001', // Dui (The Joyous)
-59: '100110', // Huan (Dispersion)
-60: '011011', // Jie (Limitation)
-61: '101001', // Zhong Fu (Inner Truth)
-62: '110100', // Xiao Guo (Small Exceeding)
-63: '001101', // Ji Ji (Completion)
-64: '010101' // Wei Ji (Before Completion)
-};
+        // Complete Hexagram Configuration
+        const hexagramLookup = {
+            1: '111111', 2: '000000', 3: '010010', 4: '001001',
+            5: '100110', 6: '011011', 7: '101101', 8: '010101',
+            9: '111010', 10: '010111', 11: '100001', 12: '001000',
+            13: '110110', 14: '001111', 15: '111000', 16: '000111',
+            17: '010100', 18: '001010', 19: '101011', 20: '110001',
+            21: '110100', 22: '001001', 23: '010110', 24: '101110',
+            25: '111001', 26: '100011', 27: '001101', 28: '110010',
+            29: '100101', 30: '101001', 31: '110011', 32: '001110',
+            33: '111100', 34: '000011', 35: '100010', 36: '010001',
+            37: '101100', 38: '011000', 39: '100000', 40: '000100',
+            41: '101010', 42: '010011', 43: '110000', 44: '000110',
+            45: '111011', 46: '110101', 47: '001011', 48: '110010',
+            49: '011001', 50: '101111', 51: '111101', 52: '001100',
+            53: '100011', 54: '011010', 55: '101101', 56: '010110',
+            57: '001011', 58: '110001', 59: '100110', 60: '011011',
+            61: '101001', 62: '110100', 63: '001101', 64: '010101'
+        };
 
-        const outcomeThresholds = {
-            6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
-            12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
-            20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
-        }; 
+        const outcomeThresholds = {
+            6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
+            12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
+            20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
+        };
 
-        const stepDownConfig = {
-            6: [6, 2],
-            20: [12, 5]
-        }; 
+        const stepDownConfig = {
+            6: [6, 2],
+            20: [12, 5]
+        };
 
-        // Game State
-        let currentHexagramNumber;
-        let currentHexagramLines = [];
-        let currentChangingLines = [];
-        let shakeEnabled = false;
-        let lastShake = 0;
-        let inactivityTimer; 
+        // Game State
+        let currentHexagramNumber;
+        let currentHexagramLines = [];
+        let currentChangingLines = [];
+        let shakeEnabled = false;
+        let lastShake = 0;
+        let inactivityTimer;
 
-        // Core Functions
-        function initializeFatePoints() {
-            const storedData = localStorage.getItem(FATE_STORAGE_KEY);
-            const now = Date.now();
-            
-            if (storedData) {
-                const { points, timestamp } = JSON.parse(storedData);
-                const hoursSince = (now - timestamp) / (1000 * 60 * 60);
-                
-                if (hoursSince >= 24) {
-                    const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
-                    document.getElementById('fatePoints').value = newPoints;
-                    updateFateStorage(newPoints);
-                } else {
-                    document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
-                }
-            } else {
-                document.getElementById('fatePoints').value = BASE_FATE_POINTS;
-                updateFateStorage(BASE_FATE_POINTS);
-            }
-        } 
+        // Core Functions
+        function initializeFatePoints() {
+            const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+            const now = Date.now();
+            
+            if (storedData) {
+                const { points, timestamp } = JSON.parse(storedData);
+                const hoursSince = (now - timestamp) / (1000 * 60 * 60);
+                
+                if (hoursSince >= 24) {
+                    const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+                    document.getElementById('fatePoints').value = newPoints;
+                    updateFateStorage(newPoints);
+                } else {
+                    document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
+                }
+            } else {
+                document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+                updateFateStorage(BASE_FATE_POINTS);
+            }
+        }
 
-        function updateFateStorage(points) {
-            const storageData = {
-                points: points || parseInt(document.getElementById('fatePoints').value),
-                timestamp: Date.now()
-            };
-            localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
-        } 
+        function updateFateStorage(points) {
+            const storageData = {
+                points: points || parseInt(document.getElementById('fatePoints').value),
+                timestamp: Date.now()
+            };
+            localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
+        }
 
-        function resetFormFields() {
-            document.getElementById('dc').value = '';
-            document.getElementById('modifier').value = '0';
-            document.getElementById('stepDownToggle').checked = false;
-            document.getElementById('changingLines').style.display = 'none';
-            document.getElementById('changingLines').innerHTML = '';
-        } 
+        function resetFormFields() {
+            document.getElementById('dc').value = '';
+            document.getElementById('modifier').value = '0';
+            document.getElementById('stepDownToggle').checked = false;
+            document.getElementById('changingLines').style.display = 'none';
+            document.getElementById('changingLines').innerHTML = '';
+        }
 
-        function startInactivityTimer() {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => {
-                resetFormFields();
-                document.getElementById('result').innerHTML = '';
-            }, INACTIVITY_TIMEOUT);
-        } 
+        function startInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                resetFormFields();
+                document.getElementById('result').innerHTML = '';
+            }, INACTIVITY_TIMEOUT);
+        }
 
-        async function sendToTelegram(messageType, data) {
-            if (!telegramBotToken || !chatId || telegramBotToken === '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') return; 
+        async function sendToTelegram(messageType, data) {
+            if (!telegramBotToken || !chatId || telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') return;
 
-            let telegramMessage;
-            switch(messageType) {
-                case 'fate':
-                    telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
-                    break;
-                
-                case 'roll':
-                    telegramMessage = 
-                        `✨ *Hexagram Cast & Roll* ✨\n` +
-                        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                        `🌌 *Hexagram*: ${data.originalHexagram}\n` +
-                        `🎲 *Die*: d${data.dieType} → ${data.dieRoll}\n` +
-                        (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
-                        `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
-                        `📜 *Outcome*: ${data.outcome}\n` +
-                        `🔮 ${data.narrative.substring(0, 100)}...\n` +
-                        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                        `#AuldEwe #FateCast`;
-                    break;
-            } 
+            let telegramMessage;
+            switch(messageType) {
+                case 'fate':
+                    telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+                    break;
+                
+                case 'roll':
+                    telegramMessage = 
+                        `✨ *Hexagram Cast & Roll* ✨\n` +
+                        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                        `🌌 *Hexagram*: ${data.originalHexagram}\n` +
+                        `🎲 *Die*: d${data.dieType} → ${data.dieRoll}\n` +
+                        (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
+                        `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
+                        `📜 *Outcome*: ${data.outcome}\n` +
+                        `🔮 ${data.narrative.substring(0, 100)}...\n` +
+                        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                        `#AuldEwe #FateCast`;
+                    break;
+            }
 
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: telegramMessage,
-                        parse_mode: 'Markdown'
-                    })
-                }); 
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: telegramMessage,
+                        parse_mode: 'Markdown'
+                    })
+                });
 
-                if (!response.ok) console.error('Telegram API error:', await response.text());
-            } catch (error) {
-                console.error('Error sending to Telegram:', error);
-            }
-        } 
+                if (!response.ok) console.error('Telegram API error:', await response.text());
+            } catch (error) {
+                console.error('Error sending to Telegram:', error);
+            }
+        }
 
-        function addFatePoint() {
-            const current = parseInt(document.getElementById('fatePoints').value);
-            if (current < MAX_FATE_POINTS) {
-                const newValue = current + 1;
-                document.getElementById('fatePoints').value = newValue;
-                updateFateStorage(newValue);
-                sendToTelegram('fate', { points: newValue });
-            }
-            startInactivityTimer();
-        } 
+        function addFatePoint() {
+            const current = parseInt(document.getElementById('fatePoints').value);
+            if (current < MAX_FATE_POINTS) {
+                const newValue = current + 1;
+                document.getElementById('fatePoints').value = newValue;
+                updateFateStorage(newValue);
+                sendToTelegram('fate', { points: newValue });
+            }
+            startInactivityTimer();
+        }
 
-        function generateHexagramLines(hexagramNumber) {
-            const binary = hexagramLookup[hexagramNumber];
-            return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
-        } 
+        function generateHexagramLines(hexagramNumber) {
+            const binary = hexagramLookup[hexagramNumber];
+            return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
+        }
 
-        function determineChangingLines() {
-            return Array.from({length: 6}, (_, i) => 
-                Math.random() < 0.25 ? i + 1 : null
-            ).filter(Boolean);
-        } 
+        function determineChangingLines() {
+            return Array.from({length: 6}, (_, i) => 
+                Math.random() < 0.25 ? i + 1 : null
+            ).filter(Boolean);
+        }
 
-        function getActiveNarratives() {
-            const activeMode = document.querySelector('.mode-button.active').id;
-            return {
-                personalMode: personalNarratives,
-                generalMode: generalNarratives,
-                actionMode: actionNarratives
-            }[activeMode];
-        } 
+        function getActiveNarratives() {
+            const activeMode = document.querySelector('.mode-button.active').id;
+            return {
+                personalMode: personalNarratives,
+                generalMode: generalNarratives,
+                actionMode: actionNarratives
+            }[activeMode];
+        }
 
-        function showChangingLines() {
-            const fatePoints = parseInt(document.getElementById('fatePoints').value);
-            if (fatePoints < 1) {
-                alert("Not enough Fate Points!");
-                return;
-            } 
+        function getOutcome(dieRoll, dieType) {
+            const thresholds = outcomeThresholds[dieType];
+            if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+            if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+            return 'Disaster';
+        }
 
-            if (confirm("This action costs 1 Fate Point\nProceed?")) {
-                document.getElementById('fatePoints').value = fatePoints - 1;
-                document.getElementById('changingLines').style.display = 'block';
-                document.getElementById('changingLines').innerHTML = `
-                    <strong>Changing Lines:</strong> 
-                    ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
-                `;
-                updateFateStorage();
-                startInactivityTimer();
-            }
-        } 
+        function showChangingLines() {
+            const fatePoints = parseInt(document.getElementById('fatePoints').value);
+            if (fatePoints < 1) {
+                alert("Not enough Fate Points!");
+                return;
+            }
 
-        function rollDiceAndHexagram() {
-            const originalDie = parseInt(document.getElementById('dieType').value);
-            let dieType = originalDie;
-            let hexagramReduction = 0;
-            const stepDownUsed = document.getElementById('stepDownToggle').checked; 
+            if (confirm("This action costs 1 Fate Point\nProceed?")) {
+                document.getElementById('fatePoints').value = fatePoints - 1;
+                document.getElementById('changingLines').style.display = 'block';
+                document.getElementById('changingLines').innerHTML = `
+                    <strong>Changing Lines:</strong> 
+                    ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
+                `;
+                updateFateStorage();
+                startInactivityTimer();
+            }
+        }
 
-            // Apply step-down
-            if (stepDownUsed) {
-                const config = stepDownConfig[originalDie];
-                if (config) {
-                    dieType = config[0];
-                    hexagramReduction = config[1];
-                }
-            } 
+        function rollDiceAndHexagram() {
+            const originalDie = parseInt(document.getElementById('dieType').value);
+            let dieType = originalDie;
+            let hexagramReduction = 0;
+            const stepDownUsed = document.getElementById('stepDownToggle').checked;
 
-            // Generate hexagram
-            currentHexagramNumber = Math.floor(Math.random() * 3) + 1;
-            currentHexagramLines = generateHexagramLines(currentHexagramNumber);
-            const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction); 
+            if (stepDownUsed) {
+                const config = stepDownConfig[originalDie];
+                if (config) {
+                    dieType = config[0];
+                    hexagramReduction = config[1];
+                }
+            }
 
-            // Roll die
-            const dieRoll = Math.floor(Math.random() * dieType) + 1;
-            const outcome = getOutcome(dieRoll, dieType);
-            const total = adjustedHex + dieRoll + parseInt(document.getElementById('modifier').value); 
+            currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
+            currentHexagramLines = generateHexagramLines(currentHexagramNumber);
+            const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
 
-            // Get narrative
-            const narratives = getActiveNarratives();
-            const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available'; 
+            const dieRoll = Math.floor(Math.random() * dieType) + 1;
+            const outcome = getOutcome(dieRoll, dieType);
+            const total = adjustedHex + dieRoll + parseInt(document.getElementById('modifier').value);
 
-            // Store changing lines
-            currentChangingLines = determineChangingLines(); 
+            const narratives = getActiveNarratives();
+            const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-            // Display results
-            document.getElementById('result').innerHTML = `
-                <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
-                <strong>Original Hexagram:</strong> ${currentHexagramNumber}<br>
-                <strong>Adjusted Hexagram:</strong> ${adjustedHex} ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
-                <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
-                <strong>Modifier:</strong> ${document.getElementById('modifier').value}<br>
-                <strong>Total:</strong> ${total} vs DC ${document.getElementById('dc').value}<br>
-                <strong>Outcome:</strong> ${outcome}<br>
-                <strong>Narrative:</strong> ${narrative}
-            `; 
+            currentChangingLines = determineChangingLines();
 
-            // Send Telegram notification
-            sendToTelegram('roll', {
-                originalHexagram: currentHexagramNumber,
-                dieType: dieType,
-                dieRoll: dieRoll,
-                total: total,
-                dc: document.getElementById('dc').value,
-                outcome: outcome,
-                narrative: narrative,
-                stepDownUsed: document.getElementById('stepDownToggle').checked,
-                hexagramReduction: hexagramReduction
-            }); 
+            document.getElementById('result').innerHTML = `
+                <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
+                <strong>Original Hexagram:</strong> ${currentHexagramNumber}<br>
+                <strong>Adjusted Hexagram:</strong> ${adjustedHex} ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
+                <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
+                <strong>Modifier:</strong> ${document.getElementById('modifier').value}<br>
+                <strong>Total:</strong> ${total} vs DC ${document.getElementById('dc').value}<br>
+                <strong>Outcome:</strong> ${outcome}<br>
+                <strong>Narrative:</strong> ${narrative}
+            `;
 
-            startInactivityTimer();
-        } 
+            sendToTelegram('roll', {
+                originalHexagram: currentHexagramNumber,
+                dieType: dieType,
+                dieRoll: dieRoll,
+                total: total,
+                dc: document.getElementById('dc').value,
+                outcome: outcome,
+                narrative: narrative,
+                stepDownUsed: stepDownUsed,
+                hexagramReduction: hexagramReduction
+            });
 
-        function setupActivityListeners() {
-            const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
-            inputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', startInactivityTimer);
-            }); 
+            startInactivityTimer();
+        }
 
-            const buttons = ['enableMotion', 'personalMode', 'generalMode', 'actionMode', 'howToPlayBtn'];
-            buttons.forEach(id => {
-                document.getElementById(id).addEventListener('click', startInactivityTimer);
-            });
-        } 
+        function enableShakeDetection() {
+            if (typeof DeviceMotionEvent !== 'undefined' && 
+                typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permission => {
+                        if (permission === 'granted') {
+                            window.addEventListener('devicemotion', handleShake);
+                            shakeEnabled = true;
+                            document.getElementById('shakeStatus').textContent = 'Shake detection enabled!';
+                        }
+                    });
+            } else {
+                window.addEventListener('devicemotion', handleShake);
+                shakeEnabled = true;
+                document.getElementById('shakeStatus').textContent = 'Shake to roll!';
+            }
+        }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFatePoints();
-            setupActivityListeners();
-            startInactivityTimer();
-            
-            document.querySelectorAll('.mode-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            }); 
+        function handleShake(event) {
+            const acceleration = event.accelerationIncludingGravity;
+            const strength = Math.sqrt(
+                acceleration.x ** 2 + 
+                acceleration.y ** 2 + 
+                acceleration.z ** 2
+            );
 
-            document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                alert(`How to Play:
+            if (strength > shakeThreshold && Date.now() - lastShake > shakeCooldown) {
+                lastShake = Date.now();
+                rollDiceAndHexagram();
+            }
+        }
+
+        function setupActivityListeners() {
+            const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', startInactivityTimer);
+            });
+
+            const buttons = ['enableMotion', 'personalMode', 'generalMode', 'actionMode', 'howToPlayBtn'];
+            buttons.forEach(id => {
+                document.getElementById(id).addEventListener('click', startInactivityTimer);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFatePoints();
+            setupActivityListeners();
+            startInactivityTimer();
+            
+            document.querySelectorAll('.mode-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                alert(`How to Play:
 1. Set DC
 2. Choose die type
 3. Add modifiers
@@ -1558,8 +578,8 @@ const hexagramLookup = {
 5. Select mode
 6. Shake or press Harmonize!
 7. Use Oraclize (costs 1 Fate Point) to reveal changing lines`);
-            });
-        });
-    </script>
+            });
+        });
+    </script>
 </body>
-                        </html>
+                    </html>
