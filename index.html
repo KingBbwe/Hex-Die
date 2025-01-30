@@ -1358,29 +1358,17 @@ const outcomeThresholds = {
         }
 
         async function sendToTelegram(messageType, data) {
-    // Remove the placeholder token check but keep validation
-    if (!telegramBotToken || !chatId) {
-        console.error('Telegram credentials missing');
-        return;
-    }
+    if (telegramBotToken && chatId) {
+    const telegramMessage = 
+        `💫 *Hexagram Cast \\& Roll* 💫\n` +
+        `✨ *Original Hexagram*: ${originalHexagram}\n` +
+        `⚡ *Adjusted Hexagram*: ${adjustedHexagram} ${stepDownEnabled ? `\\(Step\\-down: \\-${hexagramReduction}\\)` : ""}\n` +
+        `🎲 *Die Roll*: d${dieType} → ${dieRoll}\n` +
+        `📊 *Total*: ${totalValue} \\(DC: ${dcValue}\\)\n` +
+        `📜 *Outcome*: ${outcome}\n` +
+        `🔮 ${outcomeMessage.substring(0, 100).replace(/[_*[\]()~`>#+=|{}.!-]/g, '\\$&')}`;
 
-    let telegramMessage;
-    try {
-        switch(messageType) {
-            case 'fate':
-                telegramMessage = `*Fate Point Added*\nNew total: ${data.points}`;
-                break;
-            
-            case 'roll':
-                telegramMessage = 
-                    `*Hexagram Cast & Roll*\n` +
-                    `▫️ Original Hexagram: ${data.originalHexagram} (${hexagramNames[data.originalHexagram]})\n` +
-                    `▫️ Adjusted Hexagram: ${data.adjustedHexagram} (${hexagramNames[data.adjustedHexagram]})\n` +
-                    `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
-                    `📊 Total: ${data.total} (DC: ${data.dc})\n` +
-                    `📜 Outcome: ${data.outcome}\n` +
-                    `🔮 ${data.narrative.substring(0, 100).replace(/[_*]/g, '\\$&')}`;
-                break;
+    sendToTelegram(telegramMessage);
         }
 
         const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
