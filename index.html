@@ -1305,26 +1305,33 @@
 
         // Core Functions
         // ⚠️→ UPDATED TELEGRAM FUNCTION
-        async function sendToTelegram(messageType, data) {
-            if (!telegramBotToken || !chatId || telegramBotToken.includes('YOUR_')) return;
+  async function sendToTelegram(messageType, data) {
+    if (!telegramBotToken || !chatId) return;
 
-            let telegramMessage;
-            try {
-                switch(messageType) {
-                    case 'fate':
-                        telegramMessage = `*Fate Point Added*\nNew total: ${data.points}`;
-                        break;
-                    
-                    case 'roll':
-                        telegramMessage = 
-                            `*Hexagram Cast & Roll*\n` +
-                            `▫️ Original Hex: ${data.originalHex} (${hexagramNames[data.originalHex]})\n` +
-                            `▫️ Adjusted Hex: ${data.adjustedHex} (${hexagramNames[data.adjustedHex]})\n` +
-                            `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
-                            `📊 Total: ${data.total} vs DC ${data.dc}\n` +
-                            `📜 Outcome: ${data.outcome}\n` +
-                            `🔮 ${data.narrative.substring(0, 100).replace(/[_*[\]()~>#+=|{}.!-]/g, '\\$&')}`;
-                        break;
+    let telegramMessage;
+    try {
+        switch(messageType) {
+            case 'stepdown':
+                telegramMessage = 
+                    `⚡ *Step Down Validation*\n` +
+                    `▫️ Original Die: d${data.originalDie}\n` +
+                    `▫️ Reduced Die: d${data.reducedDie}\n` +
+                    `▫️ Hex Reduction: \\-${data.hexagramReduction}\n` +
+                    `▫️ Original Hex: ${data.originalHex} (${hexagramNames[data.originalHex]})\n` +
+                    `▫️ New Hex: ${data.adjustedHex} (${hexagramNames[data.adjustedHex]})`;
+                break;
+
+            case 'roll':
+                telegramMessage = 
+                    `✨ *Hexagram Cast & Roll*\n` +
+                    `▫️ Mode: ${document.querySelector('.mode-button.active').textContent}\n` +
+                    `▫️ Final Hex: ${currentHexagramNumber - (data.hexagramReduction || 0)} (${hexagramNames[currentHexagramNumber - (data.hexagramReduction || 0)]})\n` +
+                    `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
+                    `📊 Total: ${data.total} (DC: ${data.dc})\n` +
+                    `📜 Outcome: ${data.outcome}\n` +
+                    `🔮 ${data.narrative.substring(0, 100).replace(/[_*[\]()~>#+=|{}.!-]/g, '\\$&')}`;
+                break;
+            
                 }
 
             case 'stepdown':
@@ -1370,11 +1377,12 @@
             dieType = config[0];
             hexagramReduction = config[1];
             
-            // ⚠️→ ADD TELEGRAM NOTIFICATION HERE
+            // Send Step Down notification FIRST
             sendToTelegram('stepdown', {
                 originalDie: originalDie,
                 reducedDie: dieType,
                 hexagramReduction: hexagramReduction,
+                originalHex: currentHexagramNumber,
                 adjustedHex: Math.max(1, currentHexagramNumber - hexagramReduction)
             });
         }
@@ -1385,17 +1393,18 @@
             
             // ... rest of original roll logic ...
 
-            sendToTelegram('roll', {
-                originalHex: currentHexagramNumber,
-                adjustedHex: adjustedHex,
-                dieType: dieType,
-                dieRoll: dieRoll,
-                total: total,
-                dc: document.getElementById('dc').value,
-                outcome: outcome,
-                narrative: narrative
-            });
-        }
+     // Then send regular roll results
+    sendToTelegram('roll', {
+        originalHexagram: currentHexagramNumber,
+        dieType: dieType,
+        dieRoll: dieRoll,
+        total: total,
+        dc: document.getElementById('dc').value,
+        outcome: outcome,
+        narrative: narrative,
+        stepDownUsed: stepDownUsed,
+        hexagramReduction: hexagramReduction
+    });
 
         // ⚠️→ UPDATE DIE SELECTOR IN HTML
         // Change the dieType <select> to:
