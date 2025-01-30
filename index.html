@@ -224,11 +224,14 @@
             </div>
 
             <div class="input-group">
-                <label for="dieType">Die Type</label>
-                <select id="dieType">
-                    <option value="6">d6</option>
-                    <option value="20">d20</option>
-                </select>
+    <label for="dieType">Die Type</label>
+    <select id="dieType">
+        <option value="6">d6</option>
+        <option value="8">d8</option>
+        <option value="12">d12</option>
+        <option value="20">d20</option>
+        <option value="100">d100</option>
+    </select>
             </div>
 
             <div class="input-group">
@@ -1279,16 +1282,26 @@
         57: 'The Gentle', 58: 'The Joyous', 59: 'Dispersion', 60: 'Limitation',
         61: 'Inner Truth', 62: 'Small Preponderance', 63: 'After Completion', 64: 'Before Completion'
     };
-        const outcomeThresholds = {
-            6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
-            12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
-            20: { triumph: [20,19,18], conflict: [17,16,15], disaster: [14,13,12,11,10,9,8,7,6,5,4,3,2,1] }
-        };
+        
+const outcomeThresholds = {
+        6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
+        8: { triumph: [8,7], conflict: [6,5,4], disaster: [3,2,1] },
+        12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
+        20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
+        100: { 
+            triumph: Array.from({length: 20}, (_, i) => 100 - i),
+            conflict: Array.from({length: 60}, (_, i) => 80 - i),
+            disaster: Array.from({length: 20}, (_, i) => 20 - i)
+        }
+    };
 
-        const stepDownConfig = {
-            6: [6, 2],
-            20: [12, 5]
-        };
+    const stepDownConfig = {
+        6: [6, 2],
+        8: [6, 4],
+        12: [8, 8],
+        20: [12, 10],
+        100: [20, 20]
+    };
 
         // Game State
         let currentHexagramNumber;
