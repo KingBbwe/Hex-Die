@@ -261,8 +261,8 @@
 
     <script>
         // Configuration
-        const telegramBotToken = 'YOUR_TELEGRAM_BOT_TOKEN'; // Replace with actual token
-        const chatId = 'YOUR_CHAT_ID'; // Replace with actual chat ID
+        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with actual token
+        const chatId = '-1002185533073'; // Replace with actual chat ID
         const FATE_STORAGE_KEY = 'auldEweFatePoints';
         const MAX_FATE_POINTS = 5;
         const BASE_FATE_POINTS = 3;
@@ -271,35 +271,332 @@
         const shakeCooldown = 1000; 
 
         // Game Data
-        const generalNarratives = {
-            1: {
-                triumph: "General Triumph: The party unites under strong leadership",
-                conflict: "General Conflict: Allies question the leader's motives",
-                disaster: "General Disaster: Trust erodes completely"
-            }
-        }; 
+        
+const hexagramNarratives = {
+1: {
+triumph: "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose that elevates all.",
+conflict: "Ambition clashes with humility; allies question whether their leader’s goals serve the many or the self.",
+disaster: "Trust erodes as the Sentient’s actions grow self-serving, leaving their party fractured and disillusioned."
+},
+2: {
+triumph: "The Sentient fosters resilience through patience, teaching their party to find strength in stillness and reflection.",
+conflict: "Passivity risks enabling harm; the group debates when to act and when to yield.",
+disaster: "The party grows complacent, their voice silenced by fear of overstepping."
+},
+3: {
+triumph: "The Sentient guides their party through chaos with empathy, transforming uncertainty into solidarity.",
+conflict: "Competing visions divide the group; some push for haste, others for caution.",
+disaster: "The party fractures into factions, their shared purpose lost to infighting."
+},
+4: {
+triumph: "The Sentient turns naivety into wisdom, mentoring others to avoid their past mistakes.",
+conflict: "Overcorrection breeds rigidity; the group struggles to balance caution with openness.",
+disaster: "Fear of failure stifles growth, leaving the party stagnant and riskaverse."
+},
+5: {
+triumph: "The Sentient’s patience rewards the party with a hard-won harvest, proving the value of collective endurance.",
+conflict: "Impatience tempts some to hoard resources, testing the group’s unity.",
+disaster: "Greed poisons camaraderie, turning allies into rivals over dwindling gains."
+},
+6: {
+triumph: "The Sentient mediates disputes with fairness, restoring harmony through compromise and accountability.",
+conflict: "Old grudges resurface; the group debates justice versus mercy." disaster: "Fear of the unknown hinders progress, trapping the party in familiar but ineffective strategies."
+},
+20: {
+triumph: "The Sentient reflects on past experiences, guiding their party through wisdom and insight.",
+conflict: "Nostalgia tempts the party; they debate tradition versus innovation.",
+disaster: "Clutching to the past prevents progress, leaving the party stagnant."
+},
+21: {
+triumph: "The Sentient resolves conflicts through fairness, restoring harmony through justice and accountability.",
+conflict: "Old grudges resurface; the group debates justice versus mercy.",
+disaster: "Unresolved anger calcifies into permanent divisions, eroding trust."
+},
+22: {
+triumph: "The Sentient beautifies their surroundings, inspiring others through creativity and elegance.",
+conflict: "Excess breeds superficiality; the group debates substance versus appearance.",
+disaster: "Focus on appearance over substance weakens the party, making them vulnerable to criticism."
+},
+23: {
+triumph: "The Sentient transforms decay into growth, revitalizing their party through renewal and innovation.",
+conflict: "Fear of change paralyzes action; the group debates stability versus progress.",
+disaster: "Inaction leads to stagnation, causing the party to miss crucial 
+opportunities."
+},
+24: {
+triumph: "The Sentient helps the party learn from past failures, turning regret into wisdom.",
+conflict: "Some resist introspection, clinging to nostalgia for an idealized past.",
+disaster: "The party repeats its mistakes, trapped in cycles of denial."
+},
+25: {
+triumph: "The Sentient leads with integrity, proving that ethical choices strengthen the party’s bonds.",
+conflict: "A pragmatic shortcut tempts them—will they compromise values for expediency?",
+disaster: "Pragmatism becomes cynicism, and the party loses faith in ideals."
+},
+26: {
+triumph: "The Sentient accumulates strength through perseverance, guiding 
+their party to achieve greatness." conflict: "Overconfidence breeds complacency; the group debates ambition versus humility.",
+disaster: "Arrogance alienates allies, leaving the party isolated and vulnerable."
+},
+27: {
+triumph: "The Sentient nourishes their party through care, fostering growth and well-being.",
+conflict: "Overindulgence weakens the party; they debate abundance versus austerity.",
+disaster: "Excess leads to dependency, undermining the party’s resilience."
+},
+28: {
+triumph: "The Sentient exceeds expectations through bold action, inspiring their party to strive for excellence.",
+conflict: "Impulsiveness causes mistakes; the group debates caution versus boldness.",
+disaster: "Recklessness undermines progress, causing the party to lose ground."
+},
+29: {
+triumph: "The Sentient navigates danger with courage, leading their party through perilous times.",
+conflict: "Fear tempts the party; they debate risk versus safety.",
+disaster: "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
+},
+30: {
+triumph: "The Sentient illuminates their path through clarity, guiding their party with insight and wisdom.",
+conflict: "Confusion tempts the party; they debate clarity versus ambiguity.",
+disaster: "Uncertainty paralyzes action, causing the party to lose direction."
+},
+31: {
+triumph: "The Sentient influences others through empathy, fostering harmony and cooperation.",
+conflict: "Divergent interests threaten unity; the group debates cooperation versus competition.",
+disaster: "Selfishness prevails, turning allies into adversaries."
+},
+32: {
+triumph: "The Sentient endures through perseverance, teaching their party to find strength in persistence.",
+conflict: "Complacency breeds stagnation; the group debates stability versus progress.",
+disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+}, 
 
-        const personalNarratives = {
-            1: {
-                triumph: "Personal Triumph: You find inner strength",
-                conflict: "Personal Conflict: Self-doubt creeps in",
-                disaster: "Personal Disaster: You lose self-confidence"
-            }
-        }; 
-
-        const actionNarratives = {
-            1: {
-                triumph: "Action Triumph: Perfectly executed maneuver",
-                conflict: "Action Conflict: Move leaves you exposed",
-                disaster: "Action Disaster: Critical failure in execution"
-            }
-        }; 
-
-        const hexagramLookup = {
-            1: '111111',
-            2: '000000',
-            3: '010010'
-        }; 
+  33: {
+triumph: "The Sentient retreats with wisdom, preserving strength for future challenges.",
+conflict: "Pride tempts the party; they debate honor versus prudence.",
+disaster: "Egoism leads to reckless decisions, undermining the party’s safety."
+},
+34: {
+triumph: "The Sentient demonstrates strength through resilience, inspiring their party to overcome adversity.",
+conflict: "Overconfidence breeds complacency; the group debates ambition versus humility.",
+disaster: "Arrogance alienates allies, leaving the party isolated and vulnerable."
+},
+35: {
+triumph: "The Sentient progresses with adaptability, turning challenges into opportunities through flexibility.",
+conflict: "Resistance to change hinders progress; the group debates tradition versus innovation.",
+disaster: "Inflexibility traps the party in outdated strategies, causing them to fall behind."
+},
+36: {
+triumph: "The Sentient illuminates darkness through insight, guiding their party through challenging times.",
+conflict: "Fear tempts the party; they debate risk versus safety.",
+disaster: "Cowardice leads to missed opportunities, trapping the party in a cycle 
+of fear."
+},
+37: {
+triumph: "The Sentient fosters unity through shared values, creating a bond that transcends differences.",
+conflict: "Divergent interests threaten cohesion; the group debates loyalty versus self-interest.",
+disaster: "Selfishness erodes trust, leaving the party fragmented and 
+vulnerable."
+},
+38: {
+triumph: "The Sentient resolves conflicts through fairness, restoring harmony through justice and accountability.",
+conflict: "Old grudges resurface; the group debates justice versus mercy.",
+disaster: "Unresolved anger calcifies into permanent divisions, eroding trust."
+},
+39: {
+triumph: "The Sentient navigates obstacles with resilience, guiding their party through challenging times.",
+conflict: "Fear tempts the party; they debate risk versus safety.",
+disaster: "Cowardice leads to missed opportunities, trapping the party in a cycle offear."
+},
+40: {
+triumph: "The Sentient liberates their party from constraints, freeing them to pursue new opportunities.",
+conflict: "Complacency breeds stagnation; the group debates stability versus progress.",
+disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+},
+41: {
+triumph: "The Sentient reduces excess through simplicity, focusing their party on what truly matters.",
+conflict: "Frugality tempts the party; they debate thrift versus generosity.",
+disaster: "Austerity leads to resentment, undermining the party’s morale."
+},
+42: {
+triumph: "The Sentient increases their party’s strength through strategic alliances, forging powerful bonds.",
+conflict: "Overreliance on others breeds dependency; the group debates independence versus collaboration.",
+disaster: "Loss of autonomy undermines the party’s effectiveness."
+},
+43: {
+triumph: "The Sentient breaks through barriers with courage, inspiring their party to overcome adversity.",
+conflict: "Fear of change paralyzes action; the group debates tradition versus innovation.",
+disaster: "Inflexibility traps the party in outdated strategies, causing them to fall behind."
+},
+44: {
+triumph: "The Sentient attracts allies through charisma, building a coalition that amplifies their influence.",
+conflict: "Overconfidence breeds complacency; the group debates ambition versus humility.",
+disaster: "Arrogance alienates allies, leaving the party isolated and vulnerable."
+},
+45: {
+triumph: "The Sentient gathers resources through strategic planning, preparing their party for future challenges.",
+conflict: "Excess breeds complacency; the group debates abundance versus austerity.",
+disaster: "Overindulgence weakens the party, making them vulnerable to external threats."
+},
+46: triumph: "The Sentient advances with determination, guiding their party to achieve greatness.",
+conflict: "Impulsiveness causes mistakes; the group debates caution versus boldness.",
+disaster: "Recklessness undermines progress, causing the party to lose ground."
+},
+47: {
+triumph: "The Sentient perseveres through adversity, teaching their party to find strength in resilience.",
+conflict: "Despair tempts the party; they debate hope versus despair.",
+disaster: "Loss of hope leads to surrender, causing the party to abandon their quest."
+},
+48: {
+triumph: "The Sentient revitalizes their party through renewal, transforming decay into growth.",
+conflict: "Fear of change paralyzes action; the group debates stability versus progress.",
+disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+},
+49: {
+triumph: "The Sentient transforms their party through change, turning challenges into opportunities.",
+conflict: "Resistance to change hinders progress; the group debates tradition versus innovation.",
+disaster: "Inflexibility traps the party in outdated strategies, causing them to fall behind."
+},
+50: {
+triumph: "The Sentient nourishes their party through care, fostering growth and well-being.",
+conflict: "Overindulgence weakens the party; they debate abundance versus austerity.",
+disaster: "Excess leads to dependency, undermining the party’s resilience."
+},
+51: {
+triumph: "The Sentient awakens their party to new possibilities, inspiring them to strive for excellence.",
+conflict: "Overexuberance leads to recklessness; the group debates passion versus prudence.",
+disaster: "Impulsiveness causes mistakes, undermining the party’s progress."
+},
+52: {
+triumph: "The Sentient finds stillness in the midst of chaos, guiding their party to inner peace.",
+conflict: "Complacency breeds stagnation; the group debates stability versusprogress.",
+disaster: "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+},
+53: {
+triumph: "The Sentient progresses gradually, teaching their party the value of patience and persistence.",
+conflict: "Impatience tempts the party; they debate speed versus deliberation.",
+disaster: "Rushing leads to mistakes, undermining the party’s progress."
+},
+54: {
+triumph: "The Sentient marries wisdom with action, guiding their party to make informed decisions.",
+conflict: "Indecision paralyzes action; the group debates analysis versus instinct.",
+disaster: "Overanalysis leads to inaction, causing the party to miss opportunities."
+},
+55: {
+triumph: "The Sentient radiates abundance, inspiring their party to share their wealth and wisdom.",
+conflict: "Excess breeds complacency; the group debates abundance versus austerity.",
+disaster: "Overindulgence weakens the party, making them vulnerable to external threats."
+},
+56: {
+triumph: "The Sentient wanders with purpose, guiding their party to explore new horizons.",
+conflict: "Restlessness tempts the party; they debate exploration versus stability.",
+disaster: "Drifting leads to disorientation, causing the party to lose direction."
+},
+57: {
+triumph: "The Sentient penetrates obstacles with insight, guiding their party to overcome challenges.",
+conflict: "Obstacles seem insurmountable; the group debates perseverance versus surrender.",
+disaster: "Despair leads to defeat, causing the party to abandon their quest."
+},
+58: {
+triumph: "The Sentient delights in joy, inspiring their party to find happiness in simplicity.",
+conflict: "Excess breeds superficiality; the group debates substance versus appearance.",
+disaster: "Focus on appearance over substance weakens the party, making them vulnerable to criticism."
+},
+59: {
+triumph: "The Sentient disperses obstacles with clarity, guiding their party to findsolutions.",
+conflict: "Confusion tempts the party; they debate clarity versus ambiguity.",
+disaster: "Uncertainty paralyzes action, causing the party to lose direction."
+},
+60: {
+triumph: "The Sentient sets limits with wisdom, guiding their party to balance freedom with responsibility.",
+conflict: "Overindulgence leads to chaos; the group debates freedom versus structure.",
+disaster: "Lack of boundaries undermines the party’s cohesion."
+},
+61: {
+triumph: "The Sentient finds inner truth through reflection, guiding their party to authenticity.",
+conflict: "Dishonesty tempts the party; they debate integrity versus expediency.",
+disaster: "Deception erodes trust, causing the party to lose faith in each other."
+},
+62: {
+triumph: "The Sentient exceeds expectations with humility, revealing hidden paths through careful observation.",
+conflict: "Overcaution leads to missed opportunities; the group debates risk versus reward.",
+disaster: "Indecision paralyzes progress, leaving the party stranded at crossroads."
+},
+63: {
+triumph: "The Sentient celebrates the party’s journey, weaving past lessons into a tapestry of shared identity.",
+conflict: "Completion feels bittersweet; some mourn what was lost to achieve it.",
+disaster: "The party grows complacent, assuming their work is done, and stagnation sets in."
+},
+64: { 
+triumph: "The Sentient helps the party reflect on past cycles, weaving hard-won lessons into a blueprint for renewal.", 
+conflict: "Old habits resurface; the group struggles to break free from familiar mistakes.", 
+disaster: "The cycle repeats, but this time, the party resigns itself to futility." 
+}
+};
+const hexagramLookup = {
+1: '111111', // Qian (The Creative)
+2: '000000', // Kun (The Receptive)
+3: '010010', // Zhun (Difficulty at the Beginning)
+4: '001001', // Meng (Youthful Folly)
+5: '100110', // Xu (Waiting)
+6: '011011', // Song (Conflict 
+7: '101101', // Shi (The Army)
+8: '010101', // Xi (Holding Together)
+9: '111010', // Xiao Chu (Small Taming)
+10: '010111', // Lu (Treading)
+11: '100001', // Tai (Peace)
+12: '001000', // Pi (Stagnation)
+13: '110110', // Tong Ren (Fellowship)
+14: '001111', // Da You (Possession in Great Measure)
+15: '111000', // Qian (Modesty)
+16: '000111', // Yu (Enthusiasm)
+17: '010100', // Sui (Following)
+18: '001010', // Gu (Work on the Decayed)
+19: '101011', // Lin (Approach)
+20: '110001', // Guan (Contemplation)
+21: '110100', // Shi He (Biting Through)
+22: '001001', // Bi (Grace)
+23: '010110', // Bo (Splitting Apart)
+24: '101110', // Fu (Return)
+25: '111001', // Wu Wang (Without Embroiling)
+26: '100011', // Da Xu (Great Accumulating)
+27: '001101', // Yi (Nourishment)
+28: '110010', // Da Guo (Great Exceeding)
+29: '100101', // Kan (The Abysmal)
+30: '101001', // Li (The Clinging)
+31: '110011', // Xian (Influence)
+32: '001110', // Heng (Duration)
+33: '111100', // Dun (Retreat)
+34: '000011', // Da Zhuang (Great Strength)
+35: '100010', // Jin (Progress)
+36: '010001', // Ming Yi (Darkening of the Light)
+37: '101100', // Jia Ren (The Family)
+38: '011000', // Kui (Opposition)
+39: '100000', // Jian (Limping)
+40: '000100', // Xie (Deliverance)
+41: '101010', // Sun (Decrease)
+42: '010011', // Yi (Increase)
+43: '110000', // Guai (Break-through)
+44: '000110', // Gou (Coming to Meet)
+45: '111011', // Cui (Gathering Together)
+46: '110101', // Sheng (Pushing Upward)
+47: '001011', // Kun (Oppression)
+48: '110010', // Jing (The Well)
+49: '011001', // Ge (Change)
+50: '101111', // Ding (The Cauldron)
+51: '111101', // Zhen (The Arousing)
+52: '001100', // Gen (Keeping Still)
+53: '100011', // Jian (Gradual Progress 
+54: '011010', // Guimei (The Marrying Maiden)
+55: '101101', // Feng (Abundance)
+56: '010110', // Lu (Wandering)
+57: '001011', // Sun (Penetration)
+58: '110001', // Dui (The Joyous)
+59: '100110', // Huan (Dispersion)
+60: '011011', // Jie (Limitation)
+61: '101001', // Zhong Fu (Inner Truth)
+62: '110100', // Xiao Guo (Small Exceeding)
+63: '001101', // Ji Ji (Completion)
+64: '010101' // Wei Ji (Before Completion)
+};
 
         const outcomeThresholds = {
             6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
@@ -367,7 +664,7 @@
         } 
 
         async function sendToTelegram(messageType, data) {
-            if (!telegramBotToken || !chatId || telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') return; 
+            if (!telegramBotToken || !chatId || telegramBotToken === '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') return; 
 
             let telegramMessage;
             switch(messageType) {
