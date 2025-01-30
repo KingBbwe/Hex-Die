@@ -1303,6 +1303,9 @@
 
         // Game State (keep original state variables)
 
+function escapeMarkdownV2(text) {
+    return text.replace(/[_*[\]()~>#+=|{}.!-]/g, '\\$&');
+}
         // Core Functions
         // ⚠️→ UPDATED TELEGRAM FUNCTION
   async function sendToTelegram(messageType, data) {
@@ -1315,14 +1318,15 @@
         let telegramMessage;
         switch(messageType) {
             case 'stepdown':
-                telegramMessage = 
-                    `⚡ *STEP DOWN VERIFICATION*\n` +
-                    `▫️ Original Die: d${data.originalDie}\n` +
-                    `▫️ Reduced Die: d${data.reducedDie}\n` +
-                    `▫️ Hex Reduction: \\-${data.hexagramReduction}\n` +
-                    `▫️ Original Hex: ${data.originalHex} (${data.originalHexName})\n` +
-                    `▫️ New Hex: ${data.adjustedHex} (${data.adjustedHexName})`;
-                break;
+    telegramMessage = 
+        `⚡ *STEP DOWN VERIFICATION*\n` +
+        `▫️ Original Die: d${data.originalDie}\n` +
+        `▫️ Reduced Die: d${data.reducedDie}\n` +
+        `▫️ Hex Reduction: \\-${data.hexagramReduction}\n` +
+        `▫️ Original Hex: ${data.originalHex} (${escapeMarkdownV2(data.originalHexName)})`
+})\n` +
+        `▫️ New Hex: ${data.adjustedHex} (${data.adjustedHexName})`;
+    break;
 
             case 'roll':
                 telegramMessage = 
@@ -1332,7 +1336,7 @@
                     `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
                     `📊 Total: ${data.total} (DC: ${data.dc})\n` +
                     `📜 Outcome: ${data.outcome}\n` +
-                    `🔮 ${data.narrative.substring(0, 100).replace(/[_*[\]()~>#+=|{}.!-]/g, '\\$&')}`;
+                    `🔮 ${escapeMarkdownV2(data.narrative.substring(0, 100))}`;
                 break;
         }
 
@@ -1395,35 +1399,24 @@
             let hexagramReduction = 0;
             const stepDownUsed = document.getElementById('stepDownToggle').checked;
 
-    if (stepDownUsed) {
-        const config = stepDownConfig[originalDie];
-        if (config) {
-            const stepDownData = {
-                originalDie: originalDie,
-                reducedDie: dieType,
-                hexagramReduction: hexagramReduction,
-                originalHex: currentHexagramNumber,
-                adjustedHex: adjustedHex,
-                originalHexName: hexagramNames[currentHexagramNumber],
-                adjustedHexName: hexagramNames[adjustedHex]
-            };
-            
-            // Force await to complete before proceeding
-            await sendToTelegram('stepdown', stepDownData);
-        }
+if (stepDownUsed) {
+    const config = stepDownConfig[originalDie];
+    if (config) {
+        dieType = config[0];
+        hexagramReduction = config[1];
+        
+        // Add await and proper hexagram names
+        await sendToTelegram('stepdown', {
+            originalDie: originalDie,
+            reducedDie: dieType,
+            hexagramReduction: hexagramReduction,
+            originalHex: currentHexagramNumber,
+            originalHexName: hexagramNames[currentHexagramNumber],
+            adjustedHex: adjustedHex,
+            adjustedHexName: hexagramNames[adjustedHex]
+        });
     }
-
-    // Then send main roll results
-    const rollData = {
-        originalHexagram: currentHexagramNumber,
-        dieType: dieType,
-        dieRoll: dieRoll,
-        total: total,
-        dc: document.getElementById('dc').value,
-        outcome: outcome,
-        narrative: narrative,
-        adjustedHex: adjustedHex
-    };
+}
     
     await sendToTelegram('roll', rollData);
             currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
