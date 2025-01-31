@@ -1360,41 +1360,45 @@
         }, INACTIVITY_TIMEOUT);
     }
 
-    async function sendToTelegram(messageType, data) {
-        if (!telegramBotToken || !chatId || telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') return;
+async function sendToTelegram(messageType, data) {
+    if (!telegramBotToken || !chatId || telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') return;
 
-        let telegramMessage;
-        switch(messageType) {
-            case 'fate':
-                telegramMessage = `*Fate Point Added*\nNew total: ${data.points}`;
-                break;
-            case 'roll':
-                telegramMessage = `*Hexagram Cast & Roll*\n\n` +
-                    `Hexagram: ${data.originalHexagram}\n` +
-                    `Die: d${data.dieType} → ${data.dieRoll}\n` +
-                    `${data.stepDownUsed ? `Step Down Applied: -${data.hexagramReduction}\n` : ''}` +
-                    `Total: ${data.total} (DC: ${data.dc})\n` +
-                    `Outcome: ${data.outcome}\n` +
-                    `${data.narrative.substring(0, 100)}...\n\n` +
-                    `#AuldEwe #FateCast`;
-                break;
-        }
-
-        try {
-            const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: telegramMessage,
-                    parse_mode: 'Markdown'
-                })
-            });
-            if (!response.ok) console.error('Telegram API error:', await response.text());
-        } catch (error) {
-            console.error('Error sending to Telegram:', error);
-        }
+    let telegramMessage;
+    switch(messageType) {
+        case 'fate':
+            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+            break;
+        
+        case 'roll':
+            telegramMessage = 
+                `✨ *Hexagram Cast & Roll* ✨\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `🌌 *Hexagram*: ${data.originalHexagram}\n` +
+                `🎲 *Die*: d${data.dieType} → ${data.dieRoll}\n` +
+                (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
+                `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
+                `📜 *Outcome*: ${data.outcome}\n` +
+                `🔮 ${data.narrative.substring(0, 100)}...\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `#AuldEwe #FateCast`;
+            break;
     }
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: telegramMessage,
+                parse_mode: 'Markdown'
+            })
+        });
+        if (!response.ok) console.error('Telegram API error:', await response.text());
+    } catch (error) {
+        console.error('Error sending to Telegram:', error);
+    }
+}
 
     function addFatePoint() {
         const current = parseInt(document.getElementById('fatePoints').value);
