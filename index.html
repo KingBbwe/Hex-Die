@@ -1296,14 +1296,15 @@
         }
     };
 
-    const stepDownConfig = {
-        4: [4, 1],
-        6: [6, 2],
-        8: [6, 4],
-        12: [8, 8],
-        20: [12, 10],
-        100: [20, 20]
-    };
+// In the stepDownConfig object
+const stepDownConfig = {
+    4: [4, 1],
+    6: [4, 2], // Changed from [6, 2] to [4, 2]
+    8: [6, 4],
+    12: [8, 8],
+    20: [12, 10],
+    100: [20, 20]
+};
 
     // Game State
     let currentHexagramNumber;
