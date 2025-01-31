@@ -1374,7 +1374,7 @@ async function sendToTelegram(messageType, data) {
                 `✨ *Hexagram Cast & Roll* ✨\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                 `🌌 *Hexagram*: ${data.originalHexagram}\n` +
-                `🎲 *Die*: d${data.dieType} → ${data.dieRoll}\n` +
+                `🎲 *Die*: ${data.stepDownUsed ? `d${data.originalDieType} → (d${data.dieType}) ` : `d${data.dieType} → `}${data.dieRoll}\n` +
                 (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
                 `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
                 `📜 *Outcome*: ${data.outcome}\n` +
@@ -1383,6 +1383,7 @@ async function sendToTelegram(messageType, data) {
                 `#AuldEwe #FateCast`;
             break;
     }
+
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
@@ -1455,20 +1456,21 @@ async function sendToTelegram(messageType, data) {
         }
     }
 
-    function rollDiceAndHexagram() {
-        const stepDownUsed = document.getElementById('stepDownToggle').checked;
-        const dc = parseInt(document.getElementById('dc').value) || 0;
-        let dieType = parseInt(document.getElementById('dieType').value);
-        const mod = parseInt(document.getElementById('modifier').value) || 0;
-        
-        let hexagramReduction = 0;
-        if (stepDownUsed) {
-            const config = stepDownConfig[dieType];
-            if (config) {
-                dieType = config[0];
-                hexagramReduction = config[1];
-            }
+function rollDiceAndHexagram() {
+    const stepDownUsed = document.getElementById('stepDownToggle').checked;
+    const dc = parseInt(document.getElementById('dc').value) || 0;
+    const originalDieType = parseInt(document.getElementById('dieType').value);
+    let dieType = originalDieType;
+    const mod = parseInt(document.getElementById('modifier').value) || 0;
+    
+    let hexagramReduction = 0;
+    if (stepDownUsed) {
+        const config = stepDownConfig[originalDieType];
+        if (config) {
+            dieType = config[0];
+            hexagramReduction = config[1];
         }
+    }
 
         currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
         currentHexagramLines = generateHexagramLines(currentHexagramNumber);
@@ -1495,6 +1497,7 @@ async function sendToTelegram(messageType, data) {
         `;
 
         sendToTelegram('roll', {
+            originalDieType: originalDieType,  // Add this line
             originalHexagram: currentHexagramNumber,
             adjustedHexagram: adjustedHex,
             dieType: dieType,
