@@ -1312,6 +1312,9 @@ const outcomeThresholds = {
         let shakeEnabled = false;
         let lastShake = 0;
         let inactivityTimer;
+        const shakeThreshold = 15;
+        const shakeCooldown = 1000;
+
 
         // Core Functions
         function initializeFatePoints() {
@@ -1458,11 +1461,14 @@ async function sendToTelegram(messageType, data) {
         }
 
         function rollDiceAndHexagram() {
-            const originalDie = parseInt(document.getElementById('dieType').value);
-            let dieType = originalDie;
-            let hexagramReduction = 0;
             const stepDownUsed = document.getElementById('stepDownToggle').checked;
-
+            const dc = parseInt(document.getElementById('dc').value) || 0;
+            let dieType = parseInt(document.getElementById('dieType').value);
+            const mod = parseInt(document.getElementById('modifier').value) || 0;
+            // Step-down logic
+            const { newDieType, hexagramReduction } = stepDownUsed ? applyStepDown(dieType) : { newDieType: dieType, hexagramReduction: 0 };
+            dieType = newDieType;
+            
             if (stepDownUsed) {
                 const config = stepDownConfig[originalDie];
                 if (config) {
