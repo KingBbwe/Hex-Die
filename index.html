@@ -1308,8 +1308,60 @@
             100: [20, 20]
         };
 
-        // Game State (keep original state variables)
+                // Game State
+        let currentHexagramNumber;
+        let currentHexagramLines = [];
+        let currentChangingLines = [];
+        let shakeEnabled = false;
+        let lastShake = 0;
+        let inactivityTimer;
 
+        // Core Functions
+        function initializeFatePoints() {
+            const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+            const now = Date.now();
+            
+            if (storedData) {
+                const { points, timestamp } = JSON.parse(storedData);
+                const hoursSince = (now - timestamp) / (1000 * 60 * 60);
+                
+                if (hoursSince >= 24) {
+                    const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+                    document.getElementById('fatePoints').value = newPoints;
+                    updateFateStorage(newPoints);
+                } else {
+                    document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
+                }
+            } else {
+                document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+                updateFateStorage(BASE_FATE_POINTS);
+            }
+        }
+
+        function updateFateStorage(points) {
+            const storageData = {
+                points: points || parseInt(document.getElementById('fatePoints').value),
+                timestamp: Date.now()
+            };
+            localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
+        }
+
+        function resetFormFields() {
+            document.getElementById('dc').value = '';
+            document.getElementById('modifier').value = '0';
+            document.getElementById('stepDownToggle').checked = false;
+            document.getElementById('changingLines').style.display = 'none';
+            document.getElementById('changingLines').innerHTML = '';
+        }
+
+        function startInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                resetFormFields();
+                document.getElementById('result').innerHTML = '';
+            }, INACTIVITY_TIMEOUT);
+        }
+        
         // Core Functions
         // ⚠️→ UPDATED TELEGRAM FUNCTION
         async function sendToTelegram(messageType, data) {
