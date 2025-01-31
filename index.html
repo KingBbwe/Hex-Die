@@ -1312,6 +1312,7 @@
     let shakeEnabled = false;
     let lastShake = 0;
     let inactivityTimer;
+    let shouldClearOnNextShake = false;
 
     // Core Functions
     function initializeFatePoints() {
@@ -1522,45 +1523,64 @@
         }
     }
 
-    function handleShake(event) {
-        if (!shakeEnabled) return;
-        const now = Date.now();
-        if (now - lastShake < shakeCooldown) return;
+// Modified handleShake function
+function handleShake(event) {
+    if (!shakeEnabled) return;
+    const now = Date.now();
+    if (now - lastShake < shakeCooldown) return;
 
-        const acceleration = event.accelerationIncludingGravity;
-        const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
+    const acceleration = event.accelerationIncludingGravity;
+    const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
 
-        if (magnitude > shakeThreshold) {
-            lastShake = now;
+    if (magnitude > shakeThreshold) {
+        lastShake = now;
+        
+        // Clear fields only after first shake
+        if (shouldClearOnNextShake) {
             resetFormFields();
-            rollDiceAndHexagram();
         }
+        
+        rollDiceAndHexagram();
+        
+        // Add haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(200); // 200ms vibration
+        }
+        
+        // Set flag for next clear
+        shouldClearOnNextShake = true;
     }
+}
 
-    function setupActivityListeners() {
-        const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', startInactivityTimer);
+// Modified setupActivityListeners to handle input changes
+function setupActivityListeners() {
+    const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+            shouldClearOnNextShake = false; // Reset clear flag on any input change
+            startInactivityTimer();
         });
+    });
 
-        const buttons = ['enableMotion', 'howToPlayBtn'];
-        buttons.forEach(id => {
-            document.getElementById(id).addEventListener('click', startInactivityTimer);
-        });
+    const buttons = ['enableMotion', 'howToPlayBtn'];
+    buttons.forEach(id => {
+        document.getElementById(id).addEventListener('click', startInactivityTimer);
+    });
 
-        document.querySelectorAll('.mode-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                startInactivityTimer();
-            });
+    document.querySelectorAll('.mode-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            shouldClearOnNextShake = false; // Reset clear flag on mode change
+            startInactivityTimer();
         });
+    });
 
-        document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
-        });
-    }
+    document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
+    });
+}
 
     // Initialize App
     initializeFatePoints();
