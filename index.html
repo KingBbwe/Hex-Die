@@ -1284,6 +1284,7 @@
     };
         
 const outcomeThresholds = {
+    4: { triumph: [4], conflict: [3,2], disaster: [1] },
         6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
         8: { triumph: [8,7], conflict: [6,5,4], disaster: [3,2,1] },
         12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
@@ -1296,12 +1297,13 @@ const outcomeThresholds = {
     };
 
     const stepDownConfig = {
-        6: [6, 2],
-        8: [6, 4],
-        12: [8, 8],
-        20: [12, 10],
-        100: [20, 20]
-    };
+    4: [4, 1],   // New d4 entry
+    6: [6, 2],
+    8: [6, 4],
+    12: [8, 8],
+    20: [12, 10],
+    100: [20, 20]
+};
 
         // Game State
         let currentHexagramNumber;
@@ -1501,7 +1503,9 @@ sendToTelegram('roll', {
     total: total,
     dc: document.getElementById('dc').value,
     outcome: outcome,
-    narrative: narrative
+    narrative: narrative,
+    stepDownUsed: stepDownUsed,  // Add this line
+    hexagramReduction: hexagramReduction  // Add this line
 });
 
             startInactivityTimer();
@@ -1564,6 +1568,15 @@ sendToTelegram('roll', {
                 });
             });
 
+// Update HTML select
+<select id="dieType">
+    <option value="4">d4</option>
+    <option value="6">d6</option>
+    <option value="8">d8</option>
+    <option value="12">d12</option>
+    <option value="20">d20</option>
+    <option value="100">d100</option>
+</select>
             document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 alert(`How to Play:
