@@ -1313,7 +1313,7 @@ const stepDownConfig = {
     let shakeEnabled = false;
     let lastShake = 0;
     let inactivityTimer;
-    let shouldClearOnNextShake = false;
+    let shouldClearOnNextRoll = false;
 
     // Core Functions
     function initializeFatePoints() {
@@ -1458,6 +1458,15 @@ async function sendToTelegram(messageType, data) {
     }
 
 function rollDiceAndHexagram() {
+        if (shouldClearOnNextRoll) {
+        resetFormFields();
+    }
+    if (navigator.vibrate) {
+        navigator.vibrate(100); // Shorter vibration for button press
+    }
+    
+    shouldClearOnNextRoll = true; // Set flag for next clear
+}
     const stepDownUsed = document.getElementById('stepDownToggle').checked;
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
@@ -1541,14 +1550,12 @@ function handleShake(event) {
     const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
 
     if (magnitude > shakeThreshold) {
-        lastShake = now;
-        
-        // Clear fields only after first shake
-        if (shouldClearOnNextShake) {
+        if (shouldClearOnNextRoll) {
             resetFormFields();
         }
         
-        rollDiceAndHexagram();
+        rollDiceAndHexagram(); // Now handles the clear flag internally
+        shouldClearOnNextRoll = true; // Maintain consistency
         
         // Add haptic feedback
         if (navigator.vibrate) {
@@ -1565,11 +1572,16 @@ function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
-            shouldClearOnNextShake = false; // Reset clear flag on any input change
+            shouldClearOnNextRoll = false; // Reset clear flag
             startInactivityTimer();
         });
     });
-
+}
+    document.getElementById('harmonizeButton').addEventListener('click', () => {
+        if (shouldClearOnNextRoll) {
+            resetFormFields();
+        }
+    });
     const buttons = ['enableMotion', 'howToPlayBtn'];
     buttons.forEach(id => {
         document.getElementById(id).addEventListener('click', startInactivityTimer);
@@ -1595,7 +1607,6 @@ function setupActivityListeners() {
     setupActivityListeners();
     startInactivityTimer();
     document.getElementById('dieType').value = '20';
-    document.getElementById('dc').value = '35';
     </script>
 </body>
 </html>
