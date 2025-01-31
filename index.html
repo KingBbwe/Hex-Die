@@ -224,15 +224,11 @@
             </div>
 
             <div class="input-group">
-    <label for="dieType">Die Type</label>
-    <select id="dieType">
-        <option value="4">d4</option>
-        <option value="6">d6</option>
-        <option value="8">d8</option>
-        <option value="12">d12</option>
-        <option value="20">d20</option>
-        <option value="100">d100</option>
-    </select>
+                <label for="dieType">Die Type</label>
+                <select id="dieType">
+                    <option value="6">d6</option>
+                    <option value="20">d20</option>
+                </select>
             </div>
 
             <div class="input-group">
@@ -264,15 +260,35 @@
     </main>
 
     <script>
-        // Configuration
-        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-        const chatId = '-1002185533073';
+        // Configuration ⚠️→ UPDATED TELEGRAM CONFIG
+        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with actual token
+        const chatId = '-1002185533073'; // Replace with actual chat ID
         const FATE_STORAGE_KEY = 'auldEweFatePoints';
         const MAX_FATE_POINTS = 5;
         const BASE_FATE_POINTS = 3;
         const INACTIVITY_TIMEOUT = 180000;
         const shakeThreshold = 15;
         const shakeCooldown = 1000;
+
+        // ⚠️→ ADD HEXAGRAM NAMES FIRST
+        const hexagramNames = {
+            1: 'The Creative', 2: 'The Receptive', 3: 'Difficulty at the Beginning', 
+            4: 'Youthful Folly', 5: 'Waiting', 6: 'Conflict', 7: 'Army', 8: 'Holding Together',
+            9: 'Small Taming', 10: 'Treading', 11: 'Peace', 12: 'Standstill',
+            13: 'Fellowship', 14: 'Great Possession', 15: 'Modesty', 16: 'Enthusiasm',
+            17: 'Following', 18: 'Work on the Decayed', 19: 'Approach', 20: 'Contemplation',
+            21: 'Biting Through', 22: 'Grace', 23: 'Splitting Apart', 24: 'Return',
+            25: 'Innocence', 26: 'Great Taming', 27: 'Nourishment', 28: 'Great Preponderance',
+            29: 'The Abysmal', 30: 'The Clinging', 31: 'Influence', 32: 'Duration',
+            33: 'Retreat', 34: 'Great Power', 35: 'Progress', 36: 'Darkening of the Light',
+            37: 'Family', 38: 'Opposition', 39: 'Obstruction', 40: 'Deliverance',
+            41: 'Decrease', 42: 'Increase', 43: 'Breakthrough', 44: 'Coming to Meet',
+            45: 'Gathering', 46: 'Pushing Upward', 47: 'Oppression', 48: 'The Well',
+            49: 'Revolution', 50: 'The Cauldron', 51: 'The Arousing', 52: 'Keeping Still',
+            53: 'Development', 54: 'The Marrying Maiden', 55: 'Abundance', 56: 'The Wanderer',
+            57: 'The Gentle', 58: 'The Joyous', 59: 'Dispersion', 60: 'Limitation',
+            61: 'Inner Truth', 62: 'Small Preponderance', 63: 'After Completion', 64: 'Before Completion'
+        };
 
         // Complete Game Data (64 hexagrams for each mode)
         const generalNarratives = {
@@ -1263,29 +1279,6 @@
             57: '001011', 58: '110001', 59: '100110', 60: '011011',
             61: '101001', 62: '110100', 63: '001101', 64: '010101'
         };
-
-        // Add this object after the hexagramLookup configuration
-    const hexagramNames = {
-        1: 'The Creative', 2: 'The Receptive', 3: 'Difficulty at the Beginning', 4: 'Youthful Folly',
-        5: 'Waiting', 6: 'Conflict', 7: 'Army', 8: 'Holding Together',
-        9: 'Small Taming', 10: 'Treading', 11: 'Peace', 12: 'Standstill',
-        13: 'Fellowship', 14: 'Great Possession', 15: 'Modesty', 16: 'Enthusiasm',
-        17: 'Following', 18: 'Work on the Decayed', 19: 'Approach', 20: 'Contemplation',
-        21: 'Biting Through', 22: 'Grace', 23: 'Splitting Apart', 24: 'Return',
-        25: 'Innocence', 26: 'Great Taming', 27: 'Nourishment', 28: 'Great Preponderance',
-        29: 'The Abysmal', 30: 'The Clinging', 31: 'Influence', 32: 'Duration',
-        33: 'Retreat', 34: 'Great Power', 35: 'Progress', 36: 'Darkening of the Light',
-        37: 'Family', 38: 'Opposition', 39: 'Obstruction', 40: 'Deliverance',
-        41: 'Decrease', 42: 'Increase', 43: 'Breakthrough', 44: 'Coming to Meet',
-        45: 'Gathering', 46: 'Pushing Upward', 47: 'Oppression', 48: 'The Well',
-        49: 'Revolution', 50: 'The Cauldron', 51: 'The Arousing', 52: 'Keeping Still',
-        53: 'Development', 54: 'The Marrying Maiden', 55: 'Abundance', 56: 'The Wanderer',
-        57: 'The Gentle', 58: 'The Joyous', 59: 'Dispersion', 60: 'Limitation',
-        61: 'Inner Truth', 62: 'Small Preponderance', 63: 'After Completion', 64: 'Before Completion'
-    };
-        
-
-
         // ⚠️→ UPDATED OUTCOME THRESHOLDS FOR ALL DICE
         const outcomeThresholds = {
             6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
@@ -1308,6 +1301,7 @@
             100: [20, 20]
         };
 
+        // Game State (keep original state variables)
                 // Game State
         let currentHexagramNumber;
         let currentHexagramLines = [];
@@ -1362,6 +1356,7 @@
             }, INACTIVITY_TIMEOUT);
         }
         
+
         // Core Functions
         // ⚠️→ UPDATED TELEGRAM FUNCTION
         async function sendToTelegram(messageType, data) {
@@ -1423,7 +1418,24 @@
             currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
             const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
             
-            // ... rest of original roll logic ...
+            const outcome = getOutcome(dieRoll, dieType);
+            const total = adjustedHex + dieRoll + parseInt(document.getElementById('modifier').value);
+
+            const narratives = getActiveNarratives();
+            const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
+
+            currentChangingLines = determineChangingLines();
+
+                document.getElementById('result').innerHTML = `
+        <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
+        <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
+        <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
+        <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
+        <strong>Modifier:</strong> ${document.getElementById('modifier').value}<br>
+        <strong>Total:</strong> ${total} vs DC ${document.getElementById('dc').value}<br>
+        <strong>Outcome:</strong> ${outcome}<br>
+        <strong>Narrative:</strong> ${narrative}
+    `;
 
             sendToTelegram('roll', {
                 originalHex: currentHexagramNumber,
