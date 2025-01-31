@@ -1306,60 +1306,60 @@ const stepDownConfig = {
     100: [20, 20]
 };
 
-// Game State
+//Game State
 let currentHexagramNumber;
 let currentHexagramLines = [];
 let currentChangingLines = [];
 let shakeEnabled = false;
 let lastShake = 0;
 let inactivityTimer;
-let shouldClearOnNextRoll = false;  // Only this clear flag
+let shouldClearOnNextRoll = false;
 
-    // Core Functions
-    function initializeFatePoints() {
-        const storedData = localStorage.getItem(FATE_STORAGE_KEY);
-        const now = Date.now();
+// Core Functions
+function initializeFatePoints() {
+    const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+    const now = Date.now();
 
-        if (storedData) {
-            const { points, timestamp } = JSON.parse(storedData);
-            const hoursSince = (now - timestamp) / (1000 * 60 * 60);
+    if (storedData) {
+        const { points, timestamp } = JSON.parse(storedData);
+        const hoursSince = (now - timestamp) / (1000 * 60 * 60);
 
-            if (hoursSince >= 24) {
-                const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
-                document.getElementById('fatePoints').value = newPoints;
-                updateFateStorage(newPoints);
-            } else {
-                document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
-            }
+        if (hoursSince >= 24) {
+            const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+            document.getElementById('fatePoints').value = newPoints;
+            updateFateStorage(newPoints);
         } else {
-            document.getElementById('fatePoints').value = BASE_FATE_POINTS;
-            updateFateStorage(BASE_FATE_POINTS);
+            document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
         }
+    } else {
+        document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+        updateFateStorage(BASE_FATE_POINTS);
     }
+}
 
-    function updateFateStorage(points) {
-        const storageData = {
-            points: points || parseInt(document.getElementById('fatePoints').value),
-            timestamp: Date.now()
-        };
-        localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
-    }
+function updateFateStorage(points) {
+    const storageData = {
+        points: points || parseInt(document.getElementById('fatePoints').value),
+        timestamp: Date.now()
+    };
+    localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
+}
 
-    function resetFormFields() {
-        document.getElementById('dc').value = '';
-        document.getElementById('modifier').value = '0';
-        document.getElementById('stepDownToggle').checked = false;
-        document.getElementById('changingLines').style.display = 'none';
-        document.getElementById('changingLines').innerHTML = '';
-    }
+function resetFormFields() {
+    document.getElementById('dc').value = '';
+    document.getElementById('modifier').value = '0';
+    document.getElementById('stepDownToggle').checked = false;
+    document.getElementById('changingLines').style.display = 'none';
+    document.getElementById('changingLines').innerHTML = '';
+}
 
-    function startInactivityTimer() {
-        clearTimeout(inactivityTimer);
-        inactivityTimer = setTimeout(() => {
-            resetFormFields();
-            document.getElementById('result').innerHTML = '';
-        }, INACTIVITY_TIMEOUT);
-    }
+function startInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        resetFormFields();
+        document.getElementById('result').innerHTML = '';
+    }, INACTIVITY_TIMEOUT);
+}
 
 async function sendToTelegram(messageType, data) {
     if (!telegramBotToken || !chatId || telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') return;
@@ -1385,7 +1385,6 @@ async function sendToTelegram(messageType, data) {
             break;
     }
 
-
     try {
         const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
             method: 'POST',
@@ -1402,60 +1401,60 @@ async function sendToTelegram(messageType, data) {
     }
 }
 
-    function addFatePoint() {
-        const current = parseInt(document.getElementById('fatePoints').value);
-        if (current < MAX_FATE_POINTS) {
-            const newValue = current + 1;
-            document.getElementById('fatePoints').value = newValue;
-            updateFateStorage(newValue);
-            sendToTelegram('fate', { points: newValue });
-        }
+function addFatePoint() {
+    const current = parseInt(document.getElementById('fatePoints').value);
+    if (current < MAX_FATE_POINTS) {
+        const newValue = current + 1;
+        document.getElementById('fatePoints').value = newValue;
+        updateFateStorage(newValue);
+        sendToTelegram('fate', { points: newValue });
+    }
+    startInactivityTimer();
+}
+
+function generateHexagramLines(hexagramNumber) {
+    const binary = hexagramLookup[hexagramNumber];
+    return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
+}
+
+function determineChangingLines() {
+    return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
+}
+
+function getActiveNarratives() {
+    const activeMode = document.querySelector('.mode-button.active').id;
+    return {
+        personalMode: personalNarratives,
+        generalMode: generalNarratives,
+        actionMode: actionNarratives
+    }[activeMode];
+}
+
+function getOutcome(dieRoll, dieType) {
+    const thresholds = outcomeThresholds[dieType];
+    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+    return 'Disaster';
+}
+
+function showChangingLines() {
+    const fatePoints = parseInt(document.getElementById('fatePoints').value);
+    if (fatePoints < 1) {
+        alert("Not enough Fate Points!");
+        return;
+    }
+
+    if (confirm("This action costs 1 Fate Point\nProceed?")) {
+        document.getElementById('fatePoints').value = fatePoints - 1;
+        document.getElementById('changingLines').style.display = 'block';
+        document.getElementById('changingLines').innerHTML = `
+            <strong>Changing Lines:</strong>
+            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
+        `;
+        updateFateStorage();
         startInactivityTimer();
     }
-
-    function generateHexagramLines(hexagramNumber) {
-        const binary = hexagramLookup[hexagramNumber];
-        return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
-    }
-
-    function determineChangingLines() {
-        return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
-    }
-
-    function getActiveNarratives() {
-        const activeMode = document.querySelector('.mode-button.active').id;
-        return {
-            personalMode: personalNarratives,
-            generalMode: generalNarratives,
-            actionMode: actionNarratives
-        }[activeMode];
-    }
-
-    function getOutcome(dieRoll, dieType) {
-        const thresholds = outcomeThresholds[dieType];
-        if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-        if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-        return 'Disaster';
-    }
-
-    function showChangingLines() {
-        const fatePoints = parseInt(document.getElementById('fatePoints').value);
-        if (fatePoints < 1) {
-            alert("Not enough Fate Points!");
-            return;
-        }
-
-        if (confirm("This action costs 1 Fate Point\nProceed?")) {
-            document.getElementById('fatePoints').value = fatePoints - 1;
-            document.getElementById('changingLines').style.display = 'block';
-            document.getElementById('changingLines').innerHTML = `
-                <strong>Changing Lines:</strong>
-                ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
-            `;
-            updateFateStorage();
-            startInactivityTimer();
-        }
-    }
+}
 
 function rollDiceAndHexagram() {
     if (shouldClearOnNextRoll) {
@@ -1490,7 +1489,6 @@ function rollDiceAndHexagram() {
 
     currentChangingLines = determineChangingLines();
 
-    // Haptic feedback
     if (navigator.vibrate) {
         navigator.vibrate(100);
     }
@@ -1524,24 +1522,23 @@ function rollDiceAndHexagram() {
     startInactivityTimer();
 }
 
-    function enableShakeDetection() {
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            DeviceMotionEvent.requestPermission()
-                .then(permission => {
-                    if (permission === 'granted') {
-                        window.addEventListener('devicemotion', handleShake);
-                        shakeEnabled = true;
-                        document.getElementById('shakeStatus').textContent = 'Shake detection enabled!';
-                    }
-                });
-        } else {
-            window.addEventListener('devicemotion', handleShake);
-            shakeEnabled = true;
-            document.getElementById('shakeStatus').textContent = 'Shake to roll!';
-        }
+function enableShakeDetection() {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(permission => {
+                if (permission === 'granted') {
+                    window.addEventListener('devicemotion', handleShake);
+                    shakeEnabled = true;
+                    document.getElementById('shakeStatus').textContent = 'Shake detection enabled!';
+                }
+            });
+    } else {
+        window.addEventListener('devicemotion', handleShake);
+        shakeEnabled = true;
+        document.getElementById('shakeStatus').textContent = 'Shake to roll!';
     }
+}
 
-// Modified handleShake function
 function handleShake(event) {
     if (!shakeEnabled) return;
     const now = Date.now();
@@ -1567,7 +1564,6 @@ function handleShake(event) {
     }
 }
 
-// Modified setupActivityListeners to handle input changes
 function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
@@ -1591,7 +1587,6 @@ function setupActivityListeners() {
         alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
     });
 
-    // Add click handler for Harmonize button
     document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
         if (shouldClearOnNextRoll) {
             resetFormFields();
@@ -1599,17 +1594,12 @@ function setupActivityListeners() {
     });
 }
 
-    document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
-    });
-}
+// Initialize App
+initializeFatePoints();
+setupActivityListeners();
+startInactivityTimer();
+document.getElementById('dieType').value = '20';
 
-    // Initialize App
-    initializeFatePoints();
-    setupActivityListeners();
-    startInactivityTimer();
-    document.getElementById('dieType').value = '20';
     </script>
 </body>
 </html>
