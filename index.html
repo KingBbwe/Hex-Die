@@ -1306,14 +1306,14 @@ const stepDownConfig = {
     100: [20, 20]
 };
 
-    // Game State
-    let currentHexagramNumber;
-    let currentHexagramLines = [];
-    let currentChangingLines = [];
-    let shakeEnabled = false;
-    let lastShake = 0;
-    let inactivityTimer;
-    let shouldClearOnNextRoll = false;
+// Game State
+let currentHexagramNumber;
+let currentHexagramLines = [];
+let currentChangingLines = [];
+let shakeEnabled = false;
+let lastShake = 0;
+let inactivityTimer;
+let shouldClearOnNextRoll = false;  // Only this clear flag
 
     // Core Functions
     function initializeFatePoints() {
@@ -1458,15 +1458,10 @@ async function sendToTelegram(messageType, data) {
     }
 
 function rollDiceAndHexagram() {
-        if (shouldClearOnNextRoll) {
+    if (shouldClearOnNextRoll) {
         resetFormFields();
     }
-    if (navigator.vibrate) {
-        navigator.vibrate(100); // Shorter vibration for button press
-    }
     
-    shouldClearOnNextRoll = true; // Set flag for next clear
-}
     const stepDownUsed = document.getElementById('stepDownToggle').checked;
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
@@ -1482,46 +1477,52 @@ function rollDiceAndHexagram() {
         }
     }
 
-        currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
-        currentHexagramLines = generateHexagramLines(currentHexagramNumber);
-        const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
+    currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
+    currentHexagramLines = generateHexagramLines(currentHexagramNumber);
+    const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
 
-        const dieRoll = Math.floor(Math.random() * dieType) + 1;
-        const outcome = getOutcome(dieRoll, dieType);
-        const total = adjustedHex + dieRoll + mod;
+    const dieRoll = Math.floor(Math.random() * dieType) + 1;
+    const outcome = getOutcome(dieRoll, dieType);
+    const total = adjustedHex + dieRoll + mod;
 
-        const narratives = getActiveNarratives();
-        const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
+    const narratives = getActiveNarratives();
+    const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-        currentChangingLines = determineChangingLines();
+    currentChangingLines = determineChangingLines();
 
-        document.getElementById('result').innerHTML = `
-            <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
-            <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
-            <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
-            <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
-            <strong>Modifier:</strong> ${mod}<br>
-            <strong>Total:</strong> ${total} vs DC ${dc}<br>
-            <strong>Outcome:</strong> ${outcome}<br>
-            <strong>Narrative:</strong> ${narrative}
-        `;
-
-        sendToTelegram('roll', {
-            originalDieType: originalDieType,  // Add this line
-            originalHexagram: currentHexagramNumber,
-            adjustedHexagram: adjustedHex,
-            dieType: dieType,
-            dieRoll: dieRoll,
-            total: total,
-            dc: dc,
-            outcome: outcome,
-            narrative: narrative,
-            stepDownUsed: stepDownUsed,
-            hexagramReduction: hexagramReduction
-        });
-
-        startInactivityTimer();
+    // Haptic feedback
+    if (navigator.vibrate) {
+        navigator.vibrate(100);
     }
+
+    document.getElementById('result').innerHTML = `
+        <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
+        <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
+        <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
+        <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
+        <strong>Modifier:</strong> ${mod}<br>
+        <strong>Total:</strong> ${total} vs DC ${dc}<br>
+        <strong>Outcome:</strong> ${outcome}<br>
+        <strong>Narrative:</strong> ${narrative}
+    `;
+
+    sendToTelegram('roll', {
+        originalDieType: originalDieType,
+        originalHexagram: currentHexagramNumber,
+        adjustedHexagram: adjustedHex,
+        dieType: dieType,
+        dieRoll: dieRoll,
+        total: total,
+        dc: dc,
+        outcome: outcome,
+        narrative: narrative,
+        stepDownUsed: stepDownUsed,
+        hexagramReduction: hexagramReduction
+    });
+
+    shouldClearOnNextRoll = true;
+    startInactivityTimer();
+}
 
     function enableShakeDetection() {
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -1550,20 +1551,19 @@ function handleShake(event) {
     const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
 
     if (magnitude > shakeThreshold) {
+        lastShake = now;
+        
         if (shouldClearOnNextRoll) {
             resetFormFields();
         }
         
-        rollDiceAndHexagram(); // Now handles the clear flag internally
-        shouldClearOnNextRoll = true; // Maintain consistency
+        rollDiceAndHexagram();
         
-        // Add haptic feedback
         if (navigator.vibrate) {
-            navigator.vibrate(200); // 200ms vibration
+            navigator.vibrate(200);
         }
         
-        // Set flag for next clear
-        shouldClearOnNextShake = true;
+        shouldClearOnNextRoll = true;
     }
 }
 
@@ -1572,29 +1572,32 @@ function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
-            shouldClearOnNextRoll = false; // Reset clear flag
+            shouldClearOnNextRoll = false;
             startInactivityTimer();
         });
-    });
-}
-    document.getElementById('harmonizeButton').addEventListener('click', () => {
-        if (shouldClearOnNextRoll) {
-            resetFormFields();
-        }
-    });
-    const buttons = ['enableMotion', 'howToPlayBtn'];
-    buttons.forEach(id => {
-        document.getElementById(id).addEventListener('click', startInactivityTimer);
     });
 
     document.querySelectorAll('.mode-button').forEach(button => {
         button.addEventListener('click', () => {
             document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            shouldClearOnNextShake = false; // Reset clear flag on mode change
+            shouldClearOnNextRoll = false;
             startInactivityTimer();
         });
     });
+
+    document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
+    });
+
+    // Add click handler for Harmonize button
+    document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
+        if (shouldClearOnNextRoll) {
+            resetFormFields();
+        }
+    });
+}
 
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
