@@ -1533,16 +1533,18 @@ sendToTelegram('roll', {
             }
         }
 
+// Modified shake handler
         function handleShake(event) {
-            const acceleration = event.accelerationIncludingGravity;
-            const strength = Math.sqrt(
-                acceleration.x ** 2 + 
-                acceleration.y ** 2 + 
-                acceleration.z ** 2
-            );
+            if (!shakeEnabled) return;
+            const now = Date.now();
+            if (now - lastShake < shakeCooldown) return;
 
-            if (strength > shakeThreshold && Date.now() - lastShake > shakeCooldown) {
-                lastShake = Date.now();
+            const acceleration = event.accelerationIncludingGravity;
+            const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
+
+            if (magnitude > shakeThreshold) {
+                lastShake = now;
+                resetFormFields();
                 rollDiceAndHexagram();
             }
         }
@@ -1559,18 +1561,21 @@ sendToTelegram('roll', {
             });
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFatePoints();
-            setupActivityListeners();
-            startInactivityTimer();
             
-            document.querySelectorAll('.mode-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
+        document.querySelectorAll('.mode-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                startInactivityTimer();
             });
+        });
+
+                // Start the app
+        initializeFatePoints();
+        setupActivityListeners();
+        startInactivityTimer();
+        document.getElementById('dieType').value = '20';
+        document.getElementById('dc').value = '35';
 
             document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
                 e.preventDefault();
