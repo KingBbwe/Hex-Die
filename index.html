@@ -312,6 +312,23 @@
     opacity: 0.8; /* Slightly faded */
     margin-top: 0.5rem;
 }
+
+        .legendary-feat {
+    color: #ffd700;
+    font-weight: bold;
+    padding: 1rem;
+    border: 2px solid #ffd700;
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+    text-align: center;
+    animation: pulse-gold 1s infinite;
+}
+
+@keyframes pulse-gold {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
     </style>
 </head>
 <body>
@@ -1622,20 +1639,23 @@ async function sendToTelegram(messageType, data) {
                telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
                break;
            
-           case 'roll':
-               telegramMessage = 
-                   `✨ *Harmonized Hex & Die* ✨\n` +
-                   `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                   `👤 *Player*: ${playerName}\n` +
-                   `🌌 *Hexagram*: ${data.originalHexagram}\n` +
-                   `🎲 *Die*: ${data.stepDownUsed ? `d${data.originalDieType} → (d${data.dieType}) ` : `d${data.dieType} → `}${data.dieRoll}\n` +
-                   (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
-                   `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
-                   `📜 *Outcome*: ${data.outcome}\n` +
-                   `🔮 ${data.narrative.substring(0, 100)}...\n` +
-                   `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                   `#AuldEwe #FateCast`;
-               break;
+// Modified roll case in sendToTelegram
+case 'roll':
+    const originalOutcome = getOutcome(data.dieRoll, data.dieType);
+    const finalOutcome = getOutcome(data.total - data.adjustedHexagram, data.dieType, true);
+    
+    telegramMessage = 
+        `✨ *Harmonized Hex & Die* ✨\n` +
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `🌌 Hexagram: ${data.originalHexagram}\n` +
+        `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
+        (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
+        `📊 Total: ${data.total} (DC: ${data.dc})\n` +
+        `📜 Outcome: ${originalOutcome}${originalOutcome !== finalOutcome ? ` → ${finalOutcome}` : ''}\n` +
+        `🔮 ${data.narrative.substring(0, 100)}...\n` +
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `#AuldEwe #FateCast`;
+    break;
        }
 
        try {
@@ -1670,8 +1690,38 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLines() {
-    return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
+// Add scaling configuration        
+const scalingTable = {
+    6: [1, 2, 3, 4, 5, 6],
+    8: [1, 2, 3, 4, 5, 8],
+    10: [1, 2, 4, 5, 8, 10],
+    12: [2, 4, 6, 8, 10, 12],
+    20: [3, 6, 10, 13, 16, 20],
+    100: [16, 33, 50, 66, 83, 100]
+};
+        
+// Modified determineChangingLines function
+function determineChangingLines(originalDieType, originalRoll) {
+    const lines = [];
+    const scaledValues = [];
+    
+    Array.from({ length: 6 }).forEach((_, i) => {
+        if (Math.random() < 0.25) {
+            const lineNumber = i + 1;
+            const d6Roll = Math.floor(Math.random() * 6) + 1;
+            const scaledValue = scalingTable[originalDieType][d6Roll - 1];
+            
+            lines.push(lineNumber);
+            scaledValues.push({
+                line: lineNumber,
+                original: originalRoll,
+                scaled: scaledValue,
+                dieType: originalDieType
+            });
+        }
+    });
+
+    return { lines, scaledValues };
 }
 
 function getActiveNarratives() {
@@ -1683,13 +1733,18 @@ function getActiveNarratives() {
     }[activeMode];
 }
 
-function getOutcome(dieRoll, dieType) {
+// Modified getOutcome function
+function getOutcome(roll, dieType, isScaled = false) {
     const thresholds = outcomeThresholds[dieType];
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
-}
+    let outcome;
+    
+    if (thresholds.triumph.includes(roll)) outcome = 'Triumph';
+    else if (thresholds.conflict.includes(roll)) outcome = 'Conflict';
+    else outcome = 'Disaster';
 
+    // Special case for scaled Triumph from Disaster
+    return isScaled && outcome === 'Triumph' ? 'Success' : outcome;
+}
 function showChangingLines() {
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
@@ -1697,6 +1752,17 @@ function showChangingLines() {
         return;
     }
 
+const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
+    const originalOutcome = getOutcome(scaled.original, scaled.dieType);
+    const newOutcome = getOutcome(scaled.scaled, scaled.dieType, true);
+    
+    return `${scaled.line} (${originalOutcome} → ${newOutcome})`;
+});
+
+document.getElementById('changingLines').innerHTML = `
+    <strong>Changing Lines:</strong><br>
+    ${scaledOutcomes.join('<br>')}
+`;
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
@@ -1737,6 +1803,19 @@ function rollDiceAndHexagram() {
     const outcome = getOutcome(dieRoll, dieType);
     const total = adjustedHex + dieRoll + mod;
 
+    // Add to rollDiceAndHexagram function after outcome determination
+const dc = parseInt(document.getElementById('dc').value) || 0;
+if (outcome === 'Triumph' && total >= dc) {
+    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    sendToTelegram('legendary', { message: legendaryMessage });
+}
+
+// Add to sendToTelegram switch statement
+case 'legendary':
+    telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
+    break;
+    
     const narratives = getActiveNarratives();
     const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
