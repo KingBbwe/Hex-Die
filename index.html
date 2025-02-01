@@ -1307,6 +1307,7 @@ const stepDownConfig = {
 };
 
 //Game State
+
 let currentHexagramNumber;
 let currentHexagramLines = [];
 let currentChangingLines = [];
@@ -1314,6 +1315,13 @@ let shakeEnabled = false;
 let lastShake = 0;
 let inactivityTimer;
 let shouldClearOnNextRoll = false;
+// Game State (add these)
+let shakeStartTime = 0;
+let lastShakeTime = 0;
+let shakeTimeout = null;
+const MIN_SHAKE_DURATION = 2000;  // 2 seconds
+const SHAKE_END_TIMEOUT = 500;    // 500ms
+const MAX_VIBRATION = 200;        // ms
 
 // Core Functions
 function initializeFatePoints() {
@@ -1539,28 +1547,75 @@ function enableShakeDetection() {
     }
 }
 
+// Add to game state variables
+let shakeStartTime = 0;
+let lastShakeTime = 0;
+let shakeTimeout = null;
+const MIN_SHAKE_DURATION = 2000; // 2 seconds
+const SHAKE_END_TIMEOUT = 500; // 500ms pause considered end of shake
+const MAX_VIBRATION = 200; // ms
+
+// Modified handleShake function
 function handleShake(event) {
     if (!shakeEnabled) return;
     const now = Date.now();
+    
+    // Only process if we're below cooldown threshold
     if (now - lastShake < shakeCooldown) return;
 
     const acceleration = event.accelerationIncludingGravity;
-    const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
+    const magnitude = Math.sqrt(
+        acceleration.x**2 + 
+        acceleration.y**2 + 
+        acceleration.z**2
+    );
 
     if (magnitude > shakeThreshold) {
+        // Update last shake timestamp
         lastShake = now;
-        
-        if (shouldClearOnNextRoll) {
-            resetFormFields();
+
+        // Start tracking shake duration if new sequence
+        if (!shakeStartTime) {
+            shakeStartTime = now;
+            document.getElementById('shakeStatus').textContent = "Shaking detected...";
         }
+
+        // Reset the end detection timeout
+        if (shakeTimeout) clearTimeout(shakeTimeout);
         
-        rollDiceAndHexagram();
-        
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
-        }
-        
-        shouldClearOnNextRoll = true;
+        // Set timeout to detect shake end
+        shakeTimeout = setTimeout(() => {
+            const duration = now - shakeStartTime;
+            
+            // Only trigger if minimum duration met
+            if (duration >= MIN_SHAKE_DURATION) {
+                if (shouldClearOnNextRoll) {
+                    resetFormFields();
+                }
+                
+                rollDiceAndHexagram();
+                
+                // Extended vibration for success
+                if (navigator.vibrate) {
+                    navigator.vibrate([
+                        MAX_VIBRATION, // Initial vibration
+                        50,            // Pause
+                        MAX_VIBRATION/2 // Confirm vibration
+                    ]);
+                }
+                
+                document.getElementById('shakeStatus').textContent = "Roll completed!";
+                shouldClearOnNextRoll = true;
+            } else {
+                document.getElementById('shakeStatus').textContent = "Shake harder! (2+ seconds)";
+            }
+            
+            // Reset tracking
+            shakeStartTime = 0;
+            lastShakeTime = 0;
+            shakeTimeout = null;
+            
+        }, SHAKE_END_TIMEOUT);
     }
 }
 
