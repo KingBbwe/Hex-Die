@@ -1309,10 +1309,11 @@ const stepDownConfig = {
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
 let currentChangingLines = [];
+// Shake State
 let shakeEnabled = false;
 let isShaking = false;
 let shakeStartTime = 0;
-let shakeTimeout = null;
+let lastShakeTime = 0; // Add this if not already present
 let inactivityTimer;
 let shouldClearOnNextRoll = false;
 
@@ -1532,21 +1533,22 @@ function rollDiceAndHexagram() {
 }
 
 
+
 // Modified handleShake function
 function handleShake(event) {
     if (!shakeEnabled) return;
-    
+
     const now = Date.now();
     const acceleration = event.accelerationIncludingGravity;
     const magnitude = Math.sqrt(
-        acceleration.x**2 + 
-        acceleration.y**2 + 
-        acceleration.z**2
+        acceleration.x ** 2 +
+        acceleration.y ** 2 +
+        acceleration.z ** 2
     );
 
-    // Check if we're above shake threshold
+    // Check if we're above the shake threshold
     if (magnitude > SHAKE_THRESHOLD) {
-        // Start shake sequence if not already shaking
+        // Start tracking shake duration if not already shaking
         if (!isShaking) {
             isShaking = true;
             shakeStartTime = now;
@@ -1558,51 +1560,50 @@ function handleShake(event) {
             }
         }
 
-        // Reset the shake timeout
-        if (shakeTimeout) clearTimeout(shakeTimeout);
-        shakeTimeout = setTimeout(endShake, SHAKE_END_TIMEOUT);
+        // Reset the cooldown timer
+        lastShakeTime = now;
     }
-}
 
-function endShake() {
-    const now = Date.now();
-    const duration = now - shakeStartTime;
-    
-    if (duration >= MIN_SHAKE_DURATION) {
-        // Successful shake
-        if (shouldClearOnNextRoll) {
-            resetFormFields();
+    // Check if shaking has stopped
+    if (isShaking && now - lastShakeTime > SHAKE_END_TIMEOUT) {
+        const shakeDuration = now - shakeStartTime;
+
+        if (shakeDuration >= MIN_SHAKE_DURATION) {
+            // Successful shake
+            if (shouldClearOnNextRoll) {
+                resetFormFields();
+            }
+
+            rollDiceAndHexagram();
+
+            // Success vibration feedback
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 50, 100]);
+            }
+
+            document.getElementById('shakeStatus').textContent = "Roll completed!";
+            shouldClearOnNextRoll = true;
+        } else {
+            // Insufficient shake duration
+            document.getElementById('shakeStatus').textContent = "Shake harder! (2+ seconds)";
+
+            // Feedback for insufficient shake
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
+            }
         }
-        
-        rollDiceAndHexagram();
-        
-        // Success vibration feedback
-        if (navigator.vibrate) {
-            navigator.vibrate([200, 50, 100]);
-        }
-        
-        document.getElementById('shakeStatus').textContent = "Roll completed!";
-        shouldClearOnNextRoll = true;
-    } else {
-        // Insufficient shake duration
-        document.getElementById('shakeStatus').textContent = "Shake harder! (2+ seconds)";
-        
-        // Feedback for insufficient shake
-        if (navigator.vibrate) {
-            navigator.vibrate(100);
-        }
+
+        // Reset shake state
+        isShaking = false;
+        shakeStartTime = 0;
     }
-    
-    // Reset shake state
-    isShaking = false;
-    shakeStartTime = 0;
-    shakeTimeout = null;
 }
 
 // Modified enableShakeDetection function
 function enableShakeDetection() {
     if (typeof DeviceMotionEvent !== 'undefined') {
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            // iOS 13+ devices
             DeviceMotionEvent.requestPermission()
                 .then(permission => {
                     if (permission === 'granted') {
@@ -1613,9 +1614,12 @@ function enableShakeDetection() {
                         document.getElementById('shakeStatus').textContent = 'Shake permission denied';
                     }
                 })
-                .catch(console.error);
+                .catch(error => {
+                    console.error('Error requesting motion permission:', error);
+                    document.getElementById('shakeStatus').textContent = 'Error enabling shake detection';
+                });
         } else {
-            // Non-iOS 13+ devices
+            // Non-iOS devices
             window.addEventListener('devicemotion', handleShake);
             shakeEnabled = true;
             document.getElementById('shakeStatus').textContent = 'Shake to roll!';
