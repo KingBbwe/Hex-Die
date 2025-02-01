@@ -1309,19 +1309,6 @@ const stepDownConfig = {
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
 let currentChangingLines = [];
-// Shake State
-let shakeEnabled = false;
-let isShaking = false;
-let shakeStartTime = 0;
-let lastShakeTime = 0; // Add this if not already present
-let inactivityTimer;
-let shouldClearOnNextRoll = false;
-
-// Shake Configuration
-const MIN_SHAKE_DURATION = 2000;
-const SHAKE_END_TIMEOUT = 500;
-const SHAKE_THRESHOLD = 15;
-const SHAKE_COOLDOWN = 1000;
 
 
 
@@ -1532,7 +1519,19 @@ function rollDiceAndHexagram() {
     startInactivityTimer();
 }
 
+// Shake State
+let shakeEnabled = false;
+let isShaking = false;
+let shakeStartTime = 0;
+let lastShakeTime = 0; // Add this if not already present
+let inactivityTimer;
+let shouldClearOnNextRoll = false;
 
+// Shake Configuration
+const MIN_SHAKE_DURATION = 2000;
+const SHAKE_END_TIMEOUT = 500;
+const SHAKE_THRESHOLD = 15;
+const SHAKE_COOLDOWN = 1000;
 
 // Modified handleShake function
 function handleShake(event) {
