@@ -1530,7 +1530,7 @@ let currentChangingLines = [];
            "2. Type /start in the group\n" +
            "3. Look for 'Chat ID' in the bot's response\n" +
            "4. Remove the bot after getting the ID\n\n" +
-           "Note: Make sure to add the AuldEwe bot to your group as well!"
+           "Note: Make sure to add the HexAndDieBot bot to your group as well!"
        );
    }
 
@@ -1643,7 +1643,10 @@ async function sendToTelegram(messageType, data) {
 case 'roll':
     const originalOutcome = getOutcome(data.dieRoll, data.dieType);
     const finalOutcome = getOutcome(data.total - data.adjustedHexagram, data.dieType, true);
-    
+        switch(messageType) {
+        case 'fate':
+            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+            break;
     telegramMessage = 
         `✨ *Harmonized Hex & Die* ✨\n` +
         `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
@@ -1656,6 +1659,10 @@ case 'roll':
         `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
         `#AuldEwe #FateCast`;
     break;
+            case 'legendary':
+            telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
+            break;            
+
        }
 
        try {
@@ -1750,6 +1757,12 @@ function showChangingLines() {
     if (fatePoints < 1) {
         alert("Not enough Fate Points!");
         return;
+        document.getElementById('changingLines').innerHTML = `
+    <strong>Changing Lines:</strong><br>
+    ${currentChangingLines.scaledValues.map(scaled => 
+        `${scaled.line} (${getOutcome(scaled.original, scaled.dieType)} → ${getOutcome(scaled.scaled, scaled.dieType, true)})`
+    ).join('<br>')}
+`;
     }
 
 const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
@@ -1804,22 +1817,17 @@ function rollDiceAndHexagram() {
     const total = adjustedHex + dieRoll + mod;
 
     // Add to rollDiceAndHexagram function after outcome determination
-const dc = parseInt(document.getElementById('dc').value) || 0;
+
 if (outcome === 'Triumph' && total >= dc) {
     const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
     document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
     sendToTelegram('legendary', { message: legendaryMessage });
 }
 
-// Add to sendToTelegram switch statement
-case 'legendary':
-    telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
-    break;
-    
     const narratives = getActiveNarratives();
     const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-    currentChangingLines = determineChangingLines();
+    currentChangingLines = determineChangingLines(originalDieType, dieRoll);  // Add parameters
 
     if (navigator.vibrate) {
         navigator.vibrate(100);
@@ -1835,6 +1843,11 @@ case 'legendary':
         <strong>Outcome:</strong> ${outcome}<br>
         <strong>Narrative:</strong> ${narrative}
     `;
+if (outcome === 'Triumph' && total >= dc) {
+    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    sendToTelegram('legendary', { message: legendaryMessage });
+}
 
     sendToTelegram('roll', {
         originalDieType: originalDieType,
@@ -1871,8 +1884,9 @@ const SHAKE_COOLDOWN = 1000;
 // Modified handleShake function
 function handleShake(event) {
     if (!shakeEnabled) return;
-
     const now = Date.now();
+   if (now - lastShake < SHAKE_COOLDOWN) return;
+
     const acceleration = event.accelerationIncludingGravity;
     const magnitude = Math.sqrt(
         acceleration.x ** 2 +
@@ -1997,7 +2011,7 @@ function setupActivityListeners() {
 initializeFatePoints();
 setupActivityListeners();
 startInactivityTimer();
-document.getElementById('dieType').value = '6';
+document.getElementById('dieType').value = '20';
 
 // Add shake status element if not already in HTML
 if (!document.getElementById('shakeStatus')) {
