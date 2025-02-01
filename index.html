@@ -266,15 +266,15 @@
         // Configuration ⚠️→ UPDATED TELEGRAM CONFIG
         const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with actual token
         const chatId = '-1002185533073'; // Replace with actual chat ID
-        const FATE_STORAGE_KEY = 'auldEweFatePoints';  // Using original key
-        const MAX_FATE_POINTS = 5;                     // Using original value
+        const FATE_STORAGE_KEY = 'auldEweFatePoints';
+        const MAX_FATE_POINTS = 5;
         const BASE_FATE_POINTS = 3;
-        const INACTIVITY_TIMEOUT = 180000;             // Using original 3-minute timeout
-        const MIN_SHAKE_DURATION = 2000;               // 2 seconds
-        const SHAKE_END_TIMEOUT = 500;                 // 500ms
-        const MAX_VIBRATION = 200;                     // ms
-        const shakeCooldown = 1000;                    // Using original 1-second cooldown
-        const shakeThreshold = 15;                     // acceleration threshold
+        const INACTIVITY_TIMEOUT = 180000;     // 3 minutes
+        const MIN_SHAKE_DURATION = 2000;       // 2 seconds
+        const SHAKE_END_TIMEOUT = 500;         // 500ms
+        const MAX_VIBRATION = 200;             // ms
+        const shakeCooldown = 1000;            // 1 second cooldown
+        const shakeThreshold = 15;
 
         // ⚠️→ ADD HEXAGRAM NAMES FIRST
         const hexagramNames = {
@@ -1309,9 +1309,6 @@ const stepDownConfig = {
     100: [20, 20]
 };
 
-//Game State
-
-
 
 // Game State
 let currentHexagramNumber = null;      // Tracks current hexagram
@@ -1324,7 +1321,6 @@ let shakeTimeout = null;              // Timeout for shake detection
 let inactivityTimer;                  // Timer for clearing form
 let shouldClearOnNextRoll = false;    // Flag to reset form on next roll
 
-// Removing lastShakeTime as it's redundant with lastShake
 
 // Core Functions
 function initializeFatePoints() {
