@@ -192,6 +192,62 @@
         width: auto !important;
         padding: 0.5rem 1rem !important;
     }
+    
+            .chat-manager-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid #ccc;
+}
+
+.chat-manager-details {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.chat-setup-form,
+.player-setup-form {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.input-group {
+    margin: 1rem 0;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#gmCodeDisplay {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #e0f7fa;
+    border-radius: 4px;
+}
+
+#gmCodeText {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #0277bd;
+}
+
+.instructions {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
     </style>
 </head>
 <body>
@@ -1358,8 +1414,46 @@ function startInactivityTimer() {
     }, INACTIVITY_TIMEOUT);
 }
 
-async function sendToTelegram(messageType, data) {
-    if (!telegramBotToken || !chatId || telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') return;
+// Constants for Chat Management
+const CHAT_STORAGE_KEY = 'fateGameChats';
+const DEFAULT_CHAT_ID = 'your_default_chat_id'; // Your PlayTest group
+
+// Data structure for storing chat configurations
+class ChatConfig {
+    constructor(name, chatId, gmCode) {
+        this.name = name;
+        this.chatId = chatId;
+        this.gmCode = gmCode;
+        this.createdAt = Date.now();
+        this.players = [];
+    }
+}
+
+// Chat Management Functions
+function generateGMCode() {
+    return 'GM_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
+
+function saveNewChat(name, chatId) {
+    const gmCode = generateGMCode();
+    const chatConfig = new ChatConfig(name, chatId, gmCode);
+    
+    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    chats[gmCode] = chatConfig;
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
+    
+    return gmCode;
+}
+
+function getActiveChatId(gmCode) {
+    const chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    return chats[gmCode]?.chatId || DEFAULT_CHAT_ID;
+}
+
+// Modified sendToTelegram function
+async function sendToTelegram(messageType, data, gmCode = null) {
+    const activeChatId = getActiveChatId(gmCode);
+    if (!telegramBotToken || !activeChatId) return;
 
     let telegramMessage;
     switch(messageType) {
@@ -1371,6 +1465,8 @@ async function sendToTelegram(messageType, data) {
             telegramMessage = 
                 `✨ *Harmonized Hex & Die* ✨\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `🎲 *Group*: ${data.groupName || 'Default'}\n` +
+                `👤 *Player*: ${data.playerName || 'Anonymous'}\n` +
                 `🌌 *Hexagram*: ${data.originalHexagram}\n` +
                 `🎲 *Die*: ${data.stepDownUsed ? `d${data.originalDieType} → (d${data.dieType}) ` : `d${data.dieType} → `}${data.dieRoll}\n` +
                 (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
@@ -1387,7 +1483,7 @@ async function sendToTelegram(messageType, data) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: chatId,
+                chat_id: activeChatId,
                 text: telegramMessage,
                 parse_mode: 'Markdown'
             })
@@ -1396,6 +1492,110 @@ async function sendToTelegram(messageType, data) {
     } catch (error) {
         console.error('Error sending to Telegram:', error);
     }
+}
+
+// UI Components for Chat Management
+function createChatManagementUI() {
+    const container = document.createElement('div');
+    container.innerHTML = `
+        <div id="chatManager" class="chat-manager-container">
+            <details class="chat-manager-details">
+                <summary>Game Master Settings</summary>
+                <div class="chat-setup-form">
+                    <h3>Set Up New Game Group</h3>
+                    <div class="input-group">
+                        <label for="groupName">Group Name:</label>
+                        <input type="text" id="groupName" placeholder="Enter your group name">
+                    </div>
+                    <div class="input-group">
+                        <label for="chatId">Telegram Chat ID:</label>
+                        <input type="text" id="chatId" placeholder="Enter your Telegram chat ID">
+                        <button onclick="showChatIdInstructions()">How to get Chat ID?</button>
+                    </div>
+                    <button onclick="setupNewGameGroup()">Create Game Group</button>
+                    
+                    <div id="gmCodeDisplay" style="display: none;">
+                        <h4>Your GM Code:</h4>
+                        <p id="gmCodeText"></p>
+                        <p class="instructions">Share this code with your players to connect them to your group.</p>
+                    </div>
+                </div>
+                
+                <div class="player-setup-form">
+                    <h3>Player Settings</h3>
+                    <div class="input-group">
+                        <label for="gmCode">GM Code:</label>
+                        <input type="text" id="gmCode" placeholder="Enter your GM's code">
+                    </div>
+                    <div class="input-group">
+                        <label for="playerName">Your Name:</label>
+                        <input type="text" id="playerName" placeholder="Enter your name">
+                    </div>
+                    <button onclick="joinGameGroup()">Join Game Group</button>
+                </div>
+            </details>
+        </div>
+    `;
+    
+    document.body.appendChild(container);
+}
+
+// Helper Functions
+function showChatIdInstructions() {
+    alert(
+        "To get your Telegram Chat ID:\n\n" +
+        "1. Add @RawDataBot to your group\n" +
+        "2. Type /start in the group\n" +
+        "3. Look for 'Chat ID' in the bot's response\n" +
+        "4. Remove the bot after getting the ID\n\n" +
+        "Note: Make sure to add the AuldEwe bot to your group as well!"
+    );
+}
+
+function setupNewGameGroup() {
+    const groupName = document.getElementById('groupName').value;
+    const chatId = document.getElementById('chatId').value;
+    
+    if (!groupName || !chatId) {
+        alert('Please fill in both group name and chat ID');
+        return;
+    }
+    
+    const gmCode = saveNewChat(groupName, chatId);
+    
+    const gmCodeDisplay = document.getElementById('gmCodeDisplay');
+    const gmCodeText = document.getElementById('gmCodeText');
+    gmCodeText.textContent = gmCode;
+    gmCodeDisplay.style.display = 'block';
+}
+
+function joinGameGroup() {
+    const gmCode = document.getElementById('gmCode').value;
+    const playerName = document.getElementById('playerName').value;
+    
+    if (!gmCode || !playerName) {
+        alert('Please fill in both GM code and your name');
+        return;
+    }
+    
+    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    if (!chats[gmCode]) {
+        alert('Invalid GM code');
+        return;
+    }
+    
+    // Store player's active group
+    localStorage.setItem('activeGMCode', gmCode);
+    localStorage.setItem('playerName', playerName);
+    
+    // Add player to group's player list
+    chats[gmCode].players.push({
+        name: playerName,
+        joinedAt: Date.now()
+    });
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
+    
+    alert(`Successfully joined ${chats[gmCode].name}'s group!`);
 }
 
 function addFatePoint() {
