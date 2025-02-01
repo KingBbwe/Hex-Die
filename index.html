@@ -266,12 +266,15 @@
         // Configuration ⚠️→ UPDATED TELEGRAM CONFIG
         const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with actual token
         const chatId = '-1002185533073'; // Replace with actual chat ID
-        const FATE_STORAGE_KEY = 'auldEweFatePoints';
-        const MAX_FATE_POINTS = 5;
+        const FATE_STORAGE_KEY = 'auldEweFatePoints';  // Using original key
+        const MAX_FATE_POINTS = 5;                     // Using original value
         const BASE_FATE_POINTS = 3;
-        const INACTIVITY_TIMEOUT = 180000;
-        const shakeThreshold = 15;
-        const shakeCooldown = 1000;
+        const INACTIVITY_TIMEOUT = 180000;             // Using original 3-minute timeout
+        const MIN_SHAKE_DURATION = 2000;               // 2 seconds
+        const SHAKE_END_TIMEOUT = 500;                 // 500ms
+        const MAX_VIBRATION = 200;                     // ms
+        const shakeCooldown = 1000;                    // Using original 1-second cooldown
+        const shakeThreshold = 15;                     // acceleration threshold
 
         // ⚠️→ ADD HEXAGRAM NAMES FIRST
         const hexagramNames = {
@@ -1308,20 +1311,20 @@ const stepDownConfig = {
 
 //Game State
 
-let currentHexagramNumber;
-let currentHexagramLines = [];
-let currentChangingLines = [];
-let shakeEnabled = false;
-let lastShake = 0;
-let inactivityTimer;
-let shouldClearOnNextRoll = false;
-// Game State (add these)
-let shakeStartTime = 0;
-let lastShakeTime = 0;
-let shakeTimeout = null;
-const MIN_SHAKE_DURATION = 2000;  // 2 seconds
-const SHAKE_END_TIMEOUT = 500;    // 500ms
-const MAX_VIBRATION = 200;        // ms
+
+
+// Game State
+let currentHexagramNumber = null;      // Tracks current hexagram
+let currentHexagramLines = [];         // Stores current hexagram line types
+let currentChangingLines = [];         // Stores which lines are changing
+let shakeEnabled = false;             // Tracks if shake detection is enabled
+let lastShake = 0;                    // Timestamp of last shake detection
+let shakeStartTime = 0;               // Start time of current shake sequence
+let shakeTimeout = null;              // Timeout for shake detection
+let inactivityTimer;                  // Timer for clearing form
+let shouldClearOnNextRoll = false;    // Flag to reset form on next roll
+
+// Removing lastShakeTime as it's redundant with lastShake
 
 // Core Functions
 function initializeFatePoints() {
@@ -1547,20 +1550,10 @@ function enableShakeDetection() {
     }
 }
 
-// Add to game state variables
-let shakeStartTime = 0;
-let lastShakeTime = 0;
-let shakeTimeout = null;
-const MIN_SHAKE_DURATION = 2000; // 2 seconds
-const SHAKE_END_TIMEOUT = 500; // 500ms pause considered end of shake
-const MAX_VIBRATION = 200; // ms
-
-// Modified handleShake function
 function handleShake(event) {
     if (!shakeEnabled) return;
     const now = Date.now();
     
-    // Only process if we're below cooldown threshold
     if (now - lastShake < shakeCooldown) return;
 
     const acceleration = event.accelerationIncludingGravity;
@@ -1571,23 +1564,18 @@ function handleShake(event) {
     );
 
     if (magnitude > shakeThreshold) {
-        // Update last shake timestamp
         lastShake = now;
 
-        // Start tracking shake duration if new sequence
         if (!shakeStartTime) {
             shakeStartTime = now;
             document.getElementById('shakeStatus').textContent = "Shaking detected...";
         }
 
-        // Reset the end detection timeout
         if (shakeTimeout) clearTimeout(shakeTimeout);
         
-        // Set timeout to detect shake end
         shakeTimeout = setTimeout(() => {
             const duration = now - shakeStartTime;
             
-            // Only trigger if minimum duration met
             if (duration >= MIN_SHAKE_DURATION) {
                 if (shouldClearOnNextRoll) {
                     resetFormFields();
@@ -1595,12 +1583,11 @@ function handleShake(event) {
                 
                 rollDiceAndHexagram();
                 
-                // Extended vibration for success
                 if (navigator.vibrate) {
                     navigator.vibrate([
-                        MAX_VIBRATION, // Initial vibration
-                        50,            // Pause
-                        MAX_VIBRATION/2 // Confirm vibration
+                        MAX_VIBRATION,
+                        50,
+                        MAX_VIBRATION/2
                     ]);
                 }
                 
@@ -1610,7 +1597,6 @@ function handleShake(event) {
                 document.getElementById('shakeStatus').textContent = "Shake harder! (2+ seconds)";
             }
             
-            // Reset tracking
             shakeStartTime = 0;
             lastShakeTime = 0;
             shakeTimeout = null;
@@ -1639,8 +1625,7 @@ function setupActivityListeners() {
 
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
-        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
-    });
+        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n
 
     document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
         if (shouldClearOnNextRoll) {
