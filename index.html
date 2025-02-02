@@ -1435,9 +1435,19 @@
             57: '001011', 58: '110001', 59: '100110', 60: '011011',
             61: '101001', 62: '110100', 63: '001101', 64: '010101'
         };
+
+
+// Shake State
+let shakeEnabled = false;
+let isShaking = false;
+let shakeStartTime = 0;
+let lastShakeTime = 0; // Add this if not already present
+let inactivityTimer;
+let shouldClearOnNextRoll = false;
+        
 // ======================
 // Configuration
-// ======================
+// ======================       
 const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
 const FATE_STORAGE_KEY = 'auldEweFatePoints';
 const MAX_FATE_POINTS = 5;
@@ -1859,83 +1869,28 @@ function rollDiceAndHexagram() {
 // Shake Detection
 // ======================
 
-// Shake State
-let shakeEnabled = false;
-let isShaking = false;
-let shakeStartTime = 0;
-let lastShakeTime = 0; // Add this if not already present
-let inactivityTimer;
-let shouldClearOnNextRoll = false;
 
-// Shake Configuration
-const MIN_SHAKE_DURATION = 2000;
-const SHAKE_END_TIMEOUT = 500;
-const SHAKE_THRESHOLD = 15;
-const SHAKE_COOLDOWN = 1000;
+const MIN_SHAKE_DURATION =2000; 
+const SHAKE_END_TIMEOUT=500; 
+const SHAKE_THRESHOLD=15; 
+const SHAKE_COOLDOWN=1000;
 
-// Modified handleShake function
 function handleShake(event) {
-    if (!shakeEnabled) return;
-
-    const now = Date.now();
-    const acceleration = event.accelerationIncludingGravity;
-    const magnitude = Math.sqrt(
-        acceleration.x ** 2 +
-        acceleration.y ** 2 +
-        acceleration.z ** 2
-    );
-
-    // Check if we're above the shake threshold
-    if (magnitude > SHAKE_THRESHOLD) {
-        // Start tracking shake duration if not already shaking
-        if (!isShaking) {
-            isShaking = true;
-            shakeStartTime = now;
-            document.getElementById('shakeStatus').textContent = "Shaking detected...";
-            
-            // Initial vibration feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-        }
-
-        // Reset the cooldown timer
-        lastShakeTime = now;
-    }
-
-    // Check if shaking has stopped
-    if (isShaking && now - lastShakeTime > SHAKE_END_TIMEOUT) {
-        const shakeDuration = now - shakeStartTime;
-
-        if (shakeDuration >= MIN_SHAKE_DURATION) {
-            // Successful shake
-            if (shouldClearOnNextRoll) {
-                resetFormFields();
-            }
-
-            rollDiceAndHexagram();
-
-            // Success vibration feedback
-            if (navigator.vibrate) {
-                navigator.vibrate([200, 50, 100]);
-            }
-
-            document.getElementById('shakeStatus').textContent = "Roll completed!";
-            shouldClearOnNextRoll = true;
-        } else {
-            // Insufficient shake duration
-            document.getElementById('shakeStatus').textContent = "Shake harder! (2+ seconds)";
-
-            // Feedback for insufficient shake
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-        }
-
-        // Reset shake state
-        isShaking = false;
-        shakeStartTime = 0;
-    }
+     if(!shakeEnabled)return; 
+     const now=Date.now(); 
+     const acceleration=event.accelerationIncludingGravity; 
+     if(isShaking){ 
+         if(Math.abs(acceleration.x)>SHAKE_THRESHOLD||Math.abs(acceleration.y)>SHAKE_THRESHOLD||Math.abs(acceleration.z)>SHAKE_THRESHOLD){ 
+             lastShakeTime=now; 
+         }else if(now-lastShakeTime>SHAKE_END_TIMEOUT){ 
+             isShaking=false; 
+         } 
+     }else{ 
+         if(Math.abs(acceleration.x)>SHAKE_THRESHOLD||Math.abs(acceleration.y)>SHAKE_THRESHOLD||Math.abs(acceleration.z)>SHAKE_THRESHOLD){ 
+             shakeStartTime=now; 
+             isShaking=true; 
+         } 
+     } 
 }
 
 // Modified enableShakeDetection function
