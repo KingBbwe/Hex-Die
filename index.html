@@ -1923,6 +1923,9 @@ function enableShakeDetection() {
     }
 }
 
+// Initialize Fate Points on load
+document.addEventListener("DOMContentLoaded", initializeFatePoints);
+
 function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
