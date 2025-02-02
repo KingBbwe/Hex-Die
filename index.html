@@ -1685,8 +1685,27 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLines() {
-    return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
+function determineChangingLines(originalDieType, originalRoll) {
+    const lines = [];
+    const scaledValues = [];
+
+    Array.from({ length: 6 }).forEach((_, i) => {
+        if (Math.random() < 0.25) { // 25% chance of a changing line
+            const lineNumber = i + 1;
+            const d6Roll = Math.floor(Math.random() * 6) + 1;
+            const scaledValue = scalingTable[originalDieType][d6Roll - 1];
+
+            lines.push(lineNumber);
+            scaledValues.push({
+                line: lineNumber,
+                original: originalRoll,
+                scaled: scaledValue,
+                dieType: originalDieType
+            });
+        }
+    });
+
+    return { lines, scaledValues };
 }
 
 function getActiveNarratives() {
@@ -1701,18 +1720,23 @@ function getActiveNarratives() {
 function getOutcome(roll, dieType, isScaled = false) {
     const thresholds = outcomeThresholds[dieType];
     let outcome;
-    
+
+    // Determine base outcome
     if (thresholds.triumph.includes(roll)) outcome = 'Triumph';
     else if (thresholds.conflict.includes(roll)) outcome = 'Conflict';
     else outcome = 'Disaster';
 
     // Apply scaling transformations
     if (isScaled) {
-        return outcome === 'Disaster' || outcome === 'Conflict' 
-            ? 'Success' 
-            : outcome; // Triumph remains Triumph
+        if (outcome === 'Disaster') {
+            if (thresholds.conflict.includes(roll)) return 'Conflict';
+            if (thresholds.triumph.includes(roll)) return 'Success';
+        }
+        if (outcome === 'Conflict' && thresholds.triumph.includes(roll)) {
+            return 'Success';
+        }
     }
-    
+
     return outcome;
 }
 
@@ -1721,31 +1745,26 @@ function showChangingLines() {
     if (fatePoints < 1) {
         alert("Not enough Fate Points!");
         return;
-        
-    const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
-        const originalOutcome = getOutcome(scaled.original, scaled.dieType);
-        const finalOutcome = getOutcome(scaled.scaled, scaled.dieType, true);
-        
-        return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
-    });    }
+    }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
+        const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
+            const originalOutcome = getOutcome(scaled.original, scaled.dieType);
+            const finalOutcome = getOutcome(scaled.scaled, scaled.dieType, true);
+
+            return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
+        });
+
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines:</strong>
-            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
+            <strong>Changing Lines:</strong><br>
+            ${scaledOutcomes.join('<br>')}
         `;
         updateFateStorage();
         startInactivityTimer();
     }
-    document.getElementById('changingLines').innerHTML = `
-    <strong>Changing Lines:</strong><br>
-    ${currentChangingLines.scaledValues.map(scaled => 
-        `${scaled.line} (${getOutcome(scaled.original, scaled.dieType)} → ${getOutcome(scaled.scaled, scaled.dieType, true)})`
-    ).join('<br>')}
-`;
-}
+}}
 
 function rollDiceAndHexagram() {
     if (shouldClearOnNextRoll) {
