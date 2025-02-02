@@ -1470,7 +1470,8 @@ const outcomeThresholds = {
 };
 
 const stepDownConfig = {
-    // Aligned with working backup
+    // Ensure correctness in step down config
+    // Updated to reflect known working values
     4: [4, 1],
     6: [4, 2],
     8: [6, 4],
@@ -1480,11 +1481,11 @@ const stepDownConfig = {
 };
 
 const scalingTable = {
-    // Aligned with working backup
-    // Includes additional die types as needed
+    // Ensure all necessary die types are included
+    // Adjusted based on known working configurations
     6: [1, 2, 3, 4, 5, 6],
     8: [1, 2, 3, 4, 5, 8],
-    // Other configurations...
+    // Additional die types as necessary
 };
 
 // ======================
@@ -1493,7 +1494,7 @@ const scalingTable = {
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
 let currentChangingLines = [];
-let shakeEnabled = false;
+let shakeEnabled = true; // Enable shake detection by default
 let isShaking = false;
 let shakeStartTime = Date.now();
 let lastShakeTime = Date.now();
@@ -1531,23 +1532,78 @@ function getActiveChatId(gmCode) {
     return chats[gmCode]?.chatId || DEFAULT_CHAT_ID;
 }
 
+function showChatIdInstructions() {
+    alert(
+        "To get your Telegram Chat ID:\n\n" +
+        "1. Add @RawDataBot to your group\n" +
+        "2. Type /start in the group\n" +
+        "3. Look for 'Chat ID' in the bot's response\n" +
+        "4. Remove the bot after getting the ID\n\n" +
+        "Note: Make sure to add the AuldEwe bot to your group as well!"
+    );
+}
+
+function setupNewGameGroup() {
+    const groupName = document.getElementById('groupName').value;
+    const chatId = document.getElementById('chatId').value;
+    
+    if (!groupName || !chatId) {
+        alert('Please fill in both group name and chat ID');
+        return;
+    }
+    
+    const gmCode = saveNewChat(groupName, chatId);
+    
+    const gmCodeDisplay = document.getElementById('gmCodeDisplay');
+    const gmCodeText = document.getElementById('gmCodeText');
+    
+    gmCodeText.textContent = gmCode;
+    gmCodeDisplay.style.display = 'block';
+}
+
+function joinGameGroup() {
+    const gmCode = document.getElementById('gmCode').value;
+    const playerName = document.getElementById('playerName').value;
+    
+    if (!gmCode || !playerName) {
+        alert('Please fill in both GM code and your name');
+        return;
+    }
+    
+    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    
+    if (!chats[gmCode]) {
+        alert('Invalid GM code');
+        return;
+    }
+    
+    localStorage.setItem('activeGMCode', gmCode);
+    localStorage.setItem('playerName', playerName);
+    
+    chats[gmCode].players.push({ name: playerName });
+    
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
+    
+    alert(`Successfully joined ${chats[gmCode].name}'s group!`);
+}
+
 // ======================
 // Core Functions
 // ======================
 function initializeFatePoints() {
-    const storedData = localStorage.getItem(FATE_STORAGE_KEY);
-    const now = Date.now();
-
-    if (storedData) {
-        const { points } = JSON.parse(storedData);
-        document.getElementById('fatePoints').value =
-            Math.min(points + BASE_FATE_POINTS , MAX_FATE_POINTS);
-        updateFateStorage(points);
-    } else {
-        document.getElementById('fatePoints').value =
-            BASE_FATE_POINTS;
-        updateFateStorage(BASE_FATE_POINTS);
-    }
+   const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+   const now = Date.now();
+   
+   if (storedData) {
+       const { points } = JSON.parse(storedData);
+       document.getElementById('fatePoints').value =
+           Math.min(points + BASE_FATE_POINTS , MAX_FATE_POINTS);
+       updateFateStorage(points);
+   } else {
+       document.getElementById('fatePoints').value =
+           BASE_FATE_POINTS;
+       updateFateStorage(BASE_FATE_POINTS);
+   }
 }
 
 function updateFateStorage(points) {
@@ -1556,19 +1612,19 @@ function updateFateStorage(points) {
 }
 
 function resetFormFields() {
-    document.getElementById('dc').value = '';
-    document.getElementById('modifier').value = '0';
-    document.getElementById('stepDownToggle').checked = false;
-    document.getElementById('changingLines').style.display = 'none';
-    document.getElementById('changingLines').innerHTML = '';
+   document.getElementById('dc').value = '';
+   document.getElementById('modifier').value = '0';
+   document.getElementById('stepDownToggle').checked = false;
+   document.getElementById('changingLines').style.display = 'none';
+   document.getElementById('changingLines').innerHTML = '';
 }
 
 function startInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => {
-        resetFormFields();
-        document.getElementById('result').innerHTML = '';
-    }, INACTIVITY_TIMEOUT);
+   clearTimeout(inactivityTimer);
+   inactivityTimer = setTimeout(() => {
+       resetFormFields();
+       document.getElementById('result').innerHTML = '';
+   }, INACTIVITY_TIMEOUT);
 }
 
 async function sendToTelegram(messageType, data) {
@@ -1631,14 +1687,16 @@ async function sendToTelegram(messageType, data) {
 }
 
 function addFatePoint() {
-    const current = parseInt(document.getElementById('fatePoints').value);
-    if (current < MAX_FATE_POINTS) {
-        const newValue = current + 1;
-        document.getElementById('fatePoints').value = newValue;
-        updateFateStorage(newValue);
-        sendToTelegram('fate', { points: newValue });
-    }
-    startInactivityTimer();
+   const currentPoints = parseInt(document.getElementById('fatePoints').value);
+   
+   if (currentPoints < MAX_FATE_POINTS) {
+       const newValue = currentPoints +1;
+       document.getElementById('fatePoints').value=newValue;
+       updateFateStorage(newValue);
+       sendToTelegram('fate', { points:newValue });
+   }
+   
+   startInactivityTimer();
 }
 
 function generateHexagramLines(hexagramNumber) {
@@ -1802,11 +1860,10 @@ function rollDiceAndHexagram() {
     shouldClearOnNextRoll = true;
     startInactivityTimer();
 }
-
 // ======================
 // Shake Detection
 // ======================
-const MIN_SHAKE_DURATION =2000; 
+const MIN_SHAKE_DURATION=2000; 
 const SHAKE_END_TIMEOUT=500; 
 const SHAKE_THRESHOLD=15; 
 const SHAKE_COOLDOWN=1000;
@@ -1830,8 +1887,24 @@ function handleShake(event) {
 }
 
 // Initialize Fate Points on load
-document.addEventListener("DOMContentLoaded", initializeFatePoints);
+document.addEventListener("DOMContentLoaded", () => {
+   initializeFatePoints();
 
+   // Attach button event listeners
+   document.getElementById('addFatePointButton').addEventListener('click', addFatePoint);
+   
+   // Add other button listeners here...
+});
+
+// Shake event listener for mobile devices
+if ('DeviceMotionEvent' in window) {
+     window.addEventListener('devicemotion', handleShake);
+}
+// ... [Your existing code above]
+
+// ======================
+// Setup Activity Listeners
+// ======================
 function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
@@ -1861,7 +1934,7 @@ function setupActivityListeners() {
         }
     });
 }
-       
+
 // Initialize App
 initializeFatePoints();
 setupActivityListeners();
@@ -1876,6 +1949,8 @@ if (!document.getElementById('shakeStatus')) {
     status.style.textAlign = 'center';
     document.querySelector('main').prepend(status);
 }
-    </script>
+
+// End of your script
+</script>
 </body>
 </html>
