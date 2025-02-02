@@ -453,6 +453,11 @@ document.addEventListener("DOMContentLoaded", () => {
 if ('DeviceMotionEvent' in window) {
      window.addEventListener('devicemotion', handleShake);
 }
+// ... [Your existing code above]
+
+// ======================
+// Setup Activity Listeners
+// ======================
 function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
@@ -482,7 +487,7 @@ function setupActivityListeners() {
         }
     });
 }
-       
+
 // Initialize App
 initializeFatePoints();
 setupActivityListeners();
@@ -497,6 +502,9 @@ if (!document.getElementById('shakeStatus')) {
     status.style.textAlign = 'center';
     document.querySelector('main').prepend(status);
 }
-    </script>
+
+// End of your script
+</script>
 </body>
 </html>
+
