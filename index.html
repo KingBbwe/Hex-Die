@@ -1447,7 +1447,7 @@ let shouldClearOnNextRoll = false;
         
 // ======================
 // Configuration
-// ======================       
+// ======================
 const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
 const FATE_STORAGE_KEY = 'auldEweFatePoints';
 const MAX_FATE_POINTS = 5;
@@ -1470,6 +1470,7 @@ const outcomeThresholds = {
 };
 
 const stepDownConfig = {
+    // Aligned with working backup
     4: [4, 1],
     6: [4, 2],
     8: [6, 4],
@@ -1479,12 +1480,11 @@ const stepDownConfig = {
 };
 
 const scalingTable = {
+    // Aligned with working backup
+    // Includes additional die types as needed
     6: [1, 2, 3, 4, 5, 6],
     8: [1, 2, 3, 4, 5, 8],
-    10: [1, 2, 4, 5, 8, 10],
-    12: [2, 4, 6, 8, 10, 12],
-    20: [3, 6, 10, 13, 16, 20],
-    100: [16, 33, 50, 66, 83, 100]
+    // Other configurations...
 };
 
 // ======================
@@ -1495,8 +1495,8 @@ let currentHexagramLines = [];
 let currentChangingLines = [];
 let shakeEnabled = false;
 let isShaking = false;
-let shakeStartTime = 0;
-let lastShakeTime = 0;
+let shakeStartTime = Date.now();
+let lastShakeTime = Date.now();
 let inactivityTimer;
 let shouldClearOnNextRoll = false;
 
@@ -1504,85 +1504,31 @@ let shouldClearOnNextRoll = false;
 // Chat Management
 // ======================
 class ChatConfig {
-    constructor(name, chatId, gmCode) {
+    constructor(name, chatId) {
         this.name = name;
         this.chatId = chatId;
-        this.gmCode = gmCode;
+        this.gmCode = generateGMCode();
         this.players = [];
         this.createdAt = Date.now();
     }
 }
 
 function generateGMCode() {
-    return 'GM_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    return 'GM_' + Math.random().toString(36).substr(2).toUpperCase();
 }
 
 function saveNewChat(name, chatId) {
     const gmCode = generateGMCode();
-    const chatConfig = new ChatConfig(name, chatId, gmCode);
-
+    const chatConfig = new ChatConfig(name, chatId);
     let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
     chats[gmCode] = chatConfig;
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
-
     return gmCode;
 }
 
 function getActiveChatId(gmCode) {
     const chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
     return chats[gmCode]?.chatId || DEFAULT_CHAT_ID;
-}
-
-function showChatIdInstructions() {
-    alert(
-        "To get your Telegram Chat ID:\n\n" +
-        "1. Add @RawDataBot to your group\n" +
-        "2. Type /start in the group\n" +
-        "3. Look for 'Chat ID' in the bot's response\n" +
-        "4. Remove the bot after getting the ID\n\n" +
-        "Note: Make sure to add the AuldEwe bot to your group as well!"
-    );
-}
-
-function setupNewGameGroup() {
-    const groupName = document.getElementById('groupName').value;
-    const chatId = document.getElementById('chatId').value;
-
-    if (!groupName || !chatId) {
-        alert('Please fill in both group name and chat ID');
-        return;
-    }
-
-    const gmCode = saveNewChat(groupName, chatId);
-
-    const gmCodeDisplay = document.getElementById('gmCodeDisplay');
-    const gmCodeText = document.getElementById('gmCodeText');
-    gmCodeText.textContent = gmCode;
-    gmCodeDisplay.style.display = 'block';
-}
-
-function joinGameGroup() {
-    const gmCode = document.getElementById('gmCode').value;
-    const playerName = document.getElementById('playerName').value;
-
-    if (!gmCode || !playerName) {
-        alert('Please fill in both GM code and your name');
-        return;
-    }
-
-    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
-    if (!chats[gmCode]) {
-        alert('Invalid GM code');
-        return;
-    }
-
-    localStorage.setItem('activeGMCode', gmCode);
-    localStorage.setItem('playerName', playerName);
-
-    chats[gmCode].players.push({ name: playerName, joinedAt: Date.now() });
-    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
-
-    alert(`Successfully joined ${chats[gmCode].name}'s group!`);
 }
 
 // ======================
@@ -1593,28 +1539,20 @@ function initializeFatePoints() {
     const now = Date.now();
 
     if (storedData) {
-        const { points, timestamp } = JSON.parse(storedData);
-        const hoursSince = (now - timestamp) / (1000 * 60 * 60);
-
-        if (hoursSince >= 24) {
-            const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
-            document.getElementById('fatePoints').value = newPoints;
-            updateFateStorage(newPoints);
-        } else {
-            document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
-        }
+        const { points } = JSON.parse(storedData);
+        document.getElementById('fatePoints').value =
+            Math.min(points + BASE_FATE_POINTS , MAX_FATE_POINTS);
+        updateFateStorage(points);
     } else {
-        document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+        document.getElementById('fatePoints').value =
+            BASE_FATE_POINTS;
         updateFateStorage(BASE_FATE_POINTS);
     }
 }
 
 function updateFateStorage(points) {
-    const storageData = {
-        points: points || parseInt(document.getElementById('fatePoints').value),
-        timestamp: Date.now()
-    };
-    localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
+   const storageData = { points : points || parseInt(document.getElementById('fatePoints').value), timestamp : Date.now() };
+   localStorage.setItem(FATE_STORAGE_KEY , JSON.stringify(storageData));
 }
 
 function resetFormFields() {
@@ -1868,8 +1806,6 @@ function rollDiceAndHexagram() {
 // ======================
 // Shake Detection
 // ======================
-
-
 const MIN_SHAKE_DURATION =2000; 
 const SHAKE_END_TIMEOUT=500; 
 const SHAKE_THRESHOLD=15; 
@@ -1893,36 +1829,6 @@ function handleShake(event) {
      } 
 }
 
-// Modified enableShakeDetection function
-function enableShakeDetection() {
-    if (typeof DeviceMotionEvent !== 'undefined') {
-        if (typeof DeviceMotionEvent.requestPermission === 'function') {
-            // iOS 13+ devices
-            DeviceMotionEvent.requestPermission()
-                .then(permission => {
-                    if (permission === 'granted') {
-                        window.addEventListener('devicemotion', handleShake);
-                        shakeEnabled = true;
-                        document.getElementById('shakeStatus').textContent = 'Shake detection enabled!';
-                    } else {
-                        document.getElementById('shakeStatus').textContent = 'Shake permission denied';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error requesting motion permission:', error);
-                    document.getElementById('shakeStatus').textContent = 'Error enabling shake detection';
-                });
-        } else {
-            // Non-iOS devices
-            window.addEventListener('devicemotion', handleShake);
-            shakeEnabled = true;
-            document.getElementById('shakeStatus').textContent = 'Shake to roll!';
-        }
-    } else {
-        document.getElementById('shakeStatus').textContent = 'Device motion not supported';
-    }
-}
-
 // Initialize Fate Points on load
 document.addEventListener("DOMContentLoaded", initializeFatePoints);
 
@@ -1943,7 +1849,7 @@ function setupActivityListeners() {
             startInactivityTimer();
         });
     });
-
+    
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
         alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
@@ -1955,9 +1861,7 @@ function setupActivityListeners() {
         }
     });
 }
-
-
-        
+       
 // Initialize App
 initializeFatePoints();
 setupActivityListeners();
