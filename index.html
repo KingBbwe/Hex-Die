@@ -1653,6 +1653,19 @@ async function sendToTelegram(messageType, data) {
     break;
        }
 
+        case 'changingLines': // New case for changed outcomes
+            telegramMessage = 
+                `🌀 *Changing Lines Revealed* 🌀\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})\n` +
+                `🔮 Changed Lines:\n` +
+                `${data.changedLines.join('\n')}\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `#AuldEwe #FateCast`;
+            break;
+    }
+
+    
        try {
            const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
                method: 'POST',
@@ -1755,16 +1768,20 @@ function showChangingLines() {
             return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
         });
 
+        // Update UI
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines:</strong><br>
+            <strong>Changing Lines Revealed:</strong><br>
             ${scaledOutcomes.join('<br>')}
         `;
-        updateFateStorage();
-        startInactivityTimer();
-    }
-}}
+
+        // Send Telegram notification
+        sendToTelegram('changingLines', {
+            originalRoll: currentChangingLines.scaledValues[0].original, // First roll
+            originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, currentChangingLines.scaledValues[0].dieType),
+            changedLines: scaledOutcomes
+        });
 
 function rollDiceAndHexagram() {
     if (shouldClearOnNextRoll) {
