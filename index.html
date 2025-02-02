@@ -1698,11 +1698,22 @@ function getActiveNarratives() {
     }[activeMode];
 }
 
-function getOutcome(dieRoll, dieType) {
+function getOutcome(roll, dieType, isScaled = false) {
     const thresholds = outcomeThresholds[dieType];
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
+    let outcome;
+    
+    if (thresholds.triumph.includes(roll)) outcome = 'Triumph';
+    else if (thresholds.conflict.includes(roll)) outcome = 'Conflict';
+    else outcome = 'Disaster';
+
+    // Apply scaling transformations
+    if (isScaled) {
+        return outcome === 'Disaster' || outcome === 'Conflict' 
+            ? 'Success' 
+            : outcome; // Triumph remains Triumph
+    }
+    
+    return outcome;
 }
 
 function showChangingLines() {
@@ -1710,7 +1721,13 @@ function showChangingLines() {
     if (fatePoints < 1) {
         alert("Not enough Fate Points!");
         return;
-    }
+        
+    const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
+        const originalOutcome = getOutcome(scaled.original, scaled.dieType);
+        const finalOutcome = getOutcome(scaled.scaled, scaled.dieType, true);
+        
+        return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
+    });    }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
         document.getElementById('fatePoints').value = fatePoints - 1;
