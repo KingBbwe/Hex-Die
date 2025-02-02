@@ -1480,6 +1480,16 @@ const stepDownConfig = {
     100: [20, 20]
 };
 
+        // Add scaling configuration
+const scalingTable = {
+    6: [1, 2, 3, 4, 5, 6],
+    8: [1, 2, 3, 4, 5, 8],
+    10: [1, 2, 4, 5, 8, 10],
+    12: [2, 4, 6, 8, 10, 12],
+    20: [3, 6, 10, 13, 16, 20],
+    100: [16, 33, 50, 66, 83, 100]
+};
+        
 // Game State
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
@@ -1534,6 +1544,8 @@ let currentChangingLines = [];
        gmCodeDisplay.style.display = 'block';
    }
 
+
+        
    function joinGameGroup() {
        const gmCode = document.getElementById('gmCode').value;
        const playerName = document.getElementById('playerName').value;
@@ -1636,6 +1648,9 @@ async function sendToTelegram(messageType, data) {
                    `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                    `#AuldEwe #FateCast`;
                break;
+               case 'legendary':
+    telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
+    break;
        }
 
        try {
@@ -1707,6 +1722,12 @@ function showChangingLines() {
         updateFateStorage();
         startInactivityTimer();
     }
+    document.getElementById('changingLines').innerHTML = `
+    <strong>Changing Lines:</strong><br>
+    ${currentChangingLines.scaledValues.map(scaled => 
+        `${scaled.line} (${getOutcome(scaled.original, scaled.dieType)} → ${getOutcome(scaled.scaled, scaled.dieType, true)})`
+    ).join('<br>')}
+`;
 }
 
 function rollDiceAndHexagram() {
@@ -1740,11 +1761,17 @@ function rollDiceAndHexagram() {
     const narratives = getActiveNarratives();
     const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-    currentChangingLines = determineChangingLines();
+    currentChangingLines = determineChangingLines(originalDieType, dieRoll);  // Add parameters
 
     if (navigator.vibrate) {
         navigator.vibrate(100);
     }
+
+    if (outcome === 'Triumph' && total >= dc) {
+    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    sendToTelegram('legendary', { message: legendaryMessage });
+}
 
     document.getElementById('result').innerHTML = `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
@@ -1757,6 +1784,11 @@ function rollDiceAndHexagram() {
         <strong>Narrative:</strong> ${narrative}
     `;
 
+    if (outcome === 'Triumph' && total >= dc) {
+    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    sendToTelegram('legendary', { message: legendaryMessage });
+}
     sendToTelegram('roll', {
         originalDieType: originalDieType,
         originalHexagram: currentHexagramNumber,
