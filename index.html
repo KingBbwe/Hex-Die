@@ -1768,21 +1768,6 @@ function showChangingLines() {
             return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
         });
 
-        // Update UI
-        document.getElementById('fatePoints').value = fatePoints - 1;
-        document.getElementById('changingLines').style.display = 'block';
-        document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines Revealed:</strong><br>
-            ${scaledOutcomes.join('<br>')}
-        `;
-
-        // Send Telegram notification
-        sendToTelegram('changingLines', {
-            originalRoll: currentChangingLines.scaledValues[0].original, // First roll
-            originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, currentChangingLines.scaledValues[0].dieType),
-            changedLines: scaledOutcomes
-        });
-
 function rollDiceAndHexagram() {
     if (shouldClearOnNextRoll) {
         resetFormFields();
@@ -1860,6 +1845,19 @@ function rollDiceAndHexagram() {
     startInactivityTimer();
 }
 
+                // Send Telegram notification
+        sendToTelegram('changingLines', {
+            originalRoll: currentChangingLines.scaledValues[0].original, // First roll
+            originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, currentChangingLines.scaledValues[0].dieType),
+            changedLines: scaledOutcomes
+        });
+
+        // Update storage and timer
+        updateFateStorage();
+        startInactivityTimer();
+    }
+}
+        
 // Shake State
 let shakeEnabled = false;
 let isShaking = false;
@@ -1999,6 +1997,8 @@ function setupActivityListeners() {
     });
 }
 
+
+        
 // Initialize App
 initializeFatePoints();
 setupActivityListeners();
