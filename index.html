@@ -1718,7 +1718,7 @@ function determineChangingLines(originalDieType, originalRoll) {
     Array.from({ length: 6 }).forEach((_, i) => {
         if (Math.random() < 0.25) {
             const lineNumber = i + 1;
-            const d6Roll = Math.floor(Math.random() * 6);
+            const d6Roll = Math.floor(Math.random() * 6); // 0-5
             const scaledValue = dieScale[d6Roll];
 
             lines.push(lineNumber);
@@ -1753,6 +1753,7 @@ function showChangingLines() {
             return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
         });
 
+        // Update UI
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
@@ -1760,9 +1761,11 @@ function showChangingLines() {
             ${scaledOutcomes.join('<br>')}
         `;
 
+        // Send to Telegram
         sendToTelegram('changingLines', {
             originalRoll: currentChangingLines.scaledValues[0].original,
-            originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, currentChangingLines.scaledValues[0].dieType),
+            originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, 
+                                      currentChangingLines.scaledValues[0].dieType),
             changedLines: scaledOutcomes
         });
 
