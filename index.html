@@ -1946,18 +1946,25 @@ function setupActivityListeners() {
     document.getElementById('enableMotion').addEventListener('click', enableShakeDetection);
     document.getElementById('oraclizeBtn').addEventListener('click', showChangingLines);
 
-    // ✅ FIXED: Properly update the active mode when clicking buttons
+    // ✅ FIX: Ensure mode selection updates properly
     document.querySelectorAll('.mode-button').forEach(button => {
         button.addEventListener('click', () => {
+            console.log("Mode button clicked:", button.id); // Log click event
+
             // Remove 'active' class from all mode buttons
             document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
 
             // Add 'active' class to the clicked button
             button.classList.add('active');
 
-            // Ensure the narrative updates properly
-            const selectedNarratives = getActiveNarratives();
-            console.log("Updated Mode:", button.id, "→ Active Narratives:", selectedNarratives);
+            // Double-check that the class was actually added
+            console.log("Updated active mode:", document.querySelector('.mode-button.active')?.id || "None");
+
+            // Force refresh the narratives
+            setTimeout(() => {
+                const selectedNarratives = getActiveNarratives();
+                console.log("New Active Narratives:", selectedNarratives);
+            }, 10);
         });
     });
 
@@ -1979,7 +1986,6 @@ function setupActivityListeners() {
         window.addEventListener('devicemotion', handleShake);
     }
 }
-
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
     initializeFatePoints();
