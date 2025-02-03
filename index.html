@@ -1696,7 +1696,8 @@ function getActiveNarratives() {
         personalMode: personalNarratives,
         generalMode: generalNarratives,
         actionMode: actionNarratives
-    }
+    }[activeMode];
+}
 
 
 function getOutcome(roll, dieType) {
