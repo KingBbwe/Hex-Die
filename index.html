@@ -1477,12 +1477,52 @@ const stepDownConfig = {
 };
 
 const scalingTable = {
-    6:  [1, 2, 3, 4, 5, 6],
-    8:  [1, 2, 3, 4, 5, 8],
-    12: [1, 2, 3, 4, 5, 12],
-    20: [1, 2, 3, 4, 5, 20],
+    6:   [1, 2, 3, 4, 5, 6],
+    8:   [1, 2, 3, 4, 5, 8],
+    10:  [1, 2, 3, 4, 5, 10],
+    12:  [1, 2, 3, 4, 5, 12],
+    20:  [1, 2, 3, 4, 5, 20],
     100: [1, 2, 3, 4, 5, 100]
 };
+
+const outcomeThresholds = {
+    4: { 
+        triumph: [4], 
+        conflict: [3, 2], 
+        disaster: [1] 
+    },
+    6: { 
+        triumph: [6], 
+        conflict: [5, 4], 
+        disaster: [3, 2, 1] 
+    },
+    8: { 
+        triumph: [8, 7], 
+        conflict: [6, 5, 4], 
+        disaster: [3, 2, 1] 
+    },
+    10: { 
+        triumph: [10, 9], 
+        conflict: [8, 7, 6, 5], 
+        disaster: [4, 3, 2, 1] 
+    },
+    12: { 
+        triumph: [12, 11, 10], 
+        conflict: [9, 8, 7, 6, 5], 
+        disaster: [4, 3, 2, 1] 
+    },
+    20: { 
+        triumph: [20, 19, 18, 17, 16], 
+        conflict: [15, 14, 13, 12, 11, 10], 
+        disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] 
+    },
+    100: { 
+        triumph: Array.from({ length: 20 }, (_, i) => 100 - i), 
+        conflict: Array.from({ length: 60 }, (_, i) => 80 - i), 
+        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)
+    }
+};
+
 
 
 // ======================
@@ -1723,7 +1763,7 @@ function getActiveNarratives() {
 function getOutcome(roll, dieType) {
     const thresholds = outcomeThresholds[dieType];
     if (!thresholds) return 'Unknown';
-    
+
     if (thresholds.triumph.includes(roll)) return 'Triumph';
     if (thresholds.conflict.includes(roll)) return 'Conflict';
     return 'Disaster';
@@ -1734,11 +1774,11 @@ function determineChangingLines(originalDieType, originalRoll) {
     const scaledValues = [];
     const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
 
+    // Deterministic method to select changing lines
     for (let line = 1; line <= 6; line++) {
         if (Math.random() < 0.25) {
-            const d6Roll = Math.floor(Math.random() * 6);
-            const scaledValue = dieScale[d6Roll];
-
+            const scaledValue = dieScale[line - 1];
+            
             lines.push(line);
             scaledValues.push({
                 line: line,
@@ -1751,6 +1791,7 @@ function determineChangingLines(originalDieType, originalRoll) {
 
     return { lines, scaledValues };
 }
+
 
 function showChangingLines() {
     if (!currentChangingLines?.scaledValues?.length) {
