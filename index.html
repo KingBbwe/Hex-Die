@@ -1579,21 +1579,25 @@ function joinGameGroup() {
     const now = Date.now();
 
     if (storedData) {
-        const { points } = JSON.parse(storedData);
+        const { points, timestamp } = JSON.parse(storedData);
+        const hoursSince = (now - timestamp) / (1000 * 60 * 60);
 
-        // ✅ Force correct logic: Use stored points but cap it at MAX_FATE_POINTS
-        const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
-        document.getElementById('fatePoints').value = newPoints;
-
-        updateFateStorage(newPoints);
+        if (hoursSince >= 24) {
+            // ✅ RESTORED: Proper fate point reset logic
+            const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+            document.getElementById('fatePoints').value = newPoints;
+            updateFateStorage(newPoints);
+        } else {
+            // ✅ RESTORED: Prevents unintended increase of fate points
+            document.getElementById('fatePoints').value = Math.min(points, MAX_FATE_POINTS);
+        }
     } else {
-        // ✅ Fix: Ensure it starts with BASE_FATE_POINTS (3)
+        // ✅ Ensures correct initialization of base fate points
         console.log("No stored data, setting default fate points to:", BASE_FATE_POINTS);
         document.getElementById('fatePoints').value = BASE_FATE_POINTS;
         updateFateStorage(BASE_FATE_POINTS);
     }
 }
-
         function updateFateStorage(points) {
             const storageData = { 
                 points: points || parseInt(document.getElementById('fatePoints').value), 
@@ -1697,14 +1701,23 @@ function generateHexagramLines(hexagramNumber) {
 }
 
 function getActiveNarratives() {
-    const activeMode = document.querySelector('.mode-button.active').id;
+    const activeButton = document.querySelector('.mode-button.active');
+    
+    if (!activeButton) {
+        console.warn("No active mode found, defaulting to General Narratives.");
+        return generalNarratives;
+    }
+
+    const activeMode = activeButton.id;
+
+    console.log("Current Active Mode:", activeMode);
+
     return {
         personalMode: personalNarratives,
         generalMode: generalNarratives,
         actionMode: actionNarratives
-    }[activeMode] || generalNarratives; // Fallback to general
+    }[activeMode] || generalNarratives; // Default to General
 }
-
 
 
 function getOutcome(roll, dieType) {
@@ -1948,38 +1961,19 @@ function setupActivityListeners() {
         });
     });
 
-    document.getElementById('harmonizeBtn').addEventListener('click', rollDiceAndHexagram);
-    document.getElementById('enableMotion').addEventListener('click', enableShakeDetection);
-    document.getElementById('oraclizeBtn').addEventListener('click', showChangingLines);
-
-    // ✅ FIX: Ensure mode selection resets on load and properly updates on click
+    // ✅ RESTORED: Correct mode switching logic
     document.querySelectorAll('.mode-button').forEach(button => {
         button.addEventListener('click', () => {
-            console.log("Mode button clicked:", button.id); // Debugging log
-
-            // Remove 'active' class from all mode buttons
             document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-
-            // Add 'active' class to the clicked button
             button.classList.add('active');
 
-            // Double-check the update
-            console.log("Updated active mode:", document.querySelector('.mode-button.active')?.id || "None");
+            shouldClearOnNextRoll = false;
+            startInactivityTimer();
 
-            // Force refresh narratives
-            setTimeout(() => {
-                const selectedNarratives = getActiveNarratives();
-                console.log("New Active Narratives:", selectedNarratives);
-            }, 10);
+            // Debugging log
+            console.log("Mode switched to:", button.id);
         });
     });
-
-    // ✅ Force reset mode on page load
-    setTimeout(() => {
-        console.log("Forcing mode reset on page load...");
-        document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('personalMode')?.classList.add('active'); // Default to personalMode
-    }, 50);
 
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
@@ -1987,17 +1981,10 @@ function setupActivityListeners() {
     });
 
     document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
-        if (shouldClearOnNextRoll) resetFormFields();
+        if (shouldClearOnNextRoll) {
+            resetFormFields();
+        }
     });
-
-    // Handle step-down toggle visual feedback
-    document.getElementById('stepDownToggle').addEventListener('change', function() {
-        this.parentElement.style.backgroundColor = this.checked ? 'var(--primary-hover)' : 'var(--bg-darker)';
-    });
-
-    if ('DeviceMotionEvent' in window) {
-        window.addEventListener('devicemotion', handleShake);
-    }
 }
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
