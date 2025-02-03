@@ -1703,6 +1703,8 @@ function getActiveNarratives() {
 
 function getOutcome(roll, dieType) {
     const thresholds = outcomeThresholds[dieType];
+    if (!thresholds) return 'Unknown';
+    
     if (thresholds.triumph.includes(roll)) return 'Triumph';
     if (thresholds.conflict.includes(roll)) return 'Conflict';
     return 'Disaster';
@@ -1757,11 +1759,6 @@ function showChangingLines() {
             <strong>Changing Lines Revealed:</strong><br>
             ${scaledOutcomes.join('<br>')}
         `;
-
-        updateFateStorage();
-        startInactivityTimer();
-    }
-}
 
         sendToTelegram('changingLines', {
             originalRoll: currentChangingLines.scaledValues[0].original,
