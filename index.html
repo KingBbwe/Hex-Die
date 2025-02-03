@@ -1933,40 +1933,52 @@ if ('DeviceMotionEvent' in window) {
 }
 
         // Event Listeners
-        function setupActivityListeners() {
-            const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
-            inputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', () => {
-                    shouldClearOnNextRoll = false;
-                    startInactivityTimer();
-                });
-            });
+function setupActivityListeners() {
+    const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+            shouldClearOnNextRoll = false;
+            startInactivityTimer();
+        });
+    });
 
-            document.getElementById('harmonizeBtn').addEventListener('click', rollDiceAndHexagram);
-            document.getElementById('enableMotion').addEventListener('click', enableShakeDetection);
-            document.getElementById('oraclizeBtn').addEventListener('click', showChangingLines);
-            document.querySelectorAll('.mode-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    shouldClearOnNextRoll = false;
-                    startInactivityTimer();
-                });
-            });
+    document.getElementById('harmonizeBtn').addEventListener('click', rollDiceAndHexagram);
+    document.getElementById('enableMotion').addEventListener('click', enableShakeDetection);
+    document.getElementById('oraclizeBtn').addEventListener('click', showChangingLines);
 
-            document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
-            });
+    // ✅ FIXED: Properly update the active mode when clicking buttons
+    document.querySelectorAll('.mode-button').forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove 'active' class from all mode buttons
+            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
 
-            document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
-                if (shouldClearOnNextRoll) resetFormFields();
-            });
+            // Add 'active' class to the clicked button
+            button.classList.add('active');
 
-            if ('DeviceMotionEvent' in window) {
-                window.addEventListener('devicemotion', handleShake);
-            }
-        }
+            // Ensure the narrative updates properly
+            const selectedNarratives = getActiveNarratives();
+            console.log("Updated Mode:", button.id, "→ Active Narratives:", selectedNarratives);
+        });
+    });
+
+    document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
+    });
+
+    document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
+        if (shouldClearOnNextRoll) resetFormFields();
+    });
+
+    // Handle step-down toggle visual feedback
+    document.getElementById('stepDownToggle').addEventListener('change', function() {
+        this.parentElement.style.backgroundColor = this.checked ? 'var(--primary-hover)' : 'var(--bg-darker)';
+    });
+
+    if ('DeviceMotionEvent' in window) {
+        window.addEventListener('devicemotion', handleShake);
+    }
+}
 
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
