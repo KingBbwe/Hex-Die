@@ -1438,13 +1438,29 @@ let shouldClearOnNextRoll = false;
 // ======================
 // Configuration
 // ======================
-const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-const FATE_STORAGE_KEY = 'auldEweFatePoints';
-const MAX_FATE_POINTS = 5;
-const BASE_FATE_POINTS = 3;
-const INACTIVITY_TIMEOUT = 180000; // 3 minutes
-const CHAT_STORAGE_KEY = 'fateGameChats';
-const DEFAULT_CHAT_ID = '-1002185533073';
+        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
+        const FATE_STORAGE_KEY = 'auldEweFatePoints';
+        const MAX_FATE_POINTS = 5;
+        const BASE_FATE_POINTS = 3;
+        const INACTIVITY_TIMEOUT = 180000;
+        const CHAT_STORAGE_KEY = 'fateGameChats';
+        const DEFAULT_CHAT_ID = '-1002185533073';
+
+        // Shake Detection
+        const SHAKE_THRESHOLD = 15;
+        const SHAKE_COOLDOWN = 1000;
+        const MIN_SHAKE_DURATION = 2000;
+        let shakeEnabled = false;
+        let isShaking = false;
+        let shakeStartTime = 0;
+        let lastShakeTime = 0;
+
+        // Game State
+        let currentHexagramNumber = null;
+        let currentHexagramLines = [];
+        let currentChangingLines = [];
+        let inactivityTimer;
+        let shouldClearOnNextRoll = false;
 
 const outcomeThresholds = {
     4: { triumph: [4], conflict: [3, 2], disaster: [1] },
@@ -1478,18 +1494,6 @@ const scalingTable = {
     // Additional die types as necessary
 };
 
-// ======================
-// Game State
-// ======================
-let currentHexagramNumber = null;
-let currentHexagramLines = [];
-let currentChangingLines = [];
-let shakeEnabled = true; // Enable shake detection by default
-let isShaking = false;
-let shakeStartTime = Date.now();
-let lastShakeTime = Date.now();
-let inactivityTimer;
-let shouldClearOnNextRoll = false;
 
 // ======================
 // Chat Management
@@ -1580,42 +1584,43 @@ function joinGameGroup() {
 // ======================
 // Core Functions
 // ======================
-function initializeFatePoints() {
-   const storedData = localStorage.getItem(FATE_STORAGE_KEY);
-   const now = Date.now();
-   
-   if (storedData) {
-       const { points } = JSON.parse(storedData);
-       document.getElementById('fatePoints').value =
-           Math.min(points + BASE_FATE_POINTS , MAX_FATE_POINTS);
-       updateFateStorage(points);
-   } else {
-       document.getElementById('fatePoints').value =
-           BASE_FATE_POINTS;
-       updateFateStorage(BASE_FATE_POINTS);
-   }
-}
+        function initializeFatePoints() {
+            const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+            const now = Date.now();
+            
+            if (storedData) {
+                const { points } = JSON.parse(storedData);
+                document.getElementById('fatePoints').value = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+                updateFateStorage(points);
+            } else {
+                document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+                updateFateStorage(BASE_FATE_POINTS);
+            }
+        }
 
-function updateFateStorage(points) {
-   const storageData = { points : points || parseInt(document.getElementById('fatePoints').value), timestamp : Date.now() };
-   localStorage.setItem(FATE_STORAGE_KEY , JSON.stringify(storageData));
-}
+        function updateFateStorage(points) {
+            const storageData = { 
+                points: points || parseInt(document.getElementById('fatePoints').value), 
+                timestamp: Date.now() 
+            };
+            localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
+        }
 
-function resetFormFields() {
-   document.getElementById('dc').value = '';
-   document.getElementById('modifier').value = '0';
-   document.getElementById('stepDownToggle').checked = false;
-   document.getElementById('changingLines').style.display = 'none';
-   document.getElementById('changingLines').innerHTML = '';
-}
+        function resetFormFields() {
+            document.getElementById('dc').value = '';
+            document.getElementById('modifier').value = '0';
+            document.getElementById('stepDownToggle').checked = false;
+            document.getElementById('changingLines').style.display = 'none';
+            document.getElementById('changingLines').innerHTML = '';
+        }
 
-function startInactivityTimer() {
-   clearTimeout(inactivityTimer);
-   inactivityTimer = setTimeout(() => {
-       resetFormFields();
-       document.getElementById('result').innerHTML = '';
-   }, INACTIVITY_TIMEOUT);
-}
+        function startInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                resetFormFields();
+                document.getElementById('result').innerHTML = '';
+            }, INACTIVITY_TIMEOUT);
+        }
 
 async function sendToTelegram(messageType, data) {
     const gmCode = localStorage.getItem('activeGMCode');
@@ -1853,11 +1858,48 @@ function rollDiceAndHexagram() {
 // ======================
 // Shake Detection
 // ======================
-const MIN_SHAKE_DURATION=2000; 
-const SHAKE_END_TIMEOUT=500; 
-const SHAKE_THRESHOLD=15; 
-const SHAKE_COOLDOWN=1000;
+    
+        function enableShakeDetection() {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            shakeEnabled = true;
+                            alert('Shake detection enabled!');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                shakeEnabled = true;
+                alert('Shake detection enabled!');
+            }
+        }
 
+        function handleShake(event) {
+            if (!shakeEnabled) return;
+            
+            const acceleration = event.accelerationIncludingGravity;
+            const now = Date.now();
+            const accelerationMagnitude = Math.sqrt(
+                acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
+            );
+
+            if (accelerationMagnitude > SHAKE_THRESHOLD) {
+                if (!isShaking) {
+                    isShaking = true;
+                    shakeStartTime = now;
+                }
+                lastShakeTime = now;
+            } else {
+                if (isShaking && now - lastShakeTime > 500) {
+                    isShaking = false;
+                    const duration = now - shakeStartTime;
+                    if (duration >= MIN_SHAKE_DURATION) {
+                        rollDiceAndHexagram();
+                    }
+                }
+            }
+        }        
 function handleShake(event) {
      if(!shakeEnabled)return; 
      const now=Date.now(); 
@@ -1890,40 +1932,42 @@ document.addEventListener("DOMContentLoaded", () => {
 if ('DeviceMotionEvent' in window) {
      window.addEventListener('devicemotion', handleShake);
 }
-// ... [Your existing code above]
 
 // ======================
 // Setup Activity Listeners
 // ======================
-function setupActivityListeners() {
-    const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
-    inputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', () => {
-            shouldClearOnNextRoll = false;
-            startInactivityTimer();
-        });
-    });
+        // Event Listeners
+        function setupActivityListeners() {
+            const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    shouldClearOnNextRoll = false;
+                    startInactivityTimer();
+                });
+            });
 
-    document.querySelectorAll('.mode-button').forEach(button => {
-        button.addEventListener('click', () => {
-            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            shouldClearOnNextRoll = false;
-            startInactivityTimer();
-        });
-    });
-    
-    document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
-    });
+            document.querySelectorAll('.mode-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    shouldClearOnNextRoll = false;
+                    startInactivityTimer();
+                });
+            });
 
-    document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
-        if (shouldClearOnNextRoll) {
-            resetFormFields();
+            document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
+            });
+
+            document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
+                if (shouldClearOnNextRoll) resetFormFields();
+            });
+
+            if ('DeviceMotionEvent' in window) {
+                window.addEventListener('devicemotion', handleShake);
+            }
         }
-    });
-}
 
 // Initialize App
 initializeFatePoints();
