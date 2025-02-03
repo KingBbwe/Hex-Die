@@ -6,7 +6,7 @@
     <title>The Chronicles of Auld Ewe - Cyberpunk Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+    
     :root {
         --primary: #6b46c1;
         --primary-hover: #553c9a;
@@ -1690,9 +1690,6 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-    return { lines, scaledValues };
-}
-
 function getActiveNarratives() {
     const activeMode = document.querySelector('.mode-button.active').id;
     return {
@@ -1780,6 +1777,8 @@ function rollDiceAndHexagram() {
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
+
+    document.querySelector('.mode-button.active').textContent
     
     // Calculate adjusted values
     let dieType = originalDieType;
@@ -1846,6 +1845,16 @@ function rollDiceAndHexagram() {
     shouldClearOnNextRoll = true;
     startInactivityTimer();
 }
+
+        // Add this function anywhere in your script
+
+function adjustHexagram(original, reduction) {
+    let adjusted = original - reduction;
+    if (adjusted < 1) adjusted = 1;
+    if (adjusted > 64) adjusted = 64;
+    return adjusted;
+}
+        
 // ======================
 // Shake Detection
 // ======================
@@ -1932,6 +1941,9 @@ if ('DeviceMotionEvent' in window) {
                 });
             });
 
+            document.getElementById('harmonizeBtn').addEventListener('click', rollDiceAndHexagram);
+            document.getElementById('enableMotion').addEventListener('click', enableShakeDetection);
+            document.getElementById('oraclizeBtn').addEventListener('click', showChangingLines);
             document.querySelectorAll('.mode-button').forEach(button => {
                 button.addEventListener('click', () => {
                     document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
@@ -1958,21 +1970,10 @@ if ('DeviceMotionEvent' in window) {
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
     initializeFatePoints();
-    initializeEventListeners();
+    setupActivityListeners();  // Use the correct function name
     startInactivityTimer();
-document.getElementById('dieType').value = '6';
-document.getElementById('addFatePointButton').addEventListener('click', addFatePoint);
+    document.getElementById('dieType').value = '6';
     
-// Add shake status element if not already in HTML
-if (!document.getElementById('shakeStatus')) {
-    const status = document.createElement('div');
-    status.id = 'shakeStatus';
-    status.style.margin = '1rem 0';
-    status.style.textAlign = 'center';
-    document.querySelector('main').prepend(status);
-}
-
-    // iOS shake permission handling
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
         document.getElementById('enableMotion').style.display = 'block';
     }
