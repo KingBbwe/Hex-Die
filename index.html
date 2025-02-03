@@ -1427,40 +1427,32 @@
         };
 
 
-// Shake State
-let shakeEnabled = false;
-let isShaking = false;
-let shakeStartTime = 0;
-let lastShakeTime = 0; // Add this if not already present
-let inactivityTimer;
-let shouldClearOnNextRoll = false;
-        
 // ======================
 // Configuration
 // ======================
-        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
-        const FATE_STORAGE_KEY = 'auldEweFatePoints';
-        const MAX_FATE_POINTS = 5;
-        const BASE_FATE_POINTS = 3;
-        const INACTIVITY_TIMEOUT = 180000;
-        const CHAT_STORAGE_KEY = 'fateGameChats';
-        const DEFAULT_CHAT_ID = '-1002185533073';
+const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso';
+const FATE_STORAGE_KEY = 'auldEweFatePoints';
+const MAX_FATE_POINTS = 5;
+const BASE_FATE_POINTS = 3;
+const INACTIVITY_TIMEOUT = 180000;
+const CHAT_STORAGE_KEY = 'fateGameChats';
+const DEFAULT_CHAT_ID = '-1002185533073';
 
-        // Shake Detection
-        const SHAKE_THRESHOLD = 15;
-        const SHAKE_COOLDOWN = 1000;
-        const MIN_SHAKE_DURATION = 2000;
-        let shakeEnabled = false;
-        let isShaking = false;
-        let shakeStartTime = 0;
-        let lastShakeTime = 0;
+// Shake Detection 
+const SHAKE_THRESHOLD = 15;
+const SHAKE_COOLDOWN = 1000;
+const MIN_SHAKE_DURATION = 2000;
+let shakeEnabled = false;
+let isShaking = false;
+let shakeStartTime = 0;
+let lastShakeTime = 0;
 
-        // Game State
-        let currentHexagramNumber = null;
-        let currentHexagramLines = [];
-        let currentChangingLines = [];
-        let inactivityTimer;
-        let shouldClearOnNextRoll = false;
+// Game State 
+let currentHexagramNumber = null;
+let currentHexagramLines = [];
+let currentChangingLines = [];
+let inactivityTimer;
+let shouldClearOnNextRoll = false;
 
 const outcomeThresholds = {
     4: { triumph: [4], conflict: [3, 2], disaster: [1] },
@@ -1487,11 +1479,11 @@ const stepDownConfig = {
 };
 
 const scalingTable = {
-    // Ensure all necessary die types are included
-    // Adjusted based on known working configurations
     6: [1, 2, 3, 4, 5, 6],
     8: [1, 2, 3, 4, 5, 8],
-    // Additional die types as necessary
+    12: [1, 2, 3, 4, 5, 12],
+    20: [1, 2, 3, 4, 5, 20],
+    100: [1, 2, 3, 4, 5, 100]
 };
 
 
@@ -1900,23 +1892,7 @@ function rollDiceAndHexagram() {
                 }
             }
         }        
-function handleShake(event) {
-     if(!shakeEnabled)return; 
-     const now=Date.now(); 
-     const acceleration=event.accelerationIncludingGravity; 
-     if(isShaking){ 
-         if(Math.abs(acceleration.x)>SHAKE_THRESHOLD||Math.abs(acceleration.y)>SHAKE_THRESHOLD||Math.abs(acceleration.z)>SHAKE_THRESHOLD){ 
-             lastShakeTime=now; 
-         }else if(now-lastShakeTime>SHAKE_END_TIMEOUT){ 
-             isShaking=false; 
-         } 
-     }else{ 
-         if(Math.abs(acceleration.x)>SHAKE_THRESHOLD||Math.abs(acceleration.y)>SHAKE_THRESHOLD||Math.abs(acceleration.z)>SHAKE_THRESHOLD){ 
-             shakeStartTime=now; 
-             isShaking=true; 
-         } 
-     } 
-}
+
 
 // Initialize Fate Points on load
 document.addEventListener("DOMContentLoaded", () => {
