@@ -1575,18 +1575,24 @@ function joinGameGroup() {
 // Core Functions
 // ======================
         function initializeFatePoints() {
-            const storedData = localStorage.getItem(FATE_STORAGE_KEY);
-            const now = Date.now();
-            
-            if (storedData) {
-                const { points } = JSON.parse(storedData);
-                document.getElementById('fatePoints').value = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
-                updateFateStorage(points);
-            } else {
-                document.getElementById('fatePoints').value = BASE_FATE_POINTS;
-                updateFateStorage(BASE_FATE_POINTS);
-            }
-        }
+    const storedData = localStorage.getItem(FATE_STORAGE_KEY);
+    const now = Date.now();
+
+    if (storedData) {
+        const { points } = JSON.parse(storedData);
+
+        // ✅ Force correct logic: Use stored points but cap it at MAX_FATE_POINTS
+        const newPoints = Math.min(points + BASE_FATE_POINTS, MAX_FATE_POINTS);
+        document.getElementById('fatePoints').value = newPoints;
+
+        updateFateStorage(newPoints);
+    } else {
+        // ✅ Fix: Ensure it starts with BASE_FATE_POINTS (3)
+        console.log("No stored data, setting default fate points to:", BASE_FATE_POINTS);
+        document.getElementById('fatePoints').value = BASE_FATE_POINTS;
+        updateFateStorage(BASE_FATE_POINTS);
+    }
+}
 
         function updateFateStorage(points) {
             const storageData = { 
@@ -1946,10 +1952,10 @@ function setupActivityListeners() {
     document.getElementById('enableMotion').addEventListener('click', enableShakeDetection);
     document.getElementById('oraclizeBtn').addEventListener('click', showChangingLines);
 
-    // ✅ FIX: Ensure mode selection updates properly
+    // ✅ FIX: Ensure mode selection resets on load and properly updates on click
     document.querySelectorAll('.mode-button').forEach(button => {
         button.addEventListener('click', () => {
-            console.log("Mode button clicked:", button.id); // Log click event
+            console.log("Mode button clicked:", button.id); // Debugging log
 
             // Remove 'active' class from all mode buttons
             document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
@@ -1957,16 +1963,23 @@ function setupActivityListeners() {
             // Add 'active' class to the clicked button
             button.classList.add('active');
 
-            // Double-check that the class was actually added
+            // Double-check the update
             console.log("Updated active mode:", document.querySelector('.mode-button.active')?.id || "None");
 
-            // Force refresh the narratives
+            // Force refresh narratives
             setTimeout(() => {
                 const selectedNarratives = getActiveNarratives();
                 console.log("New Active Narratives:", selectedNarratives);
             }, 10);
         });
     });
+
+    // ✅ Force reset mode on page load
+    setTimeout(() => {
+        console.log("Forcing mode reset on page load...");
+        document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('personalMode')?.classList.add('active'); // Default to personalMode
+    }, 50);
 
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
