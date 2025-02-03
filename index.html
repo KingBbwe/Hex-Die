@@ -1454,18 +1454,6 @@ let currentChangingLines = [];
 let inactivityTimer;
 let shouldClearOnNextRoll = false;
 
-const outcomeThresholds = {
-    4: { triumph: [4], conflict: [3, 2], disaster: [1] },
-    6: { triumph: [6], conflict: [5, 4], disaster: [3, 2, 1] },
-    8: { triumph: [8, 7], conflict: [6, 5, 4], disaster: [3, 2, 1] },
-    12: { triumph: [12, 11, 10], conflict: [9, 8, 7, 6, 5], disaster: [4, 3, 2, 1] },
-    20: { triumph: [20, 19, 18, 17, 16], conflict: [15, 14, 13, 12, 11, 10], disaster: [9, 8, 7, 6, 5, 4, 3, 2, 1] },
-    100: {
-        triumph: Array.from({ length: 20 }, (_, i) => 100 - i),
-        conflict: Array.from({ length: 60 }, (_, i) => 80 - i),
-        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)
-    }
-};
 
 const stepDownConfig = {
     4: [4, 1],
