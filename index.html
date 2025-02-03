@@ -1686,6 +1686,7 @@ function addFatePoint() {
 
 function generateHexagramLines(hexagramNumber) {
     const binary = hexagramLookup[hexagramNumber];
+    if (!binary) return [];
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
@@ -1698,8 +1699,9 @@ function getActiveNarratives() {
         personalMode: personalNarratives,
         generalMode: generalNarratives,
         actionMode: actionNarratives
-    }[activeMode];
+    }[activeMode] || generalNarratives; // Fallback to general
 }
+
 
 function getOutcome(roll, dieType) {
     const thresholds = outcomeThresholds[dieType];
@@ -1713,23 +1715,22 @@ function getOutcome(roll, dieType) {
 function determineChangingLines(originalDieType, originalRoll) {
     const lines = [];
     const scaledValues = [];
-    const dieScale = scalingTable[originalDieType] || [1, 2, 3, 4, 5, 6];
+    const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
 
-    Array.from({ length: 6 }).forEach((_, i) => {
+    for (let line = 1; line <= 6; line++) {
         if (Math.random() < 0.25) {
-            const lineNumber = i + 1;
-            const d6Roll = Math.floor(Math.random() * 6); // 0-5
+            const d6Roll = Math.floor(Math.random() * 6);
             const scaledValue = dieScale[d6Roll];
 
-            lines.push(lineNumber);
+            lines.push(line);
             scaledValues.push({
-                line: lineNumber,
+                line: line,
                 original: originalRoll,
                 scaled: scaledValue,
                 dieType: originalDieType
             });
         }
-    });
+    }
 
     return { lines, scaledValues };
 }
@@ -1775,18 +1776,16 @@ function showChangingLines() {
 }
 
 function rollDiceAndHexagram() {
-    if (shouldClearOnNextRoll) {
-        resetFormFields();
-    }
-
-    const stepDownUsed = document.getElementById('stepDownToggle').checked;
+    // Validate inputs
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
-    let dieType = originalDieType;
     const mod = parseInt(document.getElementById('modifier').value) || 0;
-
+    
+    // Calculate adjusted values
+    let dieType = originalDieType;
     let hexagramReduction = 0;
-    if (stepDownUsed) {
+    
+    if (document.getElementById('stepDownToggle').checked) {
         const config = stepDownConfig[originalDieType];
         if (config) {
             dieType = config[0];
@@ -1794,9 +1793,11 @@ function rollDiceAndHexagram() {
         }
     }
 
+
+        // Generate results
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
+    const adjustedHex = adjustHexagram(currentHexagramNumber, hexagramReduction);
     currentHexagramLines = generateHexagramLines(currentHexagramNumber);
-    const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
 
     const dieRoll = Math.floor(Math.random() * dieType) + 1;
     const outcome = getOutcome(dieRoll, dieType);
@@ -1892,16 +1893,6 @@ function rollDiceAndHexagram() {
         }        
 
 
-// Initialize Fate Points on load
-document.addEventListener("DOMContentLoaded", () => {
-   initializeFatePoints();
-
-   // Attach button event listeners
-   document.getElementById('addFatePointButton').addEventListener('click', addFatePoint);
-   
-   // Add other button listeners here...
-});
-
 // Shake event listener for mobile devices
 if ('DeviceMotionEvent' in window) {
      window.addEventListener('devicemotion', handleShake);
@@ -1910,6 +1901,27 @@ if ('DeviceMotionEvent' in window) {
 // ======================
 // Setup Activity Listeners
 // ======================
+
+        function initializeEventListeners() {
+    // Mode buttons
+    document.querySelectorAll('.mode-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.mode-button').forEach(btn => 
+                btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+
+    // Roll button
+    document.getElementById('rollButton').addEventListener('click', rollDiceAndHexagram);
+    
+    // Step-down toggle visual feedback
+    document.getElementById('stepDownToggle').addEventListener('change', function() {
+        this.parentElement.style.backgroundColor = this.checked ? 
+            'var(--primary-hover)' : 'var(--bg-darker)';
+    });
+}
+
         // Event Listeners
         function setupActivityListeners() {
             const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
@@ -1944,11 +1956,13 @@ if ('DeviceMotionEvent' in window) {
         }
 
 // Initialize App
-initializeFatePoints();
-setupActivityListeners();
-startInactivityTimer();
+document.addEventListener("DOMContentLoaded", () => {
+    initializeFatePoints();
+    initializeEventListeners();
+    startInactivityTimer();
 document.getElementById('dieType').value = '6';
-
+document.getElementById('addFatePointButton').addEventListener('click', addFatePoint);
+    
 // Add shake status element if not already in HTML
 if (!document.getElementById('shakeStatus')) {
     const status = document.createElement('div');
@@ -1958,6 +1972,11 @@ if (!document.getElementById('shakeStatus')) {
     document.querySelector('main').prepend(status);
 }
 
+    // iOS shake permission handling
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        document.getElementById('enableMotion').style.display = 'block';
+    }
+});
 // End of your script
 </script>
 </body>
