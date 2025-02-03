@@ -1689,26 +1689,6 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLines(originalDieType, originalRoll) {
-    const lines = [];
-    const scaledValues = [];
-
-    Array.from({ length: 6 }).forEach((_, i) => {
-        if (Math.random() < 0.25) {
-            const lineNumber = i + 1;
-            const d6Roll = Math.floor(Math.random() * 6) + 1;
-            const scaledValue = scalingTable[originalDieType][d6Roll - 1];
-
-            lines.push(lineNumber);
-            scaledValues.push({
-                line: lineNumber,
-                original: originalRoll,
-                scaled: scaledValue,
-                dieType: originalDieType
-            });
-        }
-    });
-
     return { lines, scaledValues };
 }
 
