@@ -1474,14 +1474,15 @@ const CHAT_STORAGE_KEY = 'fateGameChats';
 const DEFAULT_CHAT_ID = '-1002185533073';
 
 // Shake Detection 
-const SHAKE_THRESHOLD = 15;
 const SHAKE_COOLDOWN = 1000;
 const MIN_SHAKE_DURATION = 2000;
 let shakeEnabled = false;
 let isShaking = false;
 let shakeStartTime = 0;
 let lastShakeTime = 0;
-
+const SHAKE_THRESHOLD = 15; // Adjust sensitivity as needed
+let lastX = null, lastY = null, lastZ = null;
+        
 // Game State 
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
@@ -1973,31 +1974,53 @@ function adjustHexagram(original, reduction) {
             }
         }
 
-        function handleShake(event) {
-            if (!shakeEnabled) return;
+function handleShake() {
+    // Haptic feedback
+    if (navigator.vibrate) {
+        navigator.vibrate(200); // Vibrate for 200ms
+    }
 
-            const acceleration = event.accelerationIncludingGravity;
-            const now = Date.now();
-            const accelerationMagnitude = Math.sqrt(
-                acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
-            );
+    // Clear StepDown toggle
+    const stepDownToggle = document.getElementById('stepDownToggle');
+    if (stepDownToggle) {
+        stepDownToggle.checked = false;
+    }
 
-            if (accelerationMagnitude > SHAKE_THRESHOLD) {
-                if (!isShaking) {
-                    isShaking = true;
-                    shakeStartTime = now;
-                }
-                lastShakeTime = now;
-            } else {
-                if (isShaking && now - lastShakeTime > 500) {
-                    isShaking = false;
-                    const duration = now - shakeStartTime;
-                    if (duration >= MIN_SHAKE_DURATION) {
-                        rollDiceAndHexagram();
-                    }
-                }
-            }
-        }        
+    // Clear DC and Modifier fields
+    const dcField = document.getElementById('dc');
+    const modifierField = document.getElementById('modifier');
+    if (dcField) dcField.value = '';
+    if (modifierField) modifierField.value = '';
+
+    // Clear Changing Lines information
+    const changingLinesInfo = document.getElementById('changingLines');
+    if (changingLinesInfo) {
+        changingLinesInfo.style.display = 'none';
+        changingLinesInfo.innerHTML = '';
+    }
+
+    // Trigger a fresh roll
+    rollDiceAndHexagram();
+}
+
+function onDeviceMotion(event) {
+    const { x, y, z } = event.accelerationIncludingGravity;
+
+    if (lastX !== null && lastY !== null && lastZ !== null) {
+        const deltaX = Math.abs(x - lastX);
+        const deltaY = Math.abs(y - lastY);
+        const deltaZ = Math.abs(z - lastZ);
+
+        if (deltaX + deltaY + deltaZ > SHAKE_THRESHOLD) {
+            handleShake();
+        }
+    }
+
+    lastX = x;
+    lastY = y;
+    lastZ = z;
+}
+       
 
 
 // Shake event listener for mobile devices
@@ -2053,6 +2076,11 @@ function setupActivityListeners() {
         });
     });
 
+    if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', onDeviceMotion);
+} else {
+    console.log('Device motion not supported');
+}
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
         alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
