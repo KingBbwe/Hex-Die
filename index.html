@@ -1648,47 +1648,58 @@ function joinGameGroup() {
             }, INACTIVITY_TIMEOUT);
         }
 
+====================
+// Telegram Messaging
+// ======================
+
 async function sendToTelegram(messageType, data) {
     const gmCode = localStorage.getItem('activeGMCode');
     const activeChatId = getActiveChatId(gmCode);
     const playerName = localStorage.getItem('playerName') || 'Anonymous';
 
-    if (!telegramBotToken || !activeChatId) return;
+    if (!telegramBotToken || !activeChatId) {
+        console.error("Telegram bot token or chat ID is missing.");
+        return;
+    }
+
+    // Escape Markdown for Telegram
+    function escapeMarkdown(text) {
+        return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
+    }
 
     let telegramMessage;
     switch (messageType) {
-        
         case 'roll':
-    telegramMessage =
-        `✨ *Harmonized Hex & Die* ✨\n` +
-        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-        `🌌 Hexagram: ${data.originalHexagram}\n` +
-        `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
-        (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
-        `📊 Total: ${data.total} (DC: ${data.dc})\n` +
-        `📜 Outcome: ${data.outcome}\n` +
-        `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
-        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-        `#AuldEwe #FateCast`;
-    break;
+            telegramMessage =
+                `✨ *Harmonized Hex & Die* ✨\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `🌌 Hexagram: ${escapeMarkdown(data.originalHexagram)}\n` +
+                `🎲 Die: d${escapeMarkdown(data.dieType)} → ${escapeMarkdown(data.dieRoll)}\n` +
+                (data.stepDownUsed ? `⚡ Step Down: -${escapeMarkdown(data.hexagramReduction)}\n` : '') +
+                `📊 Total: ${escapeMarkdown(data.total)} (DC: ${escapeMarkdown(data.dc)})\n` +
+                `📜 Outcome: ${escapeMarkdown(data.outcome)}\n` +
+                `🔮 ${escapeMarkdown(data.narrative ? data.narrative.substring(0, 100) : 'No narrative available')}...\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `#AuldEwe #FateCast`;
+            break;
 
         case 'legendary':
-            telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
+            telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${escapeMarkdown(data.message)}`;
             break;
 
         case 'changingLines':
             telegramMessage =
                 `🌀 *Changing Lines Revealed* 🌀\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})\n` +
+                `🎲 Original Roll: ${escapeMarkdown(data.originalRoll)} (${escapeMarkdown(data.originalOutcome)})\n` +
                 `🔮 Changed Lines:\n` +
-                `${data.changedLines.join('\n')}\n` +
+                `${data.changedLines.map(line => escapeMarkdown(line)).join('\n')}\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                 `#AuldEwe #FateCast`;
             break;
-            
-            case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+
+        case 'fate':
+            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${escapeMarkdown(data.points)}`;
             break;
     }
 
@@ -1702,7 +1713,10 @@ async function sendToTelegram(messageType, data) {
                 parse_mode: 'Markdown'
             })
         });
-        if (!response.ok) console.error('Telegram API error:', await response.text());
+
+        const result = await response.json();
+        console.log("Telegram API response:", result);
+        if (!response.ok) console.error('Telegram API error:', result);
     } catch (error) {
         console.error('Error sending to Telegram:', error);
     }
@@ -1747,6 +1761,17 @@ function getActiveNarratives() {
 }
 
 
+// ======================
+// Utility Functions
+// ======================
+
+function adjustHexagram(original, reduction) {
+    let adjusted = original - reduction;
+    if (adjusted < 1) adjusted = 1;
+    if (adjusted > 64) adjusted = 64;
+    return adjusted;
+}
+
 function getOutcome(roll, dieType) {
     const thresholds = outcomeThresholds[dieType];
     if (!thresholds) return 'Unknown';
@@ -1756,17 +1781,14 @@ function getOutcome(roll, dieType) {
     return 'Disaster';
 }
 
-
 function determineChangingLines(originalDieType, originalRoll) {
     const lines = [];
     const scaledValues = [];
     const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
 
-    // Deterministic method to select changing lines
     for (let line = 1; line <= 6; line++) {
         if (Math.random() < 0.25) {
             const scaledValue = dieScale[line - 1];
-            
             lines.push(line);
             scaledValues.push({
                 line: line,
@@ -1821,28 +1843,28 @@ function showChangingLines() {
     }
 }
 
+=====================
+// Dice Rolling Logic
+// ======================
+
 function rollDiceAndHexagram() {
-    // Validate inputs
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
 
-    document.querySelector('.mode-button.active').textContent
-
-    // Calculate adjusted values
     let dieType = originalDieType;
     let hexagramReduction = 0;
+    let stepDownUsed = false;
 
     if (document.getElementById('stepDownToggle').checked) {
         const config = stepDownConfig[originalDieType];
         if (config) {
             dieType = config[0];
             hexagramReduction = config[1];
+            stepDownUsed = true;
         }
     }
 
-
-        // Generate results
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
     const adjustedHex = adjustHexagram(currentHexagramNumber, hexagramReduction);
     currentHexagramLines = generateHexagramLines(currentHexagramNumber);
@@ -1877,22 +1899,7 @@ function rollDiceAndHexagram() {
         sendToTelegram('legendary', { message: legendaryMessage });
     }
 
-// In rollDie() or similar:
-const data = {
-  type: 'roll', // <-- MUST be lowercase 'roll'
-  originalHexagram: currentHexagram,
-  dieType: selectedDie,
-  dieRoll: result,
-  stepDownUsed: stepDownCheckbox.checked, // Ensure checkbox state is captured
-  hexagramReduction: stepDownCheckbox.checked ? reductionValue : 0,
-  total: calculateTotal(result, modifier),
-  dc: getDC(selectedDie),
-  outcome: determineOutcome(total, dc),
-  narrative: generateNarrative(outcome) // Restored from old code
-};
-
     sendToTelegram('roll', {
-        originalDieType: originalDieType,
         originalHexagram: currentHexagramNumber,
         adjustedHexagram: adjustedHex,
         dieType: dieType,
@@ -1909,14 +1916,20 @@ const data = {
     startInactivityTimer();
 }
 
-        // Add this function anywhere in your script
 
-function adjustHexagram(original, reduction) {
-    let adjusted = original - reduction;
-    if (adjusted < 1) adjusted = 1;
-    if (adjusted > 64) adjusted = 64;
-    return adjusted;
-}
+// In rollDie() or similar:
+const data = {
+  type: 'roll', // <-- MUST be lowercase 'roll'
+  originalHexagram: currentHexagram,
+  dieType: selectedDie,
+  dieRoll: result,
+  stepDownUsed: stepDownCheckbox.checked, // Ensure checkbox state is captured
+  hexagramReduction: stepDownCheckbox.checked ? reductionValue : 0,
+  total: calculateTotal(result, modifier),
+  dc: getDC(selectedDie),
+  outcome: determineOutcome(total, dc),
+  narrative: generateNarrative(outcome) // Restored from old code
+};
 
 // ======================
 // Shake Detection
