@@ -3936,7 +3936,7 @@ function showChangingLines() {
 }
 
 function rollDiceAndHexagram() {
-    // Validate inputs
+    resetRollFields(); // Clear fields FIRST
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
@@ -4023,7 +4023,19 @@ const data = {
     shouldClearOnNextRoll = true;
     startInactivityTimer();
 }
-
+function resetRollFields() {
+    // StepDown Toggle
+    document.getElementById('stepDownToggle').checked = false;
+    
+    // DC and Modifier
+    document.getElementById('dc').value = '';
+    document.getElementById('modifier').value = '0';
+    
+    // Changing Lines
+    const changingLines = document.getElementById('changingLines');
+    changingLines.style.display = 'none';
+    changingLines.innerHTML = '';
+}
         // Add this function anywhere in your script
 
 function adjustHexagram(original, reduction) {
@@ -4057,7 +4069,12 @@ function handleShake() {
     isOnCooldown = true;
     setTimeout(() => isOnCooldown = false, SHAKE_COOLDOWN);
 }
-
+if (duration >= MIN_SHAKE_DURATION) {
+        resetRollFields(); // Clear fields before roll
+        if (navigator.vibrate) navigator.vibrate(200);
+        rollDiceAndHexagram();
+    }
+}
 function onDeviceMotion(event) {
     const { x, y, z } = event.accelerationIncludingGravity;
     
