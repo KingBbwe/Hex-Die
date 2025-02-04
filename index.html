@@ -1627,7 +1627,7 @@ function joinGameGroup() {
     alert(`Successfully joined ${chats[gmCode].name}'s group!`);
 }
 
-// ======================
+======================
 // Core Functions
 // ======================
         function initializeFatePoints() {
@@ -1852,7 +1852,7 @@ function showChangingLines() {
 }
 
 function rollDiceAndHexagram() {
-    resetRollFields(); // Clear fields FIRST
+    // Validate inputs
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
@@ -1870,8 +1870,7 @@ function rollDiceAndHexagram() {
             hexagramReduction = config[1];
         }
     }
-// In rollDiceAndHexagram()
-${hexagramNames[currentHexagramNumber]}
+
 
         // Generate results
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
@@ -1939,19 +1938,7 @@ const data = {
     shouldClearOnNextRoll = true;
     startInactivityTimer();
 }
-function resetRollFields() {
-    // StepDown Toggle
-    document.getElementById('stepDownToggle').checked = false;
-    
-    // DC and Modifier
-    document.getElementById('dc').value = '';
-    document.getElementById('modifier').value = '0';
-    
-    // Changing Lines
-    const changingLines = document.getElementById('changingLines');
-    changingLines.style.display = 'none';
-    changingLines.innerHTML = '';
-}
+
         // Add this function anywhere in your script
 
 function adjustHexagram(original, reduction) {
@@ -1965,55 +1952,53 @@ function adjustHexagram(original, reduction) {
 // Shake Detection
 // ======================
 
-function handleShake() {
-    if (isOnCooldown) return;
-    
-    // Haptic feedback (single pulse)
-    if (navigator.vibrate) navigator.vibrate(200);
+        function enableShakeDetection() {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            shakeEnabled = true;
+                            alert('Shake detection enabled!');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                shakeEnabled = true;
+                alert('Shake detection enabled!');
+            }
+        }
 
-    // Clear fields
-    document.getElementById('stepDownToggle').checked = false;
-    document.getElementById('dc').value = '';
-    document.getElementById('modifier').value = '0';
-    document.getElementById('changingLines').style.display = 'none';
-    document.getElementById('changingLines').innerHTML = '';
+        function handleShake(event) {
+            if (!shakeEnabled) return;
 
-    // Trigger roll
-    rollDiceAndHexagram();
+            const acceleration = event.accelerationIncludingGravity;
+            const now = Date.now();
+            const accelerationMagnitude = Math.sqrt(
+                acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
+            );
 
-    // Cooldown enforcement
-    isOnCooldown = true;
-    setTimeout(() => isOnCooldown = false, SHAKE_COOLDOWN);
+            if (accelerationMagnitude > SHAKE_THRESHOLD) {
+                if (!isShaking) {
+                    isShaking = true;
+                    shakeStartTime = now;
+                }
+                lastShakeTime = now;
+            } else {
+                if (isShaking && now - lastShakeTime > 500) {
+                    isShaking = false;
+                    const duration = now - shakeStartTime;
+                    if (duration >= MIN_SHAKE_DURATION) {
+                        rollDiceAndHexagram();
+                    }
+                }
+            }
+        }        
+
+
+// Shake event listener for mobile devices
+if ('DeviceMotionEvent' in window) {
+     window.addEventListener('devicemotion', handleShake);
 }
-if (duration >= MIN_SHAKE_DURATION) {
-        resetRollFields(); // Clear fields before roll
-        if (navigator.vibrate) navigator.vibrate(200);
-        rollDiceAndHexagram();
-    }
-}
-function onDeviceMotion(event) {
-    const { x, y, z } = event.accelerationIncludingGravity;
-    
-    if (!lastX || !lastY || !lastZ) {
-        lastX = x;
-        lastY = y;
-        lastZ = z;
-        return;
-    }
-
-    const deltaX = Math.abs(x - lastX);
-    const deltaY = Math.abs(y - lastY);
-    const deltaZ = Math.abs(z - lastZ);
-
-    if ((deltaX + deltaY + deltaZ) > SHAKE_THRESHOLD) {
-        handleShake();
-    }
-
-    lastX = x;
-    lastY = y;
-    lastZ = z;
-}
-}}
 
 // ======================
 // Setup Activity Listeners
@@ -2039,7 +2024,7 @@ function onDeviceMotion(event) {
     });
 }
 
-// Event Listeners
+        // Event Listeners
 function setupActivityListeners() {
     const inputs = ['dc', 'modifier', 'stepDownToggle', 'dieType'];
     inputs.forEach(id => {
@@ -2049,43 +2034,41 @@ function setupActivityListeners() {
         });
     });
 
-    // Mode buttons
+    // ✅ RESTORED: Correct mode switching logic
     document.querySelectorAll('.mode-button').forEach(button => {
         button.addEventListener('click', () => {
             document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
+
             shouldClearOnNextRoll = false;
             startInactivityTimer();
+
+            // Debugging log
             console.log("Mode switched to:", button.id);
         });
     });
 
-    // How to Play
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
         alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
     });
 
-    // Harmonize Button (Single Handler)
-    document.getElementById('rollButton').addEventListener('click', () => {
+    document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
         if (shouldClearOnNextRoll) {
             resetFormFields();
         }
-        rollDiceAndHexagram(); // Add this
     });
-} // ✅ Proper function closure
-
-        
+}
 // Initialize App
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", () => {
     initializeFatePoints();
-    setupActivityListeners();
+    setupActivityListeners();  // Use the correct function name
     startInactivityTimer();
     document.getElementById('dieType').value = '6';
 
-    // Remove enableMotion reference (no longer needed)
-    const enableMotionBtn = document.getElementById('enableMotion');
-    if (enableMotionBtn) enableMotionBtn.style.display = 'none';
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        document.getElementById('enableMotion').style.display = 'block';
+    }
 });
 // End of your script
 </script>
