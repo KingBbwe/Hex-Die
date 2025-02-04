@@ -1686,8 +1686,10 @@ async function sendToTelegram(messageType, data) {
 // ======================
 // Utility Functions
 // ======================
-
-
+function escapeMarkdown(text) {
+    // Escape only necessary Markdown special characters for Telegram, but exclude numbers
+    return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
+}
 
 function generateTelegramMessage(messageType, data) {
     // Generate correctly formatted Telegram messages without escaping numbers incorrectly
