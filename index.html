@@ -402,7 +402,7 @@
                 <button class="mode-button" id="actionMode">Action</button>
             </div>
 
-            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
+        <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
             <button onclick="rollDiceAndHexagram()">Harmonize</button>
             <button class="oraclize-btn" onclick="showChangingLines()">Oraclize</button>
 
@@ -2062,17 +2062,18 @@ function setupActivityListeners() {
             resetFormFields();
         }
     });
-}
+});
+        
 // Initialize App
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function() {
     initializeFatePoints();
-    setupActivityListeners();  // Use the correct function name
+    setupActivityListeners();
     startInactivityTimer();
     document.getElementById('dieType').value = '6';
 
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        document.getElementById('enableMotion').style.display = 'block';
-    }
+    // Remove enableMotion reference (no longer needed)
+    const enableMotionBtn = document.getElementById('enableMotion');
+    if (enableMotionBtn) enableMotionBtn.style.display = 'none';
 });
 // End of your script
 </script>
