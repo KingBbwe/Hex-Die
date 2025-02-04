@@ -1597,6 +1597,57 @@ function joinGameGroup() {
     alert(`Successfully joined ${chats[gmCode].name}'s group!`);
 }
 
+======================
+// Debugging: Ensure Chat Manager Works
+// ======================
+function setupNewGameGroup() {
+    console.log("Creating new game group...");
+
+    const groupName = document.getElementById('groupName').value;
+    const chatId = document.getElementById('chatId').value;
+
+    if (!groupName || !chatId) {
+        alert('Please fill in both group name and chat ID');
+        return;
+    }
+
+    const gmCode = saveNewChat(groupName, chatId);
+    console.log("New GM Code:", gmCode);
+
+    debugUIUpdate("gmCodeText", gmCode);
+    document.getElementById("gmCodeDisplay").style.display = 'block';
+}
+
+// ======================
+// Debugging: Ensure Player Joins Work
+// ======================
+function joinGameGroup() {
+    console.log("Joining game group...");
+
+    const gmCode = document.getElementById('gmCode').value;
+    const playerName = document.getElementById('playerName').value;
+
+    if (!gmCode || !playerName) {
+        alert('Please fill in both GM code and your name');
+        return;
+    }
+
+    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+
+    if (!chats[gmCode]) {
+        alert('Invalid GM code');
+        return;
+    }
+
+    localStorage.setItem('activeGMCode', gmCode);
+    localStorage.setItem('playerName', playerName);
+
+    chats[gmCode].players.push({ name: playerName });
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
+
+    alert(`Successfully joined ${chats[gmCode].name}'s group!`);
+}
+
 // ======================
 // Core Functions
 // ======================
@@ -1648,10 +1699,7 @@ function joinGameGroup() {
             }, INACTIVITY_TIMEOUT);
         }
 
-====================
-// Telegram Messaging
-// ======================
-// ======================
+=// ======================
 // Telegram Messaging
 // ======================
 
@@ -1665,7 +1713,7 @@ async function sendToTelegram(messageType, data) {
         return;
     }
 
-    let telegramMessage = generateTelegramMessage(messageType, data); // Call updated function
+    let telegramMessage = generateTelegramMessage(messageType, data); // Calls the updated function
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
@@ -1674,7 +1722,7 @@ async function sendToTelegram(messageType, data) {
             body: JSON.stringify({
                 chat_id: activeChatId,
                 text: telegramMessage,
-                parse_mode: 'Markdown'  // Ensure Markdown format is used
+                parse_mode: 'Markdown'  // Ensures Markdown format is used
             })
         });
 
@@ -1691,23 +1739,23 @@ async function sendToTelegram(messageType, data) {
 // ======================
 
 function escapeMarkdown(text) {
-    // Escape only necessary Markdown special characters for Telegram.
+    // Escape only necessary Markdown special characters for Telegram, but exclude numbers
     return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
 }
 
 function generateTelegramMessage(messageType, data) {
-    // Generate correctly formatted Telegram messages.
+    // Generate correctly formatted Telegram messages without escaping numbers incorrectly
     let telegramMessage = "";
 
     if (messageType === 'roll') {
-        let stepDownText = data.stepDownUsed ? `⚡ Step Down: -${escapeMarkdown(data.hexagramReduction)}\n` : "";
+        let stepDownText = data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : "";
         telegramMessage =
             `✨ *Harmonized Hex & Die* ✨\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-            `🌌 Hexagram: ${escapeMarkdown(data.originalHexagram)}\n` +
-            `🎲 Die: d${escapeMarkdown(data.dieType)} → ${escapeMarkdown(data.dieRoll)}\n` +
+            `🌌 Hexagram: ${data.originalHexagram}\n` +
+            `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
             `${stepDownText}` +
-            `📊 Total: ${escapeMarkdown(data.total)} (DC: ${escapeMarkdown(data.dc)})\n` +
+            `📊 Total: ${data.total} (DC: ${data.dc})\n` +
             `📜 Outcome: ${escapeMarkdown(data.outcome)}\n` +
             `🔮 ${escapeMarkdown(data.narrative ? data.narrative.substring(0, 100) : 'No narrative available')}...\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
@@ -1723,18 +1771,19 @@ function generateTelegramMessage(messageType, data) {
         telegramMessage =
             `🌀 *Changing Lines Revealed* 🌀\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-            `🎲 Original Roll: ${escapeMarkdown(data.originalRoll)} (${escapeMarkdown(data.originalOutcome)})\n` +
+            `🎲 Original Roll: ${data.originalRoll} (${escapeMarkdown(data.originalOutcome)})\n` +
             `🔮 Changed Lines:\n${changedLinesText}\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
             `#AuldEwe #FateCast`;
     }
 
     else if (messageType === 'fate') {
-        telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${escapeMarkdown(data.points)}`;
+        telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
     }
 
     return telegramMessage;
 }
+
 function addFatePoint() {
    const currentPoints = parseInt(document.getElementById('fatePoints').value);
 
@@ -1856,11 +1905,27 @@ function showChangingLines() {
     }
 }
 
-=====================
-// Dice Rolling Logic
-// ======================
 
+// ======================
+// Debugging: Ensure UI Updates
+// ======================
+function debugUIUpdate(id, value) {
+    console.log(`Updating UI: ${id} →`, value);
+    const element = document.getElementById(id);
+    if (element) {
+        element.innerHTML = value;
+    } else {
+        console.warn(`Element #${id} not found.`);
+    }
+}
+
+=====================
+// ======================
+// Dice Rolling Logic (Fixed)
+// ======================
 function rollDiceAndHexagram() {
+    console.log("Rolling dice...");
+
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
@@ -1878,6 +1943,7 @@ function rollDiceAndHexagram() {
         }
     }
 
+    // Ensure hexagram generation
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
     const adjustedHex = adjustHexagram(currentHexagramNumber, hexagramReduction);
     currentHexagramLines = generateHexagramLines(currentHexagramNumber);
@@ -1895,7 +1961,8 @@ function rollDiceAndHexagram() {
         navigator.vibrate(100);
     }
 
-    document.getElementById('result').innerHTML = `
+    // Debugging: Check if UI updates
+    debugUIUpdate("result", `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
         <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
         <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
@@ -1904,11 +1971,11 @@ function rollDiceAndHexagram() {
         <strong>Total:</strong> ${total} vs DC ${dc}<br>
         <strong>Outcome:</strong> ${outcome}<br>
         <strong>Narrative:</strong> ${narrative}
-    `;
+    `);
 
     if (outcome === 'Triumph' && total >= dc) {
         const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
-        document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+        debugUIUpdate("result", document.getElementById("result").innerHTML + `<div class="legendary-feat">${legendaryMessage}</div>`);
         sendToTelegram('legendary', { message: legendaryMessage });
     }
 
@@ -1930,19 +1997,18 @@ function rollDiceAndHexagram() {
 }
 
 
-// In rollDie() or similar:
-const data = {
-  type: 'roll', // <-- MUST be lowercase 'roll'
-  originalHexagram: currentHexagram,
-  dieType: selectedDie,
-  dieRoll: result,
-  stepDownUsed: stepDownCheckbox.checked, // Ensure checkbox state is captured
-  hexagramReduction: stepDownCheckbox.checked ? reductionValue : 0,
-  total: calculateTotal(result, modifier),
-  dc: getDC(selectedDie),
-  outcome: determineOutcome(total, dc),
-  narrative: generateNarrative(outcome) // Restored from old code
-};
+sendToTelegram('roll', {
+    originalHexagram: currentHexagramNumber,  // ✅ Fixed variable name
+    adjustedHexagram: adjustedHex,  // ✅ Ensures step-down is included
+    dieType: dieType,  // ✅ Uses correct variable
+    dieRoll: dieRoll,  // ✅ Matches roll result
+    stepDownUsed: stepDownUsed,  // ✅ Ensures checkbox state is captured
+    hexagramReduction: hexagramReduction,  // ✅ Matches reduction value
+    total: total,  // ✅ Already calculated correctly
+    dc: dc,  // ✅ Directly taken from UI
+    outcome: outcome,  // ✅ Correctly determined
+    narrative: narrative  // ✅ Uses pre-generated narrative
+});
 
 // ======================
 // Shake Detection
@@ -2056,16 +2122,24 @@ function setupActivityListeners() {
     });
 }
 // Initialize App
+// ======================
+// Event Listeners Setup
+// ======================
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("Initializing event listeners...");
     initializeFatePoints();
-    setupActivityListeners();  // Use the correct function name
+    setupActivityListeners();
     startInactivityTimer();
     document.getElementById('dieType').value = '6';
 
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
         document.getElementById('enableMotion').style.display = 'block';
     }
-});
+
+    // Ensure the roll button is properly attached
+    document.getElementById("rollButton")?.addEventListener("click", rollDiceAndHexagram);
+
+    console.log("Event listeners initialized.");
 // End of your script
 </script>
 </body>
