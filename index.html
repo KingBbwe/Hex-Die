@@ -1790,7 +1790,19 @@ function getOutcome(roll, dieType) {
     if (thresholds.conflict.includes(roll)) return 'Conflict';
     return 'Disaster';
 }
-
+ function resetRollFields() {
+    // StepDown Toggle
+    document.getElementById('stepDownToggle').checked = false;
+    
+    // DC and Modifier
+    document.getElementById('dc').value = '';
+    document.getElementById('modifier').value = '0';
+    
+    // Changing Lines
+    const changingLines = document.getElementById('changingLines');
+    changingLines.style.display = 'none';
+    changingLines.innerHTML = '';
+}
 
 function determineChangingLines(originalDieType, originalRoll) {
     const lines = [];
@@ -1857,7 +1869,7 @@ function showChangingLines() {
 }
 
 function rollDiceAndHexagram() {
-    // Validate inputs
+     resetRollFields(); // Clear fields FIRST
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
@@ -1875,7 +1887,6 @@ function rollDiceAndHexagram() {
             hexagramReduction = config[1];
         }
     }
-
 
         // Generate results
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
@@ -1962,7 +1973,12 @@ function handleShake(event) {
     const accelerationMagnitude = Math.sqrt(
         acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
     );
-
+if (duration >= MIN_SHAKE_DURATION) {
+        resetRollFields(); // Clear fields before roll
+        if (navigator.vibrate) navigator.vibrate(200);
+        rollDiceAndHexagram();
+    }
+}
     if (accelerationMagnitude > SHAKE_THRESHOLD) {
         if (!isShaking) {
             isShaking = true;
