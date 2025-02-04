@@ -1657,10 +1657,7 @@ async function sendToTelegram(messageType, data) {
 
     let telegramMessage;
     switch (messageType) {
-        case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
-            break;
-
+        
         case 'roll':
     telegramMessage =
         `✨ *Harmonized Hex & Die* ✨\n` +
@@ -1688,6 +1685,10 @@ async function sendToTelegram(messageType, data) {
                 `${data.changedLines.join('\n')}\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                 `#AuldEwe #FateCast`;
+            break;
+            
+            case 'fate':
+            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
             break;
     }
 
