@@ -1847,7 +1847,19 @@ function rollDiceAndHexagram() {
         document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
         sendToTelegram('legendary', { message: legendaryMessage });
     }
-
+// In rollDie() or similar:
+const data = {
+  type: 'roll', // <-- MUST be lowercase 'roll'
+  originalHexagram: currentHexagram,
+  dieType: selectedDie,
+  dieRoll: result,
+  stepDownUsed: stepDownCheckbox.checked, // Ensure checkbox state is captured
+  hexagramReduction: stepDownCheckbox.checked ? reductionValue : 0,
+  total: calculateTotal(result, modifier),
+  dc: getDC(selectedDie),
+  outcome: determineOutcome(total, dc),
+  narrative: generateNarrative(outcome) // Restored from old code
+};
     sendToTelegram('roll', {
         originalDieType: originalDieType,
         originalHexagram: currentHexagramNumber,
