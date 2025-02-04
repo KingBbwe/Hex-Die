@@ -244,6 +244,41 @@
         padding: 0.5rem 1rem !important;
     }
 
+               .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-down-toggle {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin: 0;
+        }
+
+        .step-down-toggle:checked {
+            background-color: #39FF14;
+            border-color: #39FF14;
+        }
+
+        .step-down-toggle:checked::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        
     .chat-manager-container {
         margin-top: 2rem;
         padding: 1rem;
@@ -354,11 +389,11 @@
             </div>
 
             <div class="toggle-group">
-                <div class="checkbox-wrapper">
-                    <input type="checkbox" id="stepDownToggle">
-                    <label for="stepDownToggle" style="margin: 0;">Step Down</label>
-                </div>
-            </div>
+    <div class="checkbox-wrapper">
+        <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
+        <label for="stepDownToggle" style="margin: 0;">Step Down</label>
+    </div>
+</div>
 
             <h3 style="margin-bottom: 0.5rem;">Mode</h3>
             <div class="mode-group">
