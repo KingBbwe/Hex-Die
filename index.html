@@ -1482,7 +1482,8 @@ let shakeStartTime = 0;
 let lastShakeTime = 0;
 const SHAKE_THRESHOLD = 15; // Adjust sensitivity as needed
 let lastX = null, lastY = null, lastZ = null;
-        
+let isOnCooldown = false; // Cooldown flag
+
 // Game State 
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
@@ -1975,6 +1976,8 @@ function adjustHexagram(original, reduction) {
         }
 
 function handleShake() {
+    if (isOnCooldown) return; // Exit if on cooldown
+
     // Haptic feedback
     if (navigator.vibrate) {
         navigator.vibrate(200); // Vibrate for 200ms
@@ -2001,6 +2004,12 @@ function handleShake() {
 
     // Trigger a fresh roll
     rollDiceAndHexagram();
+
+    // Set cooldown
+    isOnCooldown = true;
+    setTimeout(() => {
+        isOnCooldown = false; // Reset cooldown after 1 second
+    }, SHAKE_COOLDOWN);
 }
 
 function onDeviceMotion(event) {
@@ -2020,8 +2029,6 @@ function onDeviceMotion(event) {
     lastY = y;
     lastZ = z;
 }
-       
-
 
 // Shake event listener for mobile devices
 if ('DeviceMotionEvent' in window) {
