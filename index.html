@@ -1696,9 +1696,13 @@ function generateTelegramMessage(messageType, data) {
     // Generate correctly formatted Telegram messages without escaping numbers incorrectly
     let telegramMessage = "";
 
+    // Common header for all messages
+    const commonHeader = "📩 *Message from AuldEwe* 📩\n";
+
     if (messageType === 'roll') {
         let stepDownText = data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : "";
         telegramMessage =
+            commonHeader +
             `✨ *Harmonized Hex & Die* ✨\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
             `🌌 Hexagram: ${data.originalHexagram}\n` +
@@ -1712,12 +1716,16 @@ function generateTelegramMessage(messageType, data) {
     }
 
     else if (messageType === 'legendary') {
-        telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${escapeMarkdown(data.message)}`;
+        telegramMessage =
+            commonHeader +
+            `🌟 *LEGENDARY FEAT* 🌟\n${escapeMarkdown(data.message)}` +
+            `\n#AuldEwe #FateCast`;
     }
 
     else if (messageType === 'changingLines') {
         let changedLinesText = data.changedLines.map(line => escapeMarkdown(line)).join("\n");
         telegramMessage =
+            commonHeader +
             `🌀 *Changing Lines Revealed* 🌀\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
             `🎲 Original Roll: ${data.originalRoll} (${escapeMarkdown(data.originalOutcome)})\n` +
@@ -1727,11 +1735,15 @@ function generateTelegramMessage(messageType, data) {
     }
 
     else if (messageType === 'fate') {
-        telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+        telegramMessage =
+            commonHeader +
+            `✨ *Fate Point Added* ✨\nNew total: ${data.points}` +
+            `\n#AuldEwe #FateCast`;
     }
 
     return telegramMessage;
 }
+
 
 function addFatePoint() {
    const currentPoints = parseInt(document.getElementById('fatePoints').value);
