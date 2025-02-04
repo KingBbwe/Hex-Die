@@ -1651,6 +1651,9 @@ function joinGameGroup() {
 ====================
 // Telegram Messaging
 // ======================
+// ======================
+// Telegram Messaging
+// ======================
 
 async function sendToTelegram(messageType, data) {
     const gmCode = localStorage.getItem('activeGMCode');
@@ -1662,46 +1665,7 @@ async function sendToTelegram(messageType, data) {
         return;
     }
 
-    // Escape Markdown for Telegram
-    function escapeMarkdown(text) {
-        return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
-    }
-
-    let telegramMessage;
-    switch (messageType) {
-        case 'roll':
-            telegramMessage =
-                `✨ *Harmonized Hex & Die* ✨\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `🌌 Hexagram: ${escapeMarkdown(data.originalHexagram)}\n` +
-                `🎲 Die: d${escapeMarkdown(data.dieType)} → ${escapeMarkdown(data.dieRoll)}\n` +
-                (data.stepDownUsed ? `⚡ Step Down: -${escapeMarkdown(data.hexagramReduction)}\n` : '') +
-                `📊 Total: ${escapeMarkdown(data.total)} (DC: ${escapeMarkdown(data.dc)})\n` +
-                `📜 Outcome: ${escapeMarkdown(data.outcome)}\n` +
-                `🔮 ${escapeMarkdown(data.narrative ? data.narrative.substring(0, 100) : 'No narrative available')}...\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `#AuldEwe #FateCast`;
-            break;
-
-        case 'legendary':
-            telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${escapeMarkdown(data.message)}`;
-            break;
-
-        case 'changingLines':
-            telegramMessage =
-                `🌀 *Changing Lines Revealed* 🌀\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `🎲 Original Roll: ${escapeMarkdown(data.originalRoll)} (${escapeMarkdown(data.originalOutcome)})\n` +
-                `🔮 Changed Lines:\n` +
-                `${data.changedLines.map(line => escapeMarkdown(line)).join('\n')}\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `#AuldEwe #FateCast`;
-            break;
-
-        case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${escapeMarkdown(data.points)}`;
-            break;
-    }
+    let telegramMessage = generateTelegramMessage(messageType, data); // Call updated function
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
@@ -1710,7 +1674,7 @@ async function sendToTelegram(messageType, data) {
             body: JSON.stringify({
                 chat_id: activeChatId,
                 text: telegramMessage,
-                parse_mode: 'Markdown'
+                parse_mode: 'Markdown'  // Ensure Markdown format is used
             })
         });
 
@@ -1722,6 +1686,55 @@ async function sendToTelegram(messageType, data) {
     }
 }
 
+// ======================
+// Utility Functions
+// ======================
+
+function escapeMarkdown(text) {
+    // Escape only necessary Markdown special characters for Telegram.
+    return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
+}
+
+function generateTelegramMessage(messageType, data) {
+    // Generate correctly formatted Telegram messages.
+    let telegramMessage = "";
+
+    if (messageType === 'roll') {
+        let stepDownText = data.stepDownUsed ? `⚡ Step Down: -${escapeMarkdown(data.hexagramReduction)}\n` : "";
+        telegramMessage =
+            `✨ *Harmonized Hex & Die* ✨\n` +
+            `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+            `🌌 Hexagram: ${escapeMarkdown(data.originalHexagram)}\n` +
+            `🎲 Die: d${escapeMarkdown(data.dieType)} → ${escapeMarkdown(data.dieRoll)}\n` +
+            `${stepDownText}` +
+            `📊 Total: ${escapeMarkdown(data.total)} (DC: ${escapeMarkdown(data.dc)})\n` +
+            `📜 Outcome: ${escapeMarkdown(data.outcome)}\n` +
+            `🔮 ${escapeMarkdown(data.narrative ? data.narrative.substring(0, 100) : 'No narrative available')}...\n` +
+            `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+            `#AuldEwe #FateCast`;
+    }
+
+    else if (messageType === 'legendary') {
+        telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${escapeMarkdown(data.message)}`;
+    }
+
+    else if (messageType === 'changingLines') {
+        let changedLinesText = data.changedLines.map(line => escapeMarkdown(line)).join("\n");
+        telegramMessage =
+            `🌀 *Changing Lines Revealed* 🌀\n` +
+            `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+            `🎲 Original Roll: ${escapeMarkdown(data.originalRoll)} (${escapeMarkdown(data.originalOutcome)})\n` +
+            `🔮 Changed Lines:\n${changedLinesText}\n` +
+            `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+            `#AuldEwe #FateCast`;
+    }
+
+    else if (messageType === 'fate') {
+        telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${escapeMarkdown(data.points)}`;
+    }
+
+    return telegramMessage;
+}
 function addFatePoint() {
    const currentPoints = parseInt(document.getElementById('fatePoints').value);
 
