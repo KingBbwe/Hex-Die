@@ -1476,6 +1476,7 @@ const DEFAULT_CHAT_ID = '-1002185533073';
 const SHAKE_THRESHOLD = 15;
 const SHAKE_COOLDOWN = 1000;
 const MIN_SHAKE_DURATION = 2000;
+
 let shakeEnabled = false;
 let isShaking = false;
 let shakeStartTime = 0;
@@ -1953,55 +1954,38 @@ function adjustHexagram(original, reduction) {
 }
 
 // ======================
-// Shake Detection
+// Optimized Shake Handling 
 // ======================
+function handleShake(event) {
+    const acceleration = event.accelerationIncludingGravity;
+    const now = Date.now();
+    const accelerationMagnitude = Math.sqrt(
+        acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
+    );
 
-        function enableShakeDetection() {
-            if (typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            shakeEnabled = true;
-                            alert('Shake detection enabled!');
-                        }
-                    })
-                    .catch(console.error);
-            } else {
-                shakeEnabled = true;
-                alert('Shake detection enabled!');
+    if (accelerationMagnitude > SHAKE_THRESHOLD) {
+        if (!isShaking) {
+            isShaking = true;
+            shakeStartTime = now;
+        }
+        lastShakeTime = now;
+    } else {
+        if (isShaking && now - lastShakeTime > 500) {
+            isShaking = false;
+            const duration = now - shakeStartTime;
+            if (duration >= MIN_SHAKE_DURATION) {
+                // Haptic feedback FIRST
+                if (navigator.vibrate) navigator.vibrate(200);
+                // Then execute roll
+                rollDiceAndHexagram();
             }
         }
+    }
+}
 
-        function handleShake(event) {
-            if (!shakeEnabled) return;
-
-            const acceleration = event.accelerationIncludingGravity;
-            const now = Date.now();
-            const accelerationMagnitude = Math.sqrt(
-                acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
-            );
-
-            if (accelerationMagnitude > SHAKE_THRESHOLD) {
-                if (!isShaking) {
-                    isShaking = true;
-                    shakeStartTime = now;
-                }
-                lastShakeTime = now;
-            } else {
-                if (isShaking && now - lastShakeTime > 500) {
-                    isShaking = false;
-                    const duration = now - shakeStartTime;
-                    if (duration >= MIN_SHAKE_DURATION) {
-                        rollDiceAndHexagram();
-                    }
-                }
-            }
-        }        
-
-
-// Shake event listener for mobile devices
-if ('DeviceMotionEvent' in window) {
-     window.addEventListener('devicemotion', handleShake);
+// Single event listener
+if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', handleShake);
 }
 
 // ======================
