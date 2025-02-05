@@ -1662,7 +1662,7 @@ async function sendToTelegram(messageType, data) {
         return;
     }
 
-    let telegramMessage = generateTelegramMessage(messageType, data); // Calls the updated function
+    let telegramMessage = generateTelegramMessage(messageType, data);
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
@@ -1671,7 +1671,7 @@ async function sendToTelegram(messageType, data) {
             body: JSON.stringify({
                 chat_id: activeChatId,
                 text: telegramMessage,
-                parse_mode: 'Markdown'  // Ensures Markdown format is used
+                parse_mode: 'Markdown'
             })
         });
 
@@ -1683,19 +1683,8 @@ async function sendToTelegram(messageType, data) {
     }
 }
 
-// ======================
-// Utility Functions
-// ======================
-function escapeMarkdown(text) {
-    // Escape only necessary Markdown special characters for Telegram, but exclude numbers
-    return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
-}
-
 function generateTelegramMessage(messageType, data) {
-    // Generate correctly formatted Telegram messages without escaping numbers incorrectly
     let telegramMessage = "";
-
-    // Common header for all messages
     const commonHeader = "📩 *Message from AuldEwe* 📩\n";
 
     if (messageType === 'roll') {
@@ -1712,16 +1701,12 @@ function generateTelegramMessage(messageType, data) {
             `🔮 ${escapeMarkdown(data.narrative ? data.narrative.substring(0, 100) : 'No narrative available')}...\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
             `#AuldEwe #FateCast`;
-    }
-
-    else if (messageType === 'legendary') {
+    } else if (messageType === 'legendary') {
         telegramMessage =
             commonHeader +
             `🌟 *LEGENDARY FEAT* 🌟\n${escapeMarkdown(data.message)}` +
             `\n#AuldEwe #FateCast`;
-    }
-
-    else if (messageType === 'changingLines') {
+    } else if (messageType === 'changingLines') {
         let changedLinesText = data.changedLines.map(line => escapeMarkdown(line)).join("\n");
         telegramMessage =
             commonHeader +
@@ -1731,9 +1716,7 @@ function generateTelegramMessage(messageType, data) {
             `🔮 Changed Lines:\n${changedLinesText}\n` +
             `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
             `#AuldEwe #FateCast`;
-    }
-
-    else if (messageType === 'fate') {
+    } else if (messageType === 'fate') {
         telegramMessage =
             commonHeader +
             `✨ *Fate Point Added* ✨\nNew total: ${data.points}` +
@@ -1821,7 +1804,17 @@ function showChangingLines() {
     if (!currentChangingLines?.scaledValues?.length) {
         alert("No changing lines available. Perform a roll first!");
         return;
+
+sendToTelegram('changingLines', {
+        originalRoll: currentChangingLines.scaledValues[0].original,
+        originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, 
+                                      currentChangingLines.scaledValues[0].dieType),
+        changedLines: scaledOutcomes
+    });
+
     }
+
+
 
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
@@ -1862,7 +1855,6 @@ function rollDiceAndHexagram() {
     const dc = parseInt(document.getElementById('dc').value) || 0;
     const originalDieType = parseInt(document.getElementById('dieType').value);
     const mod = parseInt(document.getElementById('modifier').value) || 0;
-
     document.querySelector('.mode-button.active').textContent
 
     // Calculate adjusted values
@@ -1875,6 +1867,27 @@ function rollDiceAndHexagram() {
             dieType = config[0];
             hexagramReduction = config[1];
         }
+sendToTelegram('roll', {
+        originalHexagram: currentHexagramNumber,
+        dieType: dieType,
+        dieRoll: dieRoll,
+        stepDownUsed: document.getElementById('stepDownToggle').checked,
+        hexagramReduction: hexagramReduction,
+        total: total,
+        dc: dc,
+        outcome: outcome,
+        narrative: getActiveNarratives()[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available'
+    });
+
+    // Check for legendary feat
+    if (outcome === 'Triumph' && total >= dc) {
+        const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+        sendToTelegram('legendary', { message: legendaryMessage });
+        
+        document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    }
+
+    startInactivityTimer();
     }
 
 
@@ -1911,6 +1924,7 @@ function rollDiceAndHexagram() {
         const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
         document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
         sendToTelegram('legendary', { message: legendaryMessage });
+
     }
 
 // In rollDie() or similar:
