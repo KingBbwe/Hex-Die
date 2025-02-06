@@ -1635,13 +1635,16 @@ function startInactivityTimer() {
     }, INACTIVITY_TIMEOUT);
 }
 
-// First, let's add a helper function to check for Legendary Feats
+// Update the helper function to check for Legendary Feats with DC validation
 function isLegendaryFeat(outcome, total, dc, hexagramNumber) {
-    // Get roll result details
-    const rollResult = determineRollResult(total, dc, hexagramNumber);
+    // First verify that a valid DC was entered
+    if (!dc || dc < 1) return false;
     
     // Only proceed if it's a Triumph
     if (outcome !== 'Triumph') return false;
+    
+    // Get roll result details
+    const rollResult = determineRollResult(total, dc, hexagramNumber);
     
     // Check if it's a success based on the roll type (ROS or RUS)
     return rollResult.success;
