@@ -1661,19 +1661,19 @@ async function sendToTelegram(messageType, data) {
                break;
            
            case 'roll':
-               telegramMessage = 
-                   `✨ *Harmonized Hex & Die* ✨\n` +
-                   `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                   `👤 *Player*: ${playerName}\n` +
-                   `🌌 *Hexagram*: ${data.originalHexagram}\n` +
-                   `🎲 *Die*: ${data.stepDownUsed ? `d${data.originalDieType} → (d${data.dieType}) ` : `d${data.dieType} → `}${data.dieRoll}\n` +
-                   (data.stepDownUsed ? `⚡ *Step Down Applied*: -${data.hexagramReduction}\n` : '') +
-                   `📊 *Total*: ${data.total} (DC: ${data.dc})\n` +
-                   `📜 *Outcome*: ${data.outcome}\n` +
-                   `🔮 ${data.narrative.substring(0, 100)}...\n` +
-                   `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                   `#AuldEwe #FateCast`;
-               break;
+    const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
+    telegramMessage =
+        `✨ Harmonized Hex & Die ✨\n` +
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `🌌 Hexagram: ${data.originalHexagram}\n` +
+        `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
+        (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
+        `📊 Total: ${data.total} (DC: ${data.dc}) *${telegramRollResult.result}*\n` +
+        `📜 Outcome: ${data.outcome}\n` +
+        `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `#AuldEwe #FateCast`;
+    break;
 
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
