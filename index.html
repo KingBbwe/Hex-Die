@@ -1735,6 +1735,28 @@ function showChangingLines() {
     }
 }
 
+// Add this helper function near the other helper functions, before rollDiceAndHexagram()
+function determineRollResult(total, dc, hexagramNumber) {
+    // Determine if this is a Roll Over or Roll Under based on hexagram ranges
+    const isRollOver = (hexagramNumber >= 1 && hexagramNumber <= 16) || 
+                      (hexagramNumber >= 33 && hexagramNumber <= 47);
+    
+    if (isRollOver) {
+        return {
+            result: total >= dc ? 'ROS' : 'ROF',
+            color: total >= dc ? '#28a745' : '#fd7e14',
+            success: total >= dc
+        };
+    } else {
+        return {
+            result: total <= dc ? 'RUS' : 'RUF',
+            color: total <= dc ? '#28a745' : '#fd7e14',
+            success: total <= dc
+        };
+    }
+}
+
+
 function rollDiceAndHexagram() {
     if (shouldClearOnNextRoll) {
         resetFormFields();
@@ -1772,13 +1794,14 @@ function rollDiceAndHexagram() {
         navigator.vibrate(100);
     }
 
-    document.getElementById('result').innerHTML = `
+const rollResult = determineRollResult(total, dc, currentHexagramNumber);
+document.getElementById('result').innerHTML = `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
         <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
         <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
         <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
         <strong>Modifier:</strong> ${mod}<br>
-        <strong>Total:</strong> ${total} vs DC ${dc}<br>
+        <strong>Total:</strong> ${total} vs DC ${dc} <strong style="color: ${rollResult.color}">(${rollResult.result})</strong><br>
         <strong>Outcome:</strong> ${outcome}<br>
         <strong>Narrative:</strong> ${narrative}
     `;
