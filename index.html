@@ -1635,6 +1635,18 @@ function startInactivityTimer() {
     }, INACTIVITY_TIMEOUT);
 }
 
+// First, let's add a helper function to check for Legendary Feats
+function isLegendaryFeat(outcome, total, dc, hexagramNumber) {
+    // Get roll result details
+    const rollResult = determineRollResult(total, dc, hexagramNumber);
+    
+    // Only proceed if it's a Triumph
+    if (outcome !== 'Triumph') return false;
+    
+    // Check if it's a success based on the roll type (ROS or RUS)
+    return rollResult.success;
+}
+
 async function sendToTelegram(messageType, data) {
        const gmCode = localStorage.getItem('activeGMCode');
        const activeChatId = getActiveChatId(gmCode);
@@ -1822,6 +1834,11 @@ document.getElementById('result').innerHTML = `
         <strong>Narrative:</strong> ${narrative}
     `;
 
+if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
+    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    sendToTelegram('legendary', { message: legendaryMessage });
+}
     sendToTelegram('roll', {
         originalDieType: originalDieType,
         originalHexagram: currentHexagramNumber,
