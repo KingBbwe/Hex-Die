@@ -1665,6 +1665,7 @@ async function sendToTelegram(messageType, data) {
     telegramMessage =
         `✨ Harmonized Hex & Die ✨\n` +
         `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `👤 *Player*: ${playerName}\n` +
         `🌌 Hexagram: ${data.originalHexagram}\n` +
         `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
         (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
