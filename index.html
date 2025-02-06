@@ -1662,6 +1662,22 @@ async function sendToTelegram(messageType, data) {
                    `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                    `#AuldEwe #FateCast`;
                break;
+
+        case 'legendary':
+            telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
+            break;
+
+        case 'changingLines':
+            telegramMessage =
+                `🌀 *Changing Lines Revealed* 🌀\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})\n` +
+                `🔮 Changed Lines:\n` +
+                `${data.changedLines.join('\n')}\n` +
+                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+                `#AuldEwe #FateCast`;
+            break;
+
        }
 
        try {
