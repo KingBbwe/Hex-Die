@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Chronicles of Auld Ewe - Complete Edition</title>
+    <title>The Chronicles of Auld Ewe - Cyberpunk Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
     :root {
         --primary: #6b46c1;
@@ -15,16 +16,20 @@
     }
 
     body {
-        background-color: var(--bg-dark);
+        background: linear-gradient(45deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
         color: var(--text-light);
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family: 'Orbitron', system-ui, -apple-system, sans-serif;
         margin: 0;
         padding: 0;
         line-height: 1.5;
+        min-height: 100vh;
     }
 
     nav {
-        background-color: var(--bg-darker);
+        background: rgba(22, 33, 62, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid var(--primary);
+        box-shadow: 0 0 15px rgba(107, 70, 193, 0.3);
         padding: 1rem;
         margin-bottom: 2rem;
     }
@@ -39,9 +44,20 @@
     }
 
     .container {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 2rem;
+        background: rgba(26, 26, 46, 0.9);
+        border: 1px solid var(--primary);
+        box-shadow: 0 0 30px rgba(107, 70, 193, 0.2);
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+    }
+
+    h1, h2, h3 {
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(107, 70, 193, 0.5);
     }
 
     h1 {
@@ -78,17 +94,18 @@
     input, select {
         width: 100%;
         padding: 0.6rem;
-        border: 1px solid var(--primary);
+        border: 1px solid var(--primary) !important;
         border-radius: 0.375rem;
-        background-color: var(--bg-darker);
-        color: var(--text-light);
+        background: rgba(22, 33, 62, 0.8) !important;
+        color: var(--text-light) !important;
         margin-bottom: 0.5rem;
+        transition: all 0.3s ease !important;
     }
 
     input:focus, select:focus {
         outline: none;
-        border-color: var(--primary-hover);
-        box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
+        border-color: #21bf73 !important;
+        box-shadow: 0 0 15px rgba(107, 70, 193, 0.4) !important;
     }
 
     .toggle-group {
@@ -98,7 +115,9 @@
         margin-bottom: 1.5rem;
         padding: 0.75rem;
         background-color: var(--bg-darker);
+        border: 1px solid var(--primary);
         border-radius: 0.375rem;
+        box-shadow: inset 0 0 10px rgba(107, 70, 193, 0.2);
     }
 
     .mode-group {
@@ -110,12 +129,13 @@
     .mode-button {
         flex: 1;
         padding: 0.6rem;
-        border: 1px solid var(--primary);
+        border: 2px solid var(--primary) !important;
         border-radius: 0.375rem;
         background-color: transparent;
         color: var(--text-light);
         cursor: pointer;
         transition: all 0.2s;
+        clip-path: polygon(90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%, 10% 0);
     }
 
     .mode-button.active {
@@ -135,13 +155,35 @@
         border: none;
         border-radius: 0.375rem;
         cursor: pointer;
-        font-size: 1.1rem;
-        transition: background-color 0.2s;
+        font-size: 1.0rem;
+        transition: all 0.3s ease;
         margin-bottom: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid var(--primary) !important;
+        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
     }
 
     button:hover {
         background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+    }
+
+    button::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(107, 70, 193, 0.2), transparent);
+        transform: rotate(45deg);
+        transition: all 0.5s;
+    }
+
+    button:hover::before {
+        animation: cyber-glow 1.5s infinite;
     }
 
     .oraclize-btn {
@@ -151,8 +193,12 @@
     #result {
         margin-top: 1.5rem;
         padding: 1rem;
-        background-color: var(--bg-darker);
+        background: rgba(22, 33, 62, 0.8);
         border-radius: 0.375rem;
+        border: 1px solid var(--primary);
+        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1),
+                    0 0 20px rgba(107, 70, 193, 0.1);
+        position: relative;
     }
 
     #result strong {
@@ -163,9 +209,11 @@
         text-align: left;
         margin-top: 1rem;
         padding: 1rem;
-        background-color: var(--bg-darker);
+        background: rgba(22, 33, 62, 0.8);
         border-radius: 0.375rem;
         display: none;
+        border: 1px solid var(--primary);
+        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
     }
 
     .fate-controls {
@@ -185,6 +233,9 @@
         width: 60px;
         font-weight: bold;
         text-align: center;
+        font-family: 'Orbitron', sans-serif;
+        border: 2px solid var(--primary) !important;
+        background: rgba(22, 33, 62, 0.9) !important;
     }
 
     .add-fate {
@@ -192,126 +243,104 @@
         width: auto !important;
         padding: 0.5rem 1rem !important;
     }
-    
- /* Chat Manager Container */
-.chat-manager-container {
-    margin-top: 2rem;
-    padding: 1rem;
-    border-top: 1px solid var(--primary); /* Use your primary color */
-    background-color: var(--bg-darker); /* Dark background */
-    color: var(--text-light); /* Light text */
-    border-radius: 0.375rem; /* Match your app's border radius */
-}
 
-/* Details/Summary Styling */
-.chat-manager-details {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-}
+                .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.chat-manager-details summary {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: var(--primary); /* Primary color for emphasis */
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    background-color: var(--bg-dark); /* Slightly lighter background */
-    transition: background-color 0.2s;
-}
+        .step-down-toggle {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin: 0;
+        }
 
-.chat-manager-details summary:hover {
-    background-color: var(--primary-hover); /* Hover effect */
-    color: white;
-}
+        .step-down-toggle:checked {
+            background-color: #39FF14;
+            border-color: #39FF14;
+        }
 
-/* Forms */
-.chat-setup-form,
-.player-setup-form {
-    margin: 1rem 0;
-    padding: 1rem;
-    background-color: var(--bg-dark); /* Dark background for forms */
-    border-radius: 0.375rem;
-    border: 1px solid var(--primary); /* Primary color border */
-}
+        .step-down-toggle:checked::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
 
-.chat-setup-form h3,
-.player-setup-form h3 {
-    color: var(--primary); /* Primary color for headings */
-    margin-bottom: 1rem;
-}
+    .chat-manager-container {
+        margin-top: 2rem;
+        padding: 1rem;
+        border-top: 1px solid var(--primary);
+        background-color: var(--bg-darker);
+        border-radius: 0.375rem;
+        border: 1px solid var(--primary);
+        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
+    }
 
-/* Input Groups */
-.input-group {
-    margin: 1rem 0;
-}
+    .chat-manager-details {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
 
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-light); /* Light text for labels */
-}
+    .chat-manager-details summary {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--primary);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: var(--bg-dark);
+        transition: background-color 0.2s;
+        border: 1px solid var(--primary);
+        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
+    }
 
-.input-group input {
-    width: 100%;
-    padding: 0.6rem;
-    border: 1px solid var(--primary); /* Primary color border */
-    border-radius: 0.375rem;
-    background-color: var(--bg-darker); /* Darker background for inputs */
-    color: var(--text-light); /* Light text for inputs */
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
+    .chat-manager-details summary:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
 
-.input-group input:focus {
-    outline: none;
-    border-color: var(--primary-hover); /* Hover color for focus */
-    box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2); /* Match your app's focus style */
-}
+    .chat-setup-form,
+    .player-setup-form {
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: var(--bg-dark);
+        border-radius: 0.375rem;
+        border: 1px solid var(--primary);
+    }
 
-/* Buttons */
-.chat-setup-form button,
-.player-setup-form button {
-    width: 100%;
-    padding: 0.8rem;
-    background-color: var(--primary); /* Primary color for buttons */
-    color: white;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s;
-    margin-top: 1rem;
-}
+    #gmCodeDisplay {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: var(--bg-dark);
+        border: 1px solid var(--primary);
+        border-radius: 0.375rem;
+        text-align: center;
+    }
 
-.chat-setup-form button:hover,
-.player-setup-form button:hover {
-    background-color: var(--primary-hover); /* Hover effect */
-}
+    @keyframes cyber-glow {
+        0% { left: -50%; }
+        100% { left: 150%; }
+    }
 
-/* GM Code Display */
-#gmCodeDisplay {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: var(--bg-dark); /* Dark background */
-    border: 1px solid var(--primary); /* Primary color border */
-    border-radius: 0.375rem;
-    text-align: center;
-}
-
-#gmCodeText {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--primary); /* Primary color for emphasis */
-    margin: 0.5rem 0;
-}
-
-.instructions {
-    font-size: 0.9rem;
-    color: var(--text-light); /* Light text for instructions */
-    opacity: 0.8; /* Slightly faded */
-    margin-top: 0.5rem;
-}
+    @keyframes border-pulse {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
     </style>
 </head>
 <body>
@@ -359,12 +388,12 @@
                 <input type="number" id="modifier" value="0">
             </div>
 
-            <div class="toggle-group">
-                <div class="checkbox-wrapper">
-                    <input type="checkbox" id="stepDownToggle">
-                    <label for="stepDownToggle" style="margin: 0;">Step Down</label>
-                </div>
-            </div>
+<div class="toggle-group">
+    <div class="checkbox-wrapper">
+        <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
+        <label for="stepDownToggle" style="margin: 0;">Step Down</label>
+    </div>
+</div>
 
             <h3 style="margin-bottom: 0.5rem;">Mode</h3>
             <div class="mode-group">
@@ -380,48 +409,45 @@
             <div id="result"></div>
             <div id="changingLines"></div>
 
-<div id="chatManager" class="chat-manager-container">
-       <details class="chat-manager-details">
-           <summary>Game Master Settings</summary>
-           <div class="chat-setup-form">
-               <h3>Set Up New Game Group</h3>
-               <div class="input-group">
-                   <label for="groupName">Group Name:</label>
-                   <input type="text" id="groupName" placeholder="Enter your group name">
-               </div>
-               <div class="input-group">
-                   <label for="chatId">Telegram Chat ID:</label>
-                   <input type="text" id="chatId" placeholder="Enter your Telegram chat ID">
-                   <button onclick="showChatIdInstructions()">How to get Chat ID?</button>
-               </div>
-               <button onclick="setupNewGameGroup()">Create Game Group</button>
-               
-               <div id="gmCodeDisplay" style="display: none;">
-                   <h4>Your GM Code:</h4>
-                   <p id="gmCodeText"></p>
-                   <p class="instructions">Share this code with your players to connect them to your group.</p>
-               </div>
-           </div>
-           
-           <div class="player-setup-form">
-               <h3>Player Settings</h3>
-               <div class="input-group">
-                   <label for="gmCode">GM Code:</label>
-                   <input type="text" id="gmCode" placeholder="Enter your GM's code">
-               </div>
-               <div class="input-group">
-                   <label for="playerName">Your Name:</label>
-                   <input type="text" id="playerName" placeholder="Enter your name">
-               </div>
-               <button onclick="joinGameGroup()">Join Game Group</button>
-           </div>
-       </details>
-   </div>
+            <div id="chatManager" class="chat-manager-container">
+                <details class="chat-manager-details">
+                    <summary>Game Master Settings</summary>
+                    <div class="chat-setup-form">
+                        <h3>Set Up New Game Group</h3>
+                        <div class="input-group">
+                            <label for="groupName">Group Name:</label>
+                            <input type="text" id="groupName" placeholder="Enter your group name">
+                        </div>
+                        <div class="input-group">
+                            <label for="chatId">Telegram Chat ID:</label>
+                            <input type="text" id="chatId" placeholder="Enter your Telegram chat ID">
+                            <button onclick="showChatIdInstructions()">How to get Chat ID?</button>
+                        </div>
+                        <button onclick="setupNewGameGroup()">Create Game Group</button>
 
+                        <div id="gmCodeDisplay" style="display: none;">
+                            <h4>Your GM Code:</h4>
+                            <p id="gmCodeText"></p>
+                            <p class="instructions">Share this code with your players to connect them to your group.</p>
+                        </div>
+                    </div>
+
+                    <div class="player-setup-form">
+                        <h3>Player Settings</h3>
+                        <div class="input-group">
+                            <label for="gmCode">GM Code:</label>
+                            <input type="text" id="gmCode" placeholder="Enter your GM's code">
+                        </div>
+                        <div class="input-group">
+                            <label for="playerName">Your Name:</label>
+                            <input type="text" id="playerName" placeholder="Enter your name">
+                        </div>
+                        <button onclick="joinGameGroup()">Join Game Group</button>
+                    </div>
+                </details>
+            </div>
         </section>
     </main>
-
-
 
     <script>
         // Configuration ⚠️→ UPDATED TELEGRAM CONFIG
