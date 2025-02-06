@@ -1693,19 +1693,20 @@ async function sendToTelegram(messageType, data) {
     let telegramMessage;
     switch (messageType) {
         
-        case 'roll':
-    telegramMessage =
-        `✨ *Harmonized Hex & Die* ✨\n` +
-        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-        `🌌 Hexagram: ${data.originalHexagram}\n` +
-        `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
-        (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
-        `📊 Total: ${data.total} (DC: ${data.dc})\n` +
-        `📜 Outcome: ${data.outcome}\n` +
-        `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
-        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-        `#AuldEwe #FateCast`;
-    break;
+case 'roll':
+   const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
+   telegramMessage =
+       `✨ Harmonized Hex & Die ✨\n` +
+       `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+       `🌌 Hexagram: ${data.originalHexagram}\n` +
+       `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
+       (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
+       `📊 Total: ${data.total} (DC: ${data.dc}) *${telegramRollResult.result}*\n` +
+       `📜 Outcome: ${data.outcome}\n` +
+       `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
+       `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+       `#AuldEwe #FateCast`;
+   break;
 
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
@@ -1756,6 +1757,28 @@ function addFatePoint() {
    startInactivityTimer();
 }
 
+
+function determineRollResult(total, dc, hexagramNumber) {
+    // Determine if this is a Roll Over or Roll Under based on hexagram ranges
+    const isRollOver = (hexagramNumber >= 1 && hexagramNumber <= 16) || 
+                      (hexagramNumber >= 33 && hexagramNumber <= 47);
+    
+    if (isRollOver) {
+        return {
+            result: total >= dc ? 'ROS' : 'ROF',
+            color: total >= dc ? '#28a745' : '#fd7e14',
+            success: total >= dc
+        };
+    } else {
+        return {
+            result: total <= dc ? 'RUS' : 'RUF',
+            color: total <= dc ? '#28a745' : '#fd7e14',
+            success: total <= dc
+        };
+    }
+}
+
+        
 function generateHexagramLines(hexagramNumber) {
     const binary = hexagramLookup[hexagramNumber];
     if (!binary) return [];
@@ -1895,13 +1918,14 @@ function rollDiceAndHexagram() {
         navigator.vibrate(100);
     }
 
-    document.getElementById('result').innerHTML = `
+const rollResult = determineRollResult(total, dc, currentHexagramNumber);
+document.getElementById('result').innerHTML = `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
         <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
         <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
         <strong>Die Roll:</strong> d${dieType} → ${dieRoll}<br>
         <strong>Modifier:</strong> ${mod}<br>
-        <strong>Total:</strong> ${total} vs DC ${dc}<br>
+        <strong>Total:</strong> ${total} vs DC ${dc} <strong style="color: ${rollResult.color}">(${rollResult.result})</strong><br>
         <strong>Outcome:</strong> ${outcome}<br>
         <strong>Narrative:</strong> ${narrative}
     `;
