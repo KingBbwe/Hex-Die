@@ -1611,6 +1611,43 @@ function initializeFatePoints() {
     }
 }
 
+
+function addFatePoint() {
+    let fateInput = document.getElementById('fatePoints');
+
+    if (!fateInput) {
+        console.error("Fate Points input not found.");
+        return;
+    }
+
+    let current = parseInt(fateInput.value);
+
+    if (isNaN(current)) {
+        console.error("Invalid Fate Points value.");
+        return;
+    }
+
+    if (current < MAX_FATE_POINTS) {
+        let newValue = current + 1;
+        fateInput.value = newValue;
+
+        if (typeof updateFateStorage === "function") {
+            updateFateStorage(newValue);
+        } else {
+            console.error("updateFateStorage function is missing.");
+        }
+
+        try {
+            sendToTelegram('fate', { points: newValue });
+        } catch (error) {
+            console.error("Error sending fate points to Telegram:", error);
+        }
+    } else {
+        console.warn("Fate Points are already at maximum.");
+    }
+
+    startInactivityTimer();
+}
 function updateFateStorage(points) {
     const storageData = {
         points: points || parseInt(document.getElementById('fatePoints').value),
@@ -1960,6 +1997,18 @@ function setupActivityListeners() {
         alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
     });
 
+
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Initializing event listeners...");
+
+    let fateButton = document.getElementById("addFateButton");
+    if (fateButton) {
+        fateButton.addEventListener("click", addFatePoint);
+        console.log("Fate button found and event listener attached.");
+    } else {
+        console.error("Add Fate Button not found in the document.");
+    }
+});
     document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
         if (shouldClearOnNextRoll) {
             resetFormFields();
