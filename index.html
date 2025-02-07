@@ -1648,14 +1648,15 @@ function addFatePoint() {
 
     startInactivityTimer();
 }
-function updateFateStorage(points) {
-    const storageData = {
-        points: points || parseInt(document.getElementById('fatePoints').value),
-        timestamp: Date.now()
-    };
-    localStorage.setItem(FATE_STORAGE_KEY, JSON.stringify(storageData));
-}
+function updateFateStorage(newValue) {
+    if (typeof newValue !== "number") {
+        console.error("Invalid fate points value.");
+        return;
+    }
 
+    localStorage.setItem("fatePoints", newValue);
+    console.log("Fate Points updated in storage:", newValue);
+}
 function resetFormFields() {
     document.getElementById('dc').value = '';
     document.getElementById('modifier').value = '0';
