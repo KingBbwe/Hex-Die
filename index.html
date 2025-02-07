@@ -1651,8 +1651,8 @@ function isLegendaryFeat(outcome, total, dc, hexagramNumber) {
 }
 
 async function sendToTelegram(messageType, data) {
-    const telegramBotToken = "7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso"; 
-    const activeChatId = "-1002185533073"; 
+    const telegramBotToken = "YOUR_TELEGRAM_BOT_TOKEN";
+    const activeChatId = "YOUR_TELEGRAM_CHAT_ID";
 
     if (!telegramBotToken || !activeChatId) {
         console.error("Telegram bot token or chat ID is missing.");
@@ -1662,9 +1662,6 @@ async function sendToTelegram(messageType, data) {
     let telegramMessage = "";
 
     switch (messageType) {
-        case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\n👤 *Player*: ${data.playerName}\nNew total: ${data.points}`;
-            break;
         case 'roll':
             telegramMessage =
                 `✨ *Harmonized Hex & Die* ✨\n` +
@@ -1673,7 +1670,7 @@ async function sendToTelegram(messageType, data) {
                 `🌌 Hexagram: ${data.originalHexagram} (Adjusted: ${data.adjustedHexagram})\n` +
                 `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
                 `📊 Total: ${data.total} (DC: ${data.dc})\n` +
-                `📜 Outcome: ${data.outcome}\n` +
+                `📜 Outcome: *${data.outcome}*\n` + // ✅ Fix: Outcome is properly formatted
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                 `#AuldEwe #FateCast`;
             break;
@@ -1710,17 +1707,6 @@ async function sendToTelegram(messageType, data) {
     }
 }
 
-function addFatePoint() {
-    const current = parseInt(document.getElementById('fatePoints').value);
-    if (current < MAX_FATE_POINTS) {
-        const newValue = current + 1;
-        document.getElementById('fatePoints').value = newValue;
-        updateFateStorage(newValue);
-        sendToTelegram('fate', { points: newValue });
-    }
-    startInactivityTimer();
-}
-
 function generateHexagramLines(hexagramNumber) {
     const binary = hexagramLookup[hexagramNumber];
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
@@ -1741,9 +1727,15 @@ function getActiveNarratives() {
 
 function getOutcome(dieRoll, dieType) {
     const thresholds = outcomeThresholds[dieType];
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
+
+    if (!thresholds) {
+        console.error(`Missing thresholds for die type: ${dieType}`);
+        return "Unknown";
+    }
+
+    if (thresholds.triumph.includes(dieRoll)) return "Triumph";
+    if (thresholds.conflict.includes(dieRoll)) return "Conflict";
+    return "Disaster";
 }
 
 function showChangingLines() {
@@ -1792,8 +1784,8 @@ function rollDiceAndHexagram() {
 
     let dieType = parseInt(document.getElementById('dieType').value);
     let dieRoll = Math.floor(Math.random() * dieType) + 1;
-    let mod = parseInt(document.getElementById('modifier')?.value || 0); // ✅ Fix: Ensure `mod` is defined
-    let dc = parseInt(document.getElementById('dc')?.value || 10); // ✅ Fix: Ensure `dc` exists
+    let mod = parseInt(document.getElementById('modifier')?.value || 0);
+    let dc = parseInt(document.getElementById('dc')?.value || 10);
 
     if (isNaN(dieType) || isNaN(dieRoll) || isNaN(mod) || isNaN(dc)) {
         console.error("Invalid roll data detected. Check your inputs.");
@@ -1801,9 +1793,8 @@ function rollDiceAndHexagram() {
     }
 
     let total = dieRoll + mod;
-    let outcome = total > dc ? "Triumph" : total > dc / 2 ? "Success" : "Failure";
+    let outcome = getOutcome(dieRoll, dieType); // ✅ Uses the correct outcome system
 
-    // ✅ Fix: Ensure hexagram data is properly defined
     let currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
     let hexagramReduction = document.getElementById('stepDownToggle')?.checked ? 5 : 0;
     let adjustedHexagram = Math.max(1, currentHexagramNumber - hexagramReduction);
@@ -1822,7 +1813,6 @@ function rollDiceAndHexagram() {
         <strong>${gmCode ? `🔗 Rolling for GM Group: ${gmCode}` : "🎲 Solo Roll"}</strong>
     `;
 
-    // ✅ Fix: Ensure `sendToTelegram()` is only called after values are set
     sendToTelegram('roll', {
         originalHexagram: currentHexagramNumber,
         adjustedHexagram: adjustedHexagram,
@@ -1837,6 +1827,7 @@ function rollDiceAndHexagram() {
 
     startInactivityTimer();
 }
+
 // Shake State
 let shakeEnabled = false;
 let isShaking = false;
