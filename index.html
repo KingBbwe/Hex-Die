@@ -1728,9 +1728,25 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLines() {
-    return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
-}
+function determineChangingLines(originalDieType, originalRoll) {
+    const lines = [];
+    const scaledValues = [];
+    const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
+
+    // Deterministic method to select changing lines
+    for (let line = 1; line <= 6; line++) {
+        if (Math.random() < 0.25) {
+            const scaledValue = dieScale[line - 1];
+            
+            lines.push(line);
+            scaledValues.push({
+                line: line,
+                original: originalRoll,
+                scaled: scaledValue,
+                dieType: originalDieType
+            });
+        }
+    }
 
 function getActiveNarratives() {
     const activeMode = document.querySelector('.mode-button.active').id;
