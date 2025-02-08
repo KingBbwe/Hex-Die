@@ -1682,7 +1682,6 @@ async function sendToTelegram(messageType, data) {
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
-
 case 'changingLines':
     telegramMessage = `🌀 *Changing Lines Analysis* 🌀
 ▫️▫️▫️▫️▫️▫️▫️▫️▫️
@@ -1777,15 +1776,9 @@ function showChangingLines() {
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
         // Deduct fate point
         document.getElementById('fatePoints').value = fatePoints - 1;
-        
-        // Generate changing lines data
-        const changingData = determineChangingLines(
-            parseInt(document.getElementById('dieType').value),
-            currentHexagramNumber
-        );
 
-        // Format lines for display
-        const lineDisplay = changingData.lines.map(line => {
+        // Generate line descriptions
+        const lineDescriptions = currentChangingLines.map(line => {
             const lineType = currentHexagramLines[line - 1]; // Convert to 0-based index
             return `Line ${line}: ${lineType}`;
         });
@@ -1795,15 +1788,14 @@ function showChangingLines() {
         changingLinesDiv.style.display = 'block';
         changingLinesDiv.innerHTML = `
             <strong>Changing Lines:</strong><br>
-            ${lineDisplay.length ? lineDisplay.join('<br>') : 'No lines changed'}
+            ${lineDescriptions.length ? lineDescriptions.join('<br>') : 'No lines changed'}
         `;
 
         // Send to Telegram
         sendToTelegram('changingLines', {
             originalRoll: currentHexagramNumber,
             originalOutcome: document.querySelector('#result strong:contains("Outcome")').nextSibling.textContent.trim(),
-            changedLines: lineDisplay,
-            scaledValues: changingData.scaledValues
+            changedLines: lineDescriptions
         });
 
         updateFateStorage();
@@ -1853,25 +1845,31 @@ function rollDiceAndHexagram() {
         }
     }
 
+    // Generate hexagram and lines
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
-    currentHexagramLines = generateHexagramLines(currentHexagramNumber);
+    currentHexagramLines = generateHexagramLines(currentHexagramNumber); // Initialize lines
     const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
 
+    // Roll die and calculate total
     const dieRoll = Math.floor(Math.random() * dieType) + 1;
     const outcome = getOutcome(dieRoll, dieType);
     const total = adjustedHex + dieRoll + mod;
 
+    // Get narrative
     const narratives = getActiveNarratives();
     const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-    currentChangingLines = determineChangingLines();
+    // Determine changing lines
+    currentChangingLines = determineChangingLines(originalDieType, currentHexagramNumber).lines; // Store lines
 
+    // Vibrate if supported
     if (navigator.vibrate) {
         navigator.vibrate(100);
     }
 
-const rollResult = determineRollResult(total, dc, currentHexagramNumber);
-document.getElementById('result').innerHTML = `
+    // Display result
+    const rollResult = determineRollResult(total, dc, currentHexagramNumber);
+    document.getElementById('result').innerHTML = `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
         <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
         <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
@@ -1882,20 +1880,25 @@ document.getElementById('result').innerHTML = `
         <strong>Narrative:</strong> ${narrative}
     `;
 
-if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
-    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
-    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
-    sendToTelegram('legendary', { message: legendaryMessage });
-}
+    // Check for legendary feat
+    if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
+        const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+        document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+        sendToTelegram('legendary', { message: legendaryMessage });
+    }
+
+    // Send roll data to Telegram
     sendToTelegram('roll', {
+        hexagram: currentHexagramNumber,
+        modifier: mod,
+        roll: {
+            total: total,
+            breakdown: `${adjustedHex} (${currentHexagramNumber} - ${hexagramReduction}) + ${dieRoll} + ${mod}`,
+            dc: dc,
+            outcome: rollResult.result
+        },
         originalDieType: originalDieType,
-        originalHexagram: currentHexagramNumber,
-        adjustedHexagram: adjustedHex,
         dieType: dieType,
-        dieRoll: dieRoll,
-        total: total,
-        dc: dc,
-        outcome: outcome,
         narrative: narrative,
         stepDownUsed: stepDownUsed,
         hexagramReduction: hexagramReduction
