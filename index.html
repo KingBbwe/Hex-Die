@@ -1746,6 +1746,7 @@ function getOutcome(dieRoll, dieType) {
     return 'Disaster';
 }
 
+// In showChangingLines() (~line 150)
 function showChangingLines() {
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
@@ -1754,16 +1755,26 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
+        // Deduct fate point
         document.getElementById('fatePoints').value = fatePoints - 1;
+        
+        // Generate changing lines data
+        const changingData = determineChangingLines(
+            parseInt(document.getElementById('dieType').value),
+            currentHexagramNumber
+        );
+
+        // Format lines for display
+        const lineDisplay = changingData.lines.map(line => {
+            const lineType = currentHexagramLines[line - 1]; // Convert to 0-based index
+            return `Line ${line}: ${lineType}`;
+        });
+
+        // Update UI
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines:</strong>
-            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
-        `;
-        updateFateStorage();
-        startInactivityTimer();
-    }
-}
+            <strong>Changing Lines:</strong><br>
+            ${lineDisplay.join('<br>') || 'No lines changed
 
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
 
