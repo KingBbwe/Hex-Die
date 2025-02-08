@@ -1687,45 +1687,47 @@ async function sendToTelegram(messageType, data) {
     const gmCode = localStorage.getItem('activeGMCode');
     const activeChatId = getActiveChatId(gmCode);
     const playerName = localStorage.getItem('playerName') || 'Anonymous';
-
-    if (!telegramBotToken || !activeChatId) return;
+    
+    if (!telegramBotToken || !activeChatId) {
+        console.error('Telegram credentials missing');
+        return;
+    }
 
     let telegramMessage;
-    switch (messageType) {
+    switch(messageType) {
+        case 'fate':
+            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+            break;
         
-case 'roll':
-   const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
-   telegramMessage =
-       `✨ Harmonized Hex & Die ✨\n` +
-       `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-       `🌌 Hexagram: ${data.originalHexagram}\n` +
-       `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
-       (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
-       `📊 Total: ${data.total} (DC: ${data.dc}) *${telegramRollResult.result}*\n` +
-       `📜 Outcome: ${data.outcome}\n` +
-       `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
-       `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-       `#AuldEwe #FateCast`;
-   break;
+        case 'roll':
+            telegramMessage = `✨ Harmonized Hex & Die ✨
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+👤 Player: ${data.player || 'Anonymous'}
+🌌 Hexagram: ${data.originalHexagram} (${hexagramNames[data.originalHexagram] || 'Unknown'})
+🎲 Die: d${data.dieType} → ${data.dieRoll}
+📊 Total: ${data.total} (DC: ${data.dc}) ${data.roll?.outcome || 'Unknown'}
+📜 Outcome: ${data.outcome}
+🔮 ${data.narrative}
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+#AuldEwe #FateCast`;
+            break;
 
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
 
         case 'changingLines':
-            telegramMessage =
-                `🌀 *Changing Lines Revealed* 🌀\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})\n` +
-                `🔮 Changed Lines:\n` +
-                `${data.changedLines.join('\n')}\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `#AuldEwe #FateCast`;
+            telegramMessage = `🌀 *Changing Lines Revealed* 🌀
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})
+🔮 Changed Lines:\n${data.changedLines.join('\n')}
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+#AuldEwe #FateCast`;
             break;
-            
-            case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
-            break;
+
+        default:
+            console.error('Unknown message type:', messageType);
+            return;
     }
 
     try {
@@ -1735,14 +1737,23 @@ case 'roll':
             body: JSON.stringify({
                 chat_id: activeChatId,
                 text: telegramMessage,
-                parse_mode: 'Markdown'
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
             })
         });
-        if (!response.ok) console.error('Telegram API error:', await response.text());
+        
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Telegram API Error:', {
+                status: response.status,
+                description: error.description
+            });
+        }
     } catch (error) {
-        console.error('Error sending to Telegram:', error);
+        console.error('Network Error:', error);
     }
 }
+
 
 function addFatePoint() {
    const currentPoints = parseInt(document.getElementById('fatePoints').value);
@@ -1818,19 +1829,19 @@ function getOutcome(roll, dieType) {
 }
 
 
+// KEEP your existing determineChangingLines function as-is
 function determineChangingLines(originalDieType, originalRoll) {
     const lines = [];
     const scaledValues = [];
-    const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
+    const dieScale = scalingTable[originalDieType] || scalingTable[6];
 
-    // Deterministic method to select changing lines
     for (let line = 1; line <= 6; line++) {
         if (Math.random() < 0.25) {
             const scaledValue = dieScale[line - 1];
             
-            lines.push(line);
+            lines.push(line); // Already 1-based ✅
             scaledValues.push({
-                line: line,
+                line: line, // Correct 1-based index
                 original: originalRoll,
                 scaled: scaledValue,
                 dieType: originalDieType
@@ -1841,13 +1852,28 @@ function determineChangingLines(originalDieType, originalRoll) {
     return { lines, scaledValues };
 }
 
+// FIX THE USAGE in showChangingLines (~line 150)
+function showChangingLines() {
+    // ... existing fate point logic ...
+
+    // Get changing lines data
+    const changingData = determineChangingLines(originalDieType, originalRoll);
+    
+    // Convert lines to descriptions
+    const lineDescriptions = changingData.lines.map(line => {
+        return `Line ${line}: ${currentHexagramLines[line - 1]}`; // line-1 for 0-based array
+    });
+
+    // Send to Telegram PROPERLY
+    sendToTelegram('changingLines', {
+        originalRoll: originalRoll,
+        originalOutcome: outcome,
+        changedLines: lineDescriptions, // ["Line 1: Solid", etc]
+        scaledValues: changingData.scaledValues // Preserve scaling data
+    });
+}
 
 function showChangingLines() {
-    if (!currentChangingLines?.scaledValues?.length) {
-        alert("No changing lines available. Perform a roll first!");
-        return;
-    }
-
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
         alert("Not enough Fate Points!");
@@ -1855,26 +1881,24 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
-        const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
-            const originalOutcome = getOutcome(scaled.original, scaled.dieType);
-            const finalOutcome = getOutcome(scaled.scaled, scaled.dieType);
-            return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
-        });
-
-        // Update UI
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
+        
+        // Generate line descriptions
+        const lineDescriptions = currentChangingLines.map(line => {
+            const lineType = currentHexagramLines[line - 1]; // Get 'Solid'/'Broken'
+            return `Line ${line}: ${lineType}`;
+        });
+
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines Revealed:</strong><br>
-            ${scaledOutcomes.join('<br>')}
+            <strong>Changing Lines:</strong>
+            ${lineDescriptions.length ? lineDescriptions.join(', ') : 'None'}
         `;
 
-        // Send to Telegram
         sendToTelegram('changingLines', {
-            originalRoll: currentChangingLines.scaledValues[0].original,
-            originalOutcome: getOutcome(currentChangingLines.scaledValues[0].original, 
-                                      currentChangingLines.scaledValues[0].dieType),
-            changedLines: scaledOutcomes
+            originalRoll: currentHexagramNumber,
+            originalOutcome: document.getElementById('result').querySelector('strong:contains("Outcome")').nextSibling.textContent.trim(),
+            changedLines: lineDescriptions
         });
 
         updateFateStorage();
