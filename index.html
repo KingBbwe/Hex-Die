@@ -1664,19 +1664,16 @@ async function sendToTelegram(messageType, data) {
                break;
            
            case 'roll':
-    const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
-    telegramMessage =
-        `✨ Harmonized Hex & Die ✨\n` +
-        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-        `👤 *Player*: ${playerName}\n` +
-        `🌌 Hexagram: ${data.originalHexagram}\n` +
-        `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
-        (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
-        `📊 Total: ${data.total} (DC: ${data.dc}) *${telegramRollResult.result}*\n` +
-        `📜 Outcome: ${data.outcome}\n` +
-        `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
-        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-        `#AuldEwe #FateCast`;
+    const message = `✨ Harmonized Hex & Die ✨
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+👤 Player: ${data.player}
+🌌 Hexagram: ${data.originalHexagram} (${hexagramNames[data.originalHexagram] || 'Unknown'})
+🎲 Die: d${data.dieType} → ${data.dieRoll}
+📊 Total: ${data.total} (DC: ${data.dc}) ${data.roll?.outcome || 'Unknown'}
+📜 Outcome: ${data.outcome}
+🔮 ${data.narrative}
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+#AuldEwe #FateCast`;
     break;
 
         case 'legendary':
@@ -1847,21 +1844,29 @@ if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
 
 // CORRECTED VERSION (preserving hexagramReduction)
 sendToTelegram('roll', {
-    hexagram: currentHexagramNumber,
-    modifier: mod,
-    roll: {
-        total: total,
-        breakdown: `${adjustedHex} (${currentHexagramNumber} - ${hexagramReduction}) + ${dieRoll} + ${mod}`, // Explicit reduction show
-        dc: dc,
-        outcome: rollResult.result,
-        reduction: hexagramReduction // Explicitly include reduction value
-    },
+    // Original fields (preserved)
     originalDieType: originalDieType,
+    originalHexagram: currentHexagramNumber,
+    adjustedHexagram: adjustedHex,
     dieType: dieType,
+    dieRoll: dieRoll,
+    total: total,
+    dc: dc,
+    outcome: outcome, // <-- Explicitly retained original outcome
     narrative: narrative,
     stepDownUsed: stepDownUsed,
-    hexagramReduction: hexagramReduction // Maintain original field
+    hexagramReduction: hexagramReduction,
+    
+    // New structured fields (additive)
+    roll: {
+        total: total,
+        breakdown: `${adjustedHex} (${currentHexagramNumber} - ${hexagramReduction}) + ${dieRoll} + ${mod}`,
+        dc: dc,
+        outcome: rollResult.result // <-- ROS/ROF/RUS/RUF from determineRollResult()
+    },
+    player: document.getElementById('playerName').value || 'Anonymous'
 });
+
 
     shouldClearOnNextRoll = true;
     startInactivityTimer();
