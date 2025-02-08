@@ -1664,17 +1664,18 @@ async function sendToTelegram(messageType, data) {
                break;
            
            case 'roll':
-    const message = `✨ Harmonized Hex & Die ✨
-▫️▫️▫️▫️▫️▫️▫️▫️▫️
+        
+        telegramMessage = `✨ Harmonized Hex & Die ✨
+▫️▫▫▫▫▫▫▫▫
 👤 Player: ${data.player}
 🌌 Hexagram: ${data.originalHexagram} (${hexagramNames[data.originalHexagram] || 'Unknown'})
 🎲 Die: d${data.dieType} → ${data.dieRoll}
 📊 Total: ${data.total} (DC: ${data.dc}) ${data.roll?.outcome || 'Unknown'}
 📜 Outcome: ${data.outcome}
 🔮 ${data.narrative}
-▫️▫️▫️▫️▫️▫️▫️▫️▫️
+▫️▫▫▫▫▫▫▫▫
 #AuldEwe #FateCast`;
-    break;
+break;
 
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
