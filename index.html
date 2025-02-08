@@ -1689,7 +1689,7 @@ case 'changingLines':
 🎲 Original Cast: ${data.originalRoll}
 📜 Outcome: ${data.originalOutcome}
 🔮 Changed Lines:
-${data.changedLines.join('\n')}
+${data.changedLines.length ? data.changedLines.join('\n') : 'No lines changed'}
 ▫️▫️▫️▫️▫️▫️▫️▫️▫️
 #AuldEwe #FateCast`;
     break;
@@ -1728,8 +1728,27 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLines() {
-    return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
+function determineChangingLines(originalDieType, originalRoll) {
+    const lines = [];
+    const scaledValues = [];
+    const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
+
+    // Deterministic method to select changing lines
+    for (let line = 1; line <= 6; line++) {
+        if (Math.random() < 0.25) {
+            const scaledValue = dieScale[line - 1];
+            
+            lines.push(line);
+            scaledValues.push({
+                line: line,
+                original: originalRoll,
+                scaled: scaledValue,
+                dieType: originalDieType
+            });
+        }
+    }
+
+    return { lines, scaledValues };
 }
 
 function getActiveNarratives() {
@@ -1772,16 +1791,17 @@ function showChangingLines() {
         });
 
         // Update UI
-        document.getElementById('changingLines').style.display = 'block';
-        document.getElementById('changingLines').innerHTML = `
+        const changingLinesDiv = document.getElementById('changingLines');
+        changingLinesDiv.style.display = 'block';
+        changingLinesDiv.innerHTML = `
             <strong>Changing Lines:</strong><br>
-            ${lineDisplay.join('<br>') || 'No lines changed'}
+            ${lineDisplay.length ? lineDisplay.join('<br>') : 'No lines changed'}
         `;
 
         // Send to Telegram
         sendToTelegram('changingLines', {
             originalRoll: currentHexagramNumber,
-            originalOutcome: document.querySelector('#result strong:last-child').nextSibling.textContent.trim(),
+            originalOutcome: document.querySelector('#result strong:contains("Outcome")').nextSibling.textContent.trim(),
             changedLines: lineDisplay,
             scaledValues: changingData.scaledValues
         });
