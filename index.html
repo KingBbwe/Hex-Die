@@ -1844,19 +1844,24 @@ if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
     document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
     sendToTelegram('legendary', { message: legendaryMessage });
 }
-    sendToTelegram('roll', {
-        originalDieType: originalDieType,
-        originalHexagram: currentHexagramNumber,
-        adjustedHexagram: adjustedHex,
-        dieType: dieType,
-        dieRoll: dieRoll,
+
+// CORRECTED VERSION (preserving hexagramReduction)
+sendToTelegram('roll', {
+    hexagram: currentHexagramNumber,
+    modifier: mod,
+    roll: {
         total: total,
+        breakdown: `${adjustedHex} (${currentHexagramNumber} - ${hexagramReduction}) + ${dieRoll} + ${mod}`, // Explicit reduction show
         dc: dc,
-        outcome: outcome,
-        narrative: narrative,
-        stepDownUsed: stepDownUsed,
-        hexagramReduction: hexagramReduction
-    });
+        outcome: rollResult.result,
+        reduction: hexagramReduction // Explicitly include reduction value
+    },
+    originalDieType: originalDieType,
+    dieType: dieType,
+    narrative: narrative,
+    stepDownUsed: stepDownUsed,
+    hexagramReduction: hexagramReduction // Maintain original field
+});
 
     shouldClearOnNextRoll = true;
     startInactivityTimer();
