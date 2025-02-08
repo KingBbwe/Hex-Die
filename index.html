@@ -1506,6 +1506,14 @@ const stepDownConfig = {
     100: [20, 20]
 };
 
+// Add this with your constants at the top
+const changingLineThresholds = {
+    6: { disaster: 3, changing: 4 },
+    8: { disaster: 2, changing: 5 },
+    10: { disaster: 3, changing: 6 },
+    12: { disaster: 4, changing: 8 }
+};
+
 // Game State
 let currentHexagramNumber = null;
 let currentHexagramLines = [];
@@ -1732,6 +1740,14 @@ function determineChangingLines() {
     return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
 }
 
+// Replace or add this function in your dice mechanics section
+function isChangingLine(dieType, result) {
+    const thresholds = changingLineThresholds[dieType];
+    if (!thresholds) return false;
+    return result <= thresholds.disaster ? 'disaster' :
+           result > thresholds.changing ? 'triumph' : false;
+}
+
 function getActiveNarratives() {
     const activeMode = document.querySelector('.mode-button.active').id;
     return {
@@ -1825,6 +1841,26 @@ function rollDiceAndHexagram() {
     if (navigator.vibrate) {
         navigator.vibrate(100);
     }
+
+// Inside rollDice(), modify the result handling block:
+const isChanging = isChangingLine(die, result);
+if (isChanging) {
+    const fateCost = isChanging === 'disaster' ? 2 : 1;
+    if (document.getElementById('changeLineToggle').checked && fatePoints >= fateCost) {
+        finalResult = die;
+        fatePoints -= fateCost;
+        resultText = `${result} (${isChanging.charAt(0).toUpperCase() + isChanging.slice(1)} → ${finalResult})`;
+    } else {
+        resultText = `${result} (${isChanging.charAt(0).toUpperCase() + isChanging.slice(1)})`;
+    }
+} else {
+    resultText = result.toString();
+}
+
+// Update the fate points display update line to ensure it's present
+document.getElementById('fatePoints').textContent = fatePoints;
+
+
 
 const rollResult = determineRollResult(total, dc, currentHexagramNumber);
 document.getElementById('result').innerHTML = `
