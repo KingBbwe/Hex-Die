@@ -1768,26 +1768,27 @@ function showChangingLines() {
 }
 
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
+
 function determineRollResult(total, dc, hexagramNumber) {
-    // Determine if this is a Roll Over or Roll Under based on hexagram ranges
-    const isRollOver = (hexagramNumber >= 1 && hexagramNumber <= 16) || 
-                      (hexagramNumber >= 33 && hexagramNumber <= 47);
-    
+    // CORRECTED: Check DC ranges instead of hexagram number
+    const isRollOver = (dc >= 1 && dc <= 16) || 
+                      (dc >= 33 && dc <= 47);
+
+    // CORRECTED: Use strict inequalities
     if (isRollOver) {
         return {
-            result: total >= dc ? 'ROS' : 'ROF',
-            color: total >= dc ? '#28a745' : '#fd7e14',
-            success: total >= dc
+            result: total > dc ? 'ROS' : 'ROF',    // Strict >
+            color: total > dc ? '#28a745' : '#fd7e14',
+            success: total > dc
         };
     } else {
         return {
-            result: total <= dc ? 'RUS' : 'RUF',
-            color: total <= dc ? '#28a745' : '#fd7e14',
-            success: total <= dc
+            result: total < dc ? 'RUS' : 'RUF',    // Strict <
+            color: total < dc ? '#28a745' : '#fd7e14',
+            success: total < dc
         };
     }
 }
-
 
 function rollDiceAndHexagram() {
     if (shouldClearOnNextRoll) {
