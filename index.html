@@ -1,516 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Chronicles of Auld Ewe - Cyberpunk Edition</title>
-    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-    :root {
-        --primary: #6b46c1;
-        --primary-hover: #553c9a;
-        --bg-dark: #1a1a2e;
-        --bg-darker: #16213e;
-        --text-light: #e2e8f0;
-    }
 
-    body {
-        background: linear-gradient(45deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
-        color: var(--text-light);
-        font-family: 'Orbitron', system-ui, -apple-system, sans-serif;
-        margin: 0;
-        padding: 0;
-        line-height: 1.5;
-        min-height: 100vh;
-    }
-
-    nav {
-        background: rgba(22, 33, 62, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 2px solid var(--primary);
-        box-shadow: 0 0 15px rgba(107, 70, 193, 0.3);
-        padding: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    nav ul {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0;
-        margin: 0;
-        list-style: none;
-    }
-
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: rgba(26, 26, 46, 0.9);
-        border: 1px solid var(--primary);
-        box-shadow: 0 0 30px rgba(107, 70, 193, 0.2);
-        border-radius: 8px;
-        backdrop-filter: blur(5px);
-    }
-
-    h1, h2, h3 {
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-shadow: 0 0 10px rgba(107, 70, 193, 0.5);
-    }
-
-    h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-        color: #fff;
-        text-align: center;
-    }
-
-    h2 {
-        font-size: 1.2rem;
-        margin-bottom: 0.3rem;
-        color: #cbd5e1;
-        text-align: center;
-    }
-
-    h3 {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-        color: #94a3b8;
-        text-align: center;
-    }
-
-    .input-group {
-        margin-bottom: 1.5rem;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--text-light);
-    }
-
-    input, select {
-        width: 100%;
-        padding: 0.6rem;
-        border: 1px solid var(--primary) !important;
-        border-radius: 0.375rem;
-        background: rgba(22, 33, 62, 0.8) !important;
-        color: var(--text-light) !important;
-        margin-bottom: 0.5rem;
-        transition: all 0.3s ease !important;
-    }
-
-    input:focus, select:focus {
-        outline: none;
-        border-color: #21bf73 !important;
-        box-shadow: 0 0 15px rgba(107, 70, 193, 0.4) !important;
-    }
-
-    .toggle-group {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 0.75rem;
-        background-color: var(--bg-darker);
-        border: 1px solid var(--primary);
-        border-radius: 0.375rem;
-        box-shadow: inset 0 0 10px rgba(107, 70, 193, 0.2);
-    }
-
-    .mode-group {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .mode-button {
-        flex: 1;
-        padding: 0.6rem;
-        border: 2px solid var(--primary) !important;
-        border-radius: 0.375rem;
-        background-color: transparent;
-        color: var(--text-light);
-        cursor: pointer;
-        transition: all 0.2s;
-        clip-path: polygon(90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%, 10% 0);
-    }
-
-    .mode-button.active {
-        background-color: var(--primary);
-        border-color: var(--primary);
-    }
-
-    .mode-button:hover {
-        background-color: var(--primary-hover);
-    }
-
-    button {
-        width: 100%;
-        padding: 0.8rem;
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 1.0rem;
-        transition: all 0.3s ease;
-        margin-bottom: 0.5rem;
-        position: relative;
-        overflow: hidden;
-        border: 2px solid var(--primary) !important;
-        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
-    }
-
-    button:hover {
-        background-color: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
-    }
-
-    button::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(107, 70, 193, 0.2), transparent);
-        transform: rotate(45deg);
-        transition: all 0.5s;
-    }
-
-    button:hover::before {
-        animation: cyber-glow 1.5s infinite;
-    }
-
-    .oraclize-btn {
-        background-color: #21bf73;
-    }
-
-    #result {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        background: rgba(22, 33, 62, 0.8);
-        border-radius: 0.375rem;
-        border: 1px solid var(--primary);
-        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1),
-                    0 0 20px rgba(107, 70, 193, 0.1);
-        position: relative;
-    }
-
-    #result strong {
-        color: #a78bfa;
-    }
-
-    #changingLines {
-        text-align: left;
-        margin-top: 1rem;
-        padding: 1rem;
-        background: rgba(22, 33, 62, 0.8);
-        border-radius: 0.375rem;
-        display: none;
-        border: 1px solid var(--primary);
-        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
-    }
-
-    .fate-controls {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .fate-points {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    #fatePoints {
-        width: 60px;
-        font-weight: bold;
-        text-align: center;
-        font-family: 'Orbitron', sans-serif;
-        border: 2px solid var(--primary) !important;
-        background: rgba(22, 33, 62, 0.9) !important;
-    }
-
-    .add-fate {
-        background-color: #21bf73 !important;
-        width: auto !important;
-        padding: 0.5rem 1rem !important;
-    }
-
-                .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .step-down-toggle {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-            transition: background-color 0.3s, border-color 0.3s;
-            margin: 0;
-        }
-
-        .step-down-toggle:checked {
-            background-color: #39FF14;
-            border-color: #39FF14;
-        }
-
-        .step-down-toggle:checked::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: translate(-50%, -50%) rotate(45deg);
-        }
-
-    .chat-manager-container {
-        margin-top: 2rem;
-        padding: 1rem;
-        border-top: 1px solid var(--primary);
-        background-color: var(--bg-darker);
-        border-radius: 0.375rem;
-        border: 1px solid var(--primary);
-        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
-    }
-
-    .chat-manager-details {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .chat-manager-details summary {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: var(--primary);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        background-color: var(--bg-dark);
-        transition: background-color 0.2s;
-        border: 1px solid var(--primary);
-        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
-    }
-
-    .chat-manager-details summary:hover {
-        background-color: var(--primary-hover);
-        color: white;
-    }
-
-    .chat-setup-form,
-    .player-setup-form {
-        margin: 1rem 0;
-        padding: 1rem;
-        background-color: var(--bg-dark);
-        border-radius: 0.375rem;
-        border: 1px solid var(--primary);
-    }
-
-    #gmCodeDisplay {
-        margin-top: 1rem;
-        padding: 1rem;
-        background-color: var(--bg-dark);
-        border: 1px solid var(--primary);
-        border-radius: 0.375rem;
-        text-align: center;
-    }
-
-    @keyframes cyber-glow {
-        0% { left: -50%; }
-        100% { left: 150%; }
-    }
-
-    @keyframes border-pulse {
-        0% { opacity: 0.5; }
-        50% { opacity: 1; }
-        100% { opacity: 0.5; }
-    }
-    </style>
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
-            <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
-        </ul>
-    </nav>
-
-    <main class="container">
-        <section>
-            <div class="fate-controls">
-                <div class="fate-points">
-                    <label for="fatePoints">Fate Points:</label>
-                    <input type="number" id="fatePoints" value="3" min="0" max="5" readonly>
-                </div>
-                <button class="add-fate" onclick="addFatePoint()">Add +1</button>
-            </div>
-
-            <h1>The Chronicles of Auld Ewe</h1>
-            <h2>Harmonized Hex & Die System</h2>
-            <h3>Shake device or click Harmonize!</h3>
-
-            <div id="shakeStatus"></div>
-
-            <div class="input-group">
-                <label for="dc">Difficulty Class (DC)</label>
-                <input type="number" id="dc" placeholder="Enter DC">
-            </div>
-
-            <div class="input-group">
-                <label for="dieType">Die Type</label>
-                <select id="dieType">
-                    <option value="6">d6</option>
-                    <option value="8">d8</option>
-                    <option value="12">d12</option>
-                    <option value="20">d20</option>
-                    <option value="100">d100</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="modifier">Modifier (+/-)</label>
-                <input type="number" id="modifier" value="0">
-            </div>
-
-<div class="toggle-group">
-    <div class="checkbox-wrapper">
-        <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
-        <label for="stepDownToggle" style="margin: 0;">Step Down</label>
-    </div>
-</div>
-
-            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
-            <div class="mode-group">
-                <button class="mode-button" id="personalMode">Personal</button>
-                <button class="mode-button active" id="generalMode">General</button>
-                <button class="mode-button" id="actionMode">Action</button>
-            </div>
-
-            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
-            <button onclick="rollDiceAndHexagram()">Harmonize</button>
-            <button class="oraclize-btn" onclick="showChangingLines()">Oraclize</button>
-
-            <div id="result"></div>
-            <div id="changingLines"></div>
-
-            <div id="chatManager" class="chat-manager-container">
-                <details class="chat-manager-details">
-                    <summary>Game Master Settings</summary>
-                    <div class="chat-setup-form">
-                        <h3>Set Up New Game Group</h3>
-                        <div class="input-group">
-                            <label for="groupName">Group Name:</label>
-                            <input type="text" id="groupName" placeholder="Enter your group name">
-                        </div>
-                        <div class="input-group">
-                            <label for="chatId">Telegram Chat ID:</label>
-                            <input type="text" id="chatId" placeholder="Enter your Telegram chat ID">
-                            <button onclick="showChatIdInstructions()">How to get Chat ID?</button>
-                        </div>
-                        <button onclick="setupNewGameGroup()">Create Game Group</button>
-
-                        <div id="gmCodeDisplay" style="display: none;">
-                            <h4>Your GM Code:</h4>
-                            <p id="gmCodeText"></p>
-                            <p class="instructions">Share this code with your players to connect them to your group.</p>
-                        </div>
-                    </div>
-
-                    <div class="player-setup-form">
-                        <h3>Player Settings</h3>
-                        <div class="input-group">
-                            <label for="gmCode">GM Code:</label>
-                            <input type="text" id="gmCode" placeholder="Enter your GM's code">
-                        </div>
-                        <div class="input-group">
-                            <label for="playerName">Your Name:</label>
-                            <input type="text" id="playerName" placeholder="Enter your name">
-                        </div>
-                        <button onclick="joinGameGroup()">Join Game Group</button>
-                    </div>
-                </details>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // Configuration ⚠️→ UPDATED TELEGRAM CONFIG
-        const telegramBotToken = '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso'; // Replace with actual token
-        const chatId = '-1002185533073'; // Replace with actual chat ID
-        const FATE_STORAGE_KEY = 'auldEweFatePoints';
-        const MAX_FATE_POINTS = 5;
-        const BASE_FATE_POINTS = 3;
-        const INACTIVITY_TIMEOUT = 180000;     // 3 minutes
-// Constants for Chat Management
-   const CHAT_STORAGE_KEY = 'fateGameChats';
-   const DEFAULT_CHAT_ID = '-1002185533073'; // Replace with your default chat ID
-
-   // Data structure for storing chat configurations
-   class ChatConfig {
-       constructor(name, chatId, gmCode) {
-           this.name = name;
-           this.chatId = chatId;
-           this.gmCode = gmCode;
-           this.createdAt = Date.now();
-           this.players = [];
-       }
-   }
- 
-
-        // ⚠️→ ADD HEXAGRAM NAMES FIRST
-        const hexagramNames = {
-            1: 'The Creative', 2: 'The Receptive', 3: 'Difficulty at the Beginning', 
-            4: 'Youthful Folly', 5: 'Waiting', 6: 'Conflict', 7: 'Army', 8: 'Holding Together',
-            9: 'Small Taming', 10: 'Treading', 11: 'Peace', 12: 'Standstill',
-            13: 'Fellowship', 14: 'Great Possession', 15: 'Modesty', 16: 'Enthusiasm',
-            17: 'Following', 18: 'Work on the Decayed', 19: 'Approach', 20: 'Contemplation',
-            21: 'Biting Through', 22: 'Grace', 23: 'Splitting Apart', 24: 'Return',
-            25: 'Innocence', 26: 'Great Taming', 27: 'Nourishment', 28: 'Great Preponderance',
-            29: 'The Abysmal', 30: 'The Clinging', 31: 'Influence', 32: 'Duration',
-            33: 'Retreat', 34: 'Great Power', 35: 'Progress', 36: 'Darkening of the Light',
-            37: 'Family', 38: 'Opposition', 39: 'Obstruction', 40: 'Deliverance',
-            41: 'Decrease', 42: 'Increase', 43: 'Breakthrough', 44: 'Coming to Meet',
-            45: 'Gathering', 46: 'Pushing Upward', 47: 'Oppression', 48: 'The Well',
-            49: 'Revolution', 50: 'The Cauldron', 51: 'The Arousing', 52: 'Keeping Still',
-            53: 'Development', 54: 'The Marrying Maiden', 55: 'Abundance', 56: 'The Wanderer',
-            57: 'The Gentle', 58: 'The Joyous', 59: 'Dispersion', 60: 'Limitation',
-            61: 'Inner Truth', 62: 'Small Preponderance', 63: 'After Completion', 64: 'Before Completion'
-        };
-
-        // Complete Game Data (64 hexagrams for each mode)
-        const generalNarratives = {
-  1: {
-    triumph: "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose that elevates all.",
-    conflict: "Ambition clashes with humility; allies question whether their leader’s goals serve the many or the self.",
-    disaster: "Trust erodes as the Sentient’s actions grow self-serving, leaving their party fractured and disillusioned."
-  },
-  2: {
-    triumph: "The Sentient fosters resilience through patience, teaching their party to find strength in stillness and reflection.",
-    conflict: "Passivity risks enabling harm; the group debates when to act and when to yield.",
-    disaster: "The party grows complacent, their voice silenced by fear of overstepping."
-  },
-  3: {
-    triumph: "The Sentient guides their party through chaos with empathy, transforming uncertainty into solidarity.",
-    conflict: "Competing visions divide the group; some push for haste, others for caution.",
-    disaster: "The party fractures into factions, their shared purpose lost to infighting."
-  },
-  4: {
     triumph: "The Sentient turns naivety into wisdom, mentoring others to avoid their past mistakes.",
     conflict: "Overcorrection breeds rigidity; the group struggles to balance caution with openness.",
     disaster: "Fear of failure stifles growth, leaving the party stagnant and risk-averse."
@@ -1664,18 +1152,20 @@ async function sendToTelegram(messageType, data) {
                break;
            
            case 'roll':
-        
-        telegramMessage = `✨ Harmonized Hex & Die ✨
-▫️▫▫▫▫▫▫▫▫
-👤 Player: ${data.player}
-🌌 Hexagram: ${data.originalHexagram} (${hexagramNames[data.originalHexagram] || 'Unknown'})
-🎲 Die: d${data.dieType} → ${data.dieRoll}
-📊 Total: ${data.total} (DC: ${data.dc}) ${data.roll?.outcome || 'Unknown'}
-📜 Outcome: ${data.outcome}
-🔮 ${data.narrative}
-▫️▫▫▫▫▫▫▫▫
-#AuldEwe #FateCast`;
-break;
+    const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
+    telegramMessage =
+        `✨ Harmonized Hex & Die ✨\n` +
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `👤 *Player*: ${playerName}\n` +
+        `🌌 Hexagram: ${data.originalHexagram}\n` +
+        `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
+        (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
+        `📊 Total: ${data.total} (DC: ${data.dc}) *${telegramRollResult.result}*\n` +
+        `📜 Outcome: ${data.outcome}\n` +
+        `🔮 ${data.narrative ? data.narrative.substring(0, 100) : ''}...\n` + // Handle undefined narrative
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `#AuldEwe #FateCast`;
+    break;
 
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
@@ -1746,7 +1236,6 @@ function getOutcome(dieRoll, dieType) {
     return 'Disaster';
 }
 
-// In showChangingLines() (~line 150)
 function showChangingLines() {
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
@@ -1755,26 +1244,16 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
-        // Deduct fate point
         document.getElementById('fatePoints').value = fatePoints - 1;
-        
-        // Generate changing lines data
-        const changingData = determineChangingLines(
-            parseInt(document.getElementById('dieType').value),
-            currentHexagramNumber
-        );
-
-        // Format lines for display
-        const lineDisplay = changingData.lines.map(line => {
-            const lineType = currentHexagramLines[line - 1]; // Convert to 0-based index
-            return `Line ${line}: ${lineType}`;
-        });
-
-        // Update UI
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines:</strong><br>
-            ${lineDisplay.join('<br>') || 'No lines changed
+            <strong>Changing Lines:</strong>
+            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
+        `;
+        updateFateStorage();
+        startInactivityTimer();
+    }
+}
 
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
 
@@ -1853,32 +1332,19 @@ if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
     document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
     sendToTelegram('legendary', { message: legendaryMessage });
 }
-
-// CORRECTED VERSION (preserving hexagramReduction)
-sendToTelegram('roll', {
-    // Original fields (preserved)
-    originalDieType: originalDieType,
-    originalHexagram: currentHexagramNumber,
-    adjustedHexagram: adjustedHex,
-    dieType: dieType,
-    dieRoll: dieRoll,
-    total: total,
-    dc: dc,
-    outcome: outcome, // <-- Explicitly retained original outcome
-    narrative: narrative,
-    stepDownUsed: stepDownUsed,
-    hexagramReduction: hexagramReduction,
-    
-    // New structured fields (additive)
-    roll: {
+    sendToTelegram('roll', {
+        originalDieType: originalDieType,
+        originalHexagram: currentHexagramNumber,
+        adjustedHexagram: adjustedHex,
+        dieType: dieType,
+        dieRoll: dieRoll,
         total: total,
-        breakdown: `${adjustedHex} (${currentHexagramNumber} - ${hexagramReduction}) + ${dieRoll} + ${mod}`,
         dc: dc,
-        outcome: rollResult.result // <-- ROS/ROF/RUS/RUF from determineRollResult()
-    },
-    player: document.getElementById('playerName').value || 'Anonymous'
-});
-
+        outcome: outcome,
+        narrative: narrative,
+        stepDownUsed: stepDownUsed,
+        hexagramReduction: hexagramReduction
+    });
 
     shouldClearOnNextRoll = true;
     startInactivityTimer();
