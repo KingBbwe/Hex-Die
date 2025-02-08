@@ -1758,22 +1758,25 @@ function addFatePoint() {
 }
 
 
+// AFTER (correct DC-based check with strict inequalities)
 function determineRollResult(total, dc, hexagramNumber) {
-    // Determine if this is a Roll Over or Roll Under based on hexagram ranges
-    const isRollOver = (hexagramNumber >= 1 && hexagramNumber <= 16) || 
-                      (hexagramNumber >= 33 && hexagramNumber <= 47);
-    
+    // DC range validation (1-16 and 33-47 = ROS/ROF)
+    const isRollOver = (dc >= 1 && dc <= 16) || 
+                      (dc >= 33 && dc <= 47);
+
     if (isRollOver) {
         return {
-            result: total >= dc ? 'ROS' : 'ROF',
-            color: total >= dc ? '#28a745' : '#fd7e14',
-            success: total >= dc
+            result: total > dc ? 'ROS' : 'ROF',
+            color: total > dc ? '#28a745' : '#fd7e14',
+            success: total > dc
         };
-    } else {
+    } 
+    // DC range 17-32 and 48-64 = RUS/RUF
+    else { 
         return {
-            result: total <= dc ? 'RUS' : 'RUF',
-            color: total <= dc ? '#28a745' : '#fd7e14',
-            success: total <= dc
+            result: total < dc ? 'RUS' : 'RUF',
+            color: total < dc ? '#28a745' : '#fd7e14',
+            success: total < dc
         };
     }
 }
