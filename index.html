@@ -1683,16 +1683,16 @@ async function sendToTelegram(messageType, data) {
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
 
-        case 'changingLines':
-            telegramMessage =
-                `🌀 *Changing Lines Revealed* 🌀\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})\n` +
-                `🔮 Changed Lines:\n` +
-                `${data.changedLines.join('\n')}\n` +
-                `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `#AuldEwe #FateCast`;
-            break;
+case 'changingLines':
+    telegramMessage = `🌀 *Changing Lines Analysis* 🌀
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+🎲 Original Cast: ${data.originalRoll}
+📜 Outcome: ${data.originalOutcome}
+🔮 Changed Lines:
+${data.changedLines.join('\n')}
+▫️▫️▫️▫️▫️▫️▫️▫️▫️
+#AuldEwe #FateCast`;
+    break;
 
        }
 
@@ -1756,17 +1756,40 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
+        // Deduct fate point
         document.getElementById('fatePoints').value = fatePoints - 1;
+        
+        // Generate changing lines data
+        const changingData = determineChangingLines(
+            parseInt(document.getElementById('dieType').value),
+            currentHexagramNumber
+        );
+
+        // Format lines for display
+        const lineDisplay = changingData.lines.map(line => {
+            const lineType = currentHexagramLines[line - 1]; // Convert to 0-based index
+            return `Line ${line}: ${lineType}`;
+        });
+
+        // Update UI
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines:</strong>
-            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
+            <strong>Changing Lines:</strong><br>
+            ${lineDisplay.join('<br>') || 'No lines changed'}
         `;
+
+        // Send to Telegram
+        sendToTelegram('changingLines', {
+            originalRoll: currentHexagramNumber,
+            originalOutcome: document.querySelector('#result strong:last-child').nextSibling.textContent.trim(),
+            changedLines: lineDisplay,
+            scaledValues: changingData.scaledValues
+        });
+
         updateFateStorage();
         startInactivityTimer();
     }
 }
-
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
 
 function determineRollResult(total, dc, hexagramNumber) {
