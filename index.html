@@ -1507,10 +1507,24 @@ const stepDownConfig = {
 };
 
 // Game State
-let currentHexagramNumber = null;
+// Initialize critical variables
+let currentHexagramNumber = 0;
 let currentHexagramLines = [];
 let currentChangingLines = [];
+let shouldClearOnNextRoll = false;
 
+// Debugging helper to verify button binding
+function checkButtonBinding() {
+    const harmonizeButton = document.getElementById('harmonizeButton');
+    if (harmonizeButton) {
+        console.log('Harmonize button found and bound to:', harmonizeButton.onclick);
+    } else {
+        console.error('Harmonize button not found!');
+    }
+}
+
+
+        
 // Chat Management Functions
    function generateGMCode() {
        return 'GM_' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -1829,13 +1843,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ensure the Harmonize button is bound to the roll function
     const harmonizeButton = document.getElementById('harmonizeButton');
     if (harmonizeButton) {
-        harmonizeButton.addEventListener('click', rollDiceAndHexagram);
+        harmonizeButton.addEventListener('click', () => {
+            console.log('Harmonize button clicked'); // Debugging
+            rollDiceAndHexagram();
+        });
     } else {
         console.error('Harmonize button not found!');
     }
 });        
         
 function rollDiceAndHexagram() {
+    console.log('rollDiceAndHexagram called'); // Debugging
+
     // Reset fields if needed
     if (shouldClearOnNextRoll) {
         resetFormFields();
@@ -1859,7 +1878,7 @@ function rollDiceAndHexagram() {
     let dieType = originalDieType;
     const mod = parseInt(modifierInput.value) || 0;
     
-    // Step-down logic (preserved)
+    // Step-down logic
     let hexagramReduction = 0;
     if (stepDownUsed) {
         const config = stepDownConfig[originalDieType];
