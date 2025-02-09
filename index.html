@@ -1762,14 +1762,6 @@ function getOutcome(dieRoll, dieType) {
 }
 
 function showChangingLines() {
-    // Make sure there are changing lines available – note that we expect
-    // determineChangingLines() to have set currentChangingLines.scaledValues.
-    if (!currentChangingLines?.scaledValues?.length) {
-        alert("No changing lines available. Perform a roll first!");
-        return;
-    }
-
-    // Check if the user has enough Fate Points
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
         alert("Not enough Fate Points!");
@@ -1777,35 +1769,33 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
-        // Build an array of formatted outcomes for each changing line.
-        // For each changing line, get the outcome for the original roll and the scaled value.
-        const scaledOutcomes = currentChangingLines.scaledValues.map(scaled => {
-            const originalOutcome = getOutcome(scaled.original, scaled.dieType);
-            const finalOutcome = getOutcome(scaled.scaled, scaled.dieType);
-            return `${scaled.line} (${originalOutcome} → ${finalOutcome})`;
-        });
-
-        // Deduct one Fate Point and update the UI to show the results.
+        // Deduct Fate Point and update the display
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines Revealed:</strong><br>
-            ${scaledOutcomes.join('<br>')}
+            <strong>Changing Lines:</strong>
+            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
         `;
-
-        // Prepare the data for Telegram.
-        // Here we use the first changing line’s original roll as the "Original Roll" info.
-        sendToTelegram('changingLines', {
-            originalRoll: currentChangingLines.scaledValues[0].original,
-            originalOutcome: getOutcome(
-                currentChangingLines.scaledValues[0].original,
-                currentChangingLines.scaledValues[0].dieType
-            ),
-            changedLines: scaledOutcomes
-        });
-
         updateFateStorage();
         startInactivityTimer();
+
+        // Prepare data for the Telegram message.
+        // (You might need to adjust what you pass as originalRoll/originalOutcome based on your app logic)
+        const telegramData = {
+            originalRoll: currentHexagramNumber,
+            // For demonstration, we’ll use the outcome of the roll based on the die type.
+            // (You might want to store the original outcome globally in rollDiceAndHexagram instead.)
+            originalOutcome: getOutcome(
+                // Here we assume the original die roll was used to determine the outcome;
+                // you may need to store and pass the actual dieRoll if desired.
+                currentHexagramNumber, 
+                parseInt(document.getElementById('dieType').value)
+            ),
+            changedLines: currentChangingLines
+        };
+
+        // Now send the message to Telegram
+        sendToTelegram('changingLines', telegramData);
     }
 }
 
