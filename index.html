@@ -1488,7 +1488,7 @@
         6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
         8: { triumph: [8,7], conflict: [6,5,4], disaster: [3,2,1] },
         12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
-        20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
+        20: { triumph: [20,19,18], conflict: [17,16,15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
         100: {
             triumph: Array.from({ length: 20 }, (_, i) => 100 - i),
             conflict: Array.from({ length: 60 }, (_, i) => 80 - i),
@@ -1507,24 +1507,10 @@ const stepDownConfig = {
 };
 
 // Game State
-// Initialize critical variables
-let currentHexagramNumber = 0;
+let currentHexagramNumber = null;
 let currentHexagramLines = [];
 let currentChangingLines = [];
-let shouldClearOnNextRoll = false;
 
-// Debugging helper to verify button binding
-function checkButtonBinding() {
-    const harmonizeButton = document.getElementById('harmonizeButton');
-    if (harmonizeButton) {
-        console.log('Harmonize button found and bound to:', harmonizeButton.onclick);
-    } else {
-        console.error('Harmonize button not found!');
-    }
-}
-
-
-        
 // Chat Management Functions
    function generateGMCode() {
        return 'GM_' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -1696,15 +1682,19 @@ async function sendToTelegram(messageType, data) {
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
+
 case 'changingLines':
-    telegramMessage = `🌀 *Changing Lines Analysis* 🌀
-▫️▫️▫️▫️▫️▫️▫️▫️▫️
-🎲 Original Cast: ${data.originalRoll}
-📜 Outcome: ${data.originalOutcome}
-🔮 Changed Lines:
-${data.changedLines.length ? data.changedLines.join('\n') : 'No lines changed'}
-▫️▫️▫️▫️▫️▫️▫️▫️▫️
-#AuldEwe #FateCast`;
+    telegramMessage = `🌀 *Changing Lines Analysis* 🌀\n` +
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `🎲 Original Cast: ${data.originalRoll}\n` +
+        `📜 Outcome: ${data.originalOutcome}\n` +
+        `🔮 Changed Lines:\n${
+            data.changedLines.map(line => 
+                `• Line ${line.line}: ${line.outcomes}`
+            ).join('\n') || 'No lines changed'
+        }\n` +
+        `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
+        `#AuldEwe #FateCast`;
     break;
 
        }
@@ -1741,27 +1731,42 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLines(originalDieType, originalRoll) {
+function determineChangingLinesWithOutcomes(originalDieType, originalRoll) {
     const lines = [];
     const scaledValues = [];
-    const dieScale = scalingTable[originalDieType] || scalingTable[6]; // Default to d6
-
-    // Deterministic method to select changing lines
+    const dieScale = scalingTable[originalDieType] || scalingTable[6];
+    
     for (let line = 1; line <= 6; line++) {
         if (Math.random() < 0.25) {
             const scaledValue = dieScale[line - 1];
+            const scaledDieType = Object.keys(scalingTable).find(key => 
+                scalingTable[key][0] === dieScale[0]
+            ) || originalDieType;
+
+            lines.push({
+                line: line,
+                originalRoll: originalRoll,
+                scaled: scaledValue,
+                dieType: scaledDieType
+            });
             
-            lines.push(line);
             scaledValues.push({
                 line: line,
                 original: originalRoll,
                 scaled: scaledValue,
-                dieType: originalDieType
+                dieType: scaledDieType
             });
         }
     }
-
+    
     return { lines, scaledValues };
+}
+
+function getLineOutcome(rollResult, dieType) {
+    const thresholds = outcomeThresholds[dieType] || outcomeThresholds[6]; // Default to d6
+    if (thresholds.triumph.includes(rollResult)) return 'Triumph';
+    if (thresholds.conflict.includes(rollResult)) return 'Conflict';
+    return 'Disaster';
 }
 
 function getActiveNarratives() {
@@ -1788,34 +1793,49 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
-        // Deduct fate point
         document.getElementById('fatePoints').value = fatePoints - 1;
+        document.getElementById('changingLines').style.display = 'block';
+        
+        // Get original outcomes
+        const originalDieType = parseInt(document.getElementById('dieType').value);
+        const originalRoll = currentHexagramNumber;
+        
+        // Get changing lines data with outcomes
+        const changingData = determineChangingLinesWithOutcomes(originalDieType, originalRoll);
+        
+        // Build display text
+        let linesDisplay = 'None';
+        if (changingData.lines.length > 0) {
+            linesDisplay = changingData.lines.map(line => {
+                const originalOutcome = getLineOutcome(line.originalRoll, originalDieType);
+                const newOutcome = getLineOutcome(line.scaled, line.dieType);
+                return `${line.line} (${originalOutcome} → ${newOutcome})`;
+            }).join('<br>');
+        }
 
-        // Generate line descriptions
-        const lineDescriptions = currentChangingLines.map(line => {
-            const lineType = currentHexagramLines[line - 1]; // Convert to 0-based index
-            return `Line ${line}: ${lineType}`;
-        });
-
-        // Update UI
-        const changingLinesDiv = document.getElementById('changingLines');
-        changingLinesDiv.style.display = 'block';
-        changingLinesDiv.innerHTML = `
-            <strong>Changing Lines:</strong><br>
-            ${lineDescriptions.length ? lineDescriptions.join('<br>') : 'No lines changed'}
+        document.getElementById('changingLines').innerHTML = `
+            <strong>Changing Lines Revealed:</strong><br>
+            ${linesDisplay}
         `;
 
-        // Send to Telegram
+        // Send to Telegram with outcomes
         sendToTelegram('changingLines', {
-            originalRoll: currentHexagramNumber,
+            originalRoll: originalRoll,
             originalOutcome: document.querySelector('#result strong:contains("Outcome")').nextSibling.textContent.trim(),
-            changedLines: lineDescriptions
+            changedLines: changingData.lines.map(line => ({
+                line: line.line,
+                original: line.originalRoll,
+                scaled: line.scaled,
+                outcomes: `${getLineOutcome(line.originalRoll, originalDieType)} → ${getLineOutcome(line.scaled, line.dieType)}`
+            }))
         });
 
         updateFateStorage();
         startInactivityTimer();
     }
 }
+
+
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
 
 function determineRollResult(total, dc, hexagramNumber) {
@@ -1839,46 +1859,17 @@ function determineRollResult(total, dc, hexagramNumber) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Ensure the Harmonize button is bound to the roll function
-    const harmonizeButton = document.getElementById('harmonizeButton');
-    if (harmonizeButton) {
-        harmonizeButton.addEventListener('click', () => {
-            console.log('Harmonize button clicked'); // Debugging
-            rollDiceAndHexagram();
-        });
-    } else {
-        console.error('Harmonize button not found!');
-    }
-});        
-        
 function rollDiceAndHexagram() {
-    console.log('rollDiceAndHexagram called'); // Debugging
-
-    // Reset fields if needed
     if (shouldClearOnNextRoll) {
         resetFormFields();
     }
-
-    // Ensure required elements exist
-    const dcInput = document.getElementById('dc');
-    const dieTypeInput = document.getElementById('dieType');
-    const modifierInput = document.getElementById('modifier');
-    const stepDownToggle = document.getElementById('stepDownToggle');
-
-    if (!dcInput || !dieTypeInput || !modifierInput || !stepDownToggle) {
-        console.error('Required input fields are missing!');
-        return;
-    }
-
-    // Read input values
-    const stepDownUsed = stepDownToggle.checked;
-    const dc = parseInt(dcInput.value) || 0;
-    const originalDieType = parseInt(dieTypeInput.value);
-    let dieType = originalDieType;
-    const mod = parseInt(modifierInput.value) || 0;
     
-    // Step-down logic
+    const stepDownUsed = document.getElementById('stepDownToggle').checked;
+    const dc = parseInt(document.getElementById('dc').value) || 0;
+    const originalDieType = parseInt(document.getElementById('dieType').value);
+    let dieType = originalDieType;
+    const mod = parseInt(document.getElementById('modifier').value) || 0;
+    
     let hexagramReduction = 0;
     if (stepDownUsed) {
         const config = stepDownConfig[originalDieType];
@@ -1888,31 +1879,25 @@ function rollDiceAndHexagram() {
         }
     }
 
-    // Generate hexagram and lines
     currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
     currentHexagramLines = generateHexagramLines(currentHexagramNumber);
     const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
 
-    // Roll die and calculate total
     const dieRoll = Math.floor(Math.random() * dieType) + 1;
     const outcome = getOutcome(dieRoll, dieType);
     const total = adjustedHex + dieRoll + mod;
 
-    // Get narrative
     const narratives = getActiveNarratives();
     const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-    // Determine changing lines
-    currentChangingLines = determineChangingLines(originalDieType, currentHexagramNumber).lines;
+    currentChangingLines = determineChangingLines();
 
-    // Vibrate if supported
     if (navigator.vibrate) {
         navigator.vibrate(100);
     }
 
-    // Display result
-    const rollResult = determineRollResult(total, dc, currentHexagramNumber);
-    document.getElementById('result').innerHTML = `
+const rollResult = determineRollResult(total, dc, currentHexagramNumber);
+document.getElementById('result').innerHTML = `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
         <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
         <strong>Adjusted Hexagram:</strong> ${adjustedHex} (${hexagramNames[adjustedHex]}) ${hexagramReduction ? `(-${hexagramReduction})` : ''}<br>
@@ -1923,25 +1908,20 @@ function rollDiceAndHexagram() {
         <strong>Narrative:</strong> ${narrative}
     `;
 
-    // Check for legendary feat
-    if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
-        const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
-        document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
-        sendToTelegram('legendary', { message: legendaryMessage });
-    }
-
-    // Send roll data to Telegram
+if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
+    const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
+    document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
+    sendToTelegram('legendary', { message: legendaryMessage });
+}
     sendToTelegram('roll', {
-        hexagram: currentHexagramNumber,
-        modifier: mod,
-        roll: {
-            total: total,
-            breakdown: `${adjustedHex} (${currentHexagramNumber} - ${hexagramReduction}) + ${dieRoll} + ${mod}`,
-            dc: dc,
-            outcome: rollResult.result
-        },
         originalDieType: originalDieType,
+        originalHexagram: currentHexagramNumber,
+        adjustedHexagram: adjustedHex,
         dieType: dieType,
+        dieRoll: dieRoll,
+        total: total,
+        dc: dc,
+        outcome: outcome,
         narrative: narrative,
         stepDownUsed: stepDownUsed,
         hexagramReduction: hexagramReduction
