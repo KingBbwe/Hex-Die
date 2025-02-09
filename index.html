@@ -1747,6 +1747,7 @@ function getOutcome(dieRoll, dieType) {
 }
 
 function showChangingLines() {
+originalOutcome: currentOutcome
     const fatePoints = parseInt(document.getElementById('fatePoints').value);
     if (fatePoints < 1) {
         alert("Not enough Fate Points!");
@@ -1754,32 +1755,22 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
-        // Deduct Fate Point and update the display
+        // Deduct the Fate Point and update storage/timer.
         document.getElementById('fatePoints').value = fatePoints - 1;
-        document.getElementById('changingLines').style.display = 'block';
-        document.getElementById('changingLines').innerHTML = `
-            <strong>Changing Lines:</strong>
-            ${currentChangingLines.length ? currentChangingLines.join(', ') : 'None'}
-        `;
         updateFateStorage();
         startInactivityTimer();
 
-        // Prepare data for the Telegram message.
-        // (You might need to adjust what you pass as originalRoll/originalOutcome based on your app logic)
+        // Use a stored value for the original outcome (see next point) or compute it correctly.
         const telegramData = {
             originalRoll: currentHexagramNumber,
-            // For demonstration, we’ll use the outcome of the roll based on the die type.
-            // (You might want to store the original outcome globally in rollDiceAndHexagram instead.)
-            originalOutcome: getOutcome(
-                // Here we assume the original die roll was used to determine the outcome;
-                // you may need to store and pass the actual dieRoll if desired.
-                currentHexagramNumber, 
-                parseInt(document.getElementById('dieType').value)
-            ),
+            originalOutcome: currentOutcome, // see note below!
             changedLines: currentChangingLines
         };
 
-        // Now send the message to Telegram
+        // Update the web app display using the new formatting.
+        displayChangingLines(telegramData);
+
+        // Send the Telegram message.
         sendToTelegram('changingLines', telegramData);
     }
 }
@@ -1890,6 +1881,11 @@ if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
     document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
     sendToTelegram('legendary', { message: legendaryMessage });
 }
+
+const outcome = getOutcome(dieRoll, dieType);
+// Store the outcome globally for later use in showChangingLines()
+currentOutcome = outcome;
+
     sendToTelegram('roll', {
         originalDieType: originalDieType,
         originalHexagram: currentHexagramNumber,
