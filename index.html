@@ -1786,6 +1786,16 @@ function showChangingLines() {
     }
 }
 
+function getTransformedLineOutcome(originalOutcome, lineNumber) {
+    const transformationRules = {
+        'Disaster': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' },
+        'Conflict': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' },
+        'Triumph': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' }
+    };
+
+    return transformationRules[originalOutcome]?.[lineNumber] || 'Unknown';
+}
+
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
 
 function determineRollResult(total, dc, hexagramNumber) {
