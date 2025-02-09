@@ -1498,18 +1498,28 @@
 
 // In the stepDownConfig object
 const stepDownConfig = {
-    4: [4, 1],
-    6: [4, 2], // Changed from [6, 2] to [4, 2]
-    8: [6, 4],
-    12: [8, 8],
-    20: [12, 10],
-    100: [20, 20]
+    100: [20, 10],
+    20: [12, 8],  // d20 → d12, -8 hexagram
+    12: [8, 6],   // d12 → d8, -6 hexagram
+    10: [6, 4],   // d10 → d6, -4 hexagram
+    8: [6, 4],    // d8 → d6, -4 hexagram
+    6: [4, 2]     // d6 → d4, -2 hexagram
 };
+    
+
 
 // Game State
-let currentHexagramNumber = null;
+let currentHexagramNumber = 0;
 let currentHexagramLines = [];
 let currentChangingLines = [];
+let shouldClearOnNextRoll = false;
+
+const stepDownConfig = { /* ... */ };
+const outcomeThresholds = { /* ... */ };
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('harmonizeButton').addEventListener('click', rollDiceAndHexagram);
+});
 
 // Chat Management Functions
    function generateGMCode() {
@@ -1731,7 +1741,7 @@ function generateHexagramLines(hexagramNumber) {
     return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
 }
 
-function determineChangingLinesWithOutcomes(originalDieType, originalRoll) {
+function determineChangingLines(originalDieType, originalRoll) {
     const lines = [];
     const scaledValues = [];
     const dieScale = scalingTable[originalDieType] || scalingTable[6];
@@ -1749,15 +1759,11 @@ function determineChangingLinesWithOutcomes(originalDieType, originalRoll) {
                 scaled: scaledValue,
                 dieType: scaledDieType
             });
-            
-            scaledValues.push({
-                line: line,
-                original: originalRoll,
-                scaled: scaledValue,
-                dieType: scaledDieType
-            });
         }
     }
+    
+    return { lines };
+}
     
     return { lines, scaledValues };
 }
@@ -1817,6 +1823,11 @@ function showChangingLines() {
             <strong>Changing Lines Revealed:</strong><br>
             ${linesDisplay}
         `;
+
+            const changingData = determineChangingLines(
+        parseInt(document.getElementById('dieType').value),
+        currentHexagramNumber
+    );
 
         // Send to Telegram with outcomes
         sendToTelegram('changingLines', {
@@ -1912,6 +1923,11 @@ if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
     const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
     document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
     sendToTelegram('legendary', { message: legendaryMessage });
+}
+    currentChangingLines = determineChangingLines(
+        parseInt(document.getElementById('dieType').value),
+        currentHexagramNumber
+    ).lines;
 }
     sendToTelegram('roll', {
         originalDieType: originalDieType,
