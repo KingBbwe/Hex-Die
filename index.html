@@ -1651,15 +1651,16 @@ function isLegendaryFeat(outcome, total, dc, hexagramNumber) {
 }
 
 async function sendToTelegram(messageType, data) {
-       const gmCode = localStorage.getItem('activeGMCode');
-       const activeChatId = getActiveChatId(gmCode);
-       const playerName = localStorage.getItem('playerName') || 'Anonymous';
-       
-       if (!telegramBotToken || !activeChatId) return;
+    const gmCode = localStorage.getItem('activeGMCode');
+    const activeChatId = getActiveChatId(gmCode);
+    const playerName = localStorage.getItem('playerName') || 'Anonymous';
 
-       let telegramMessage;
-       switch(messageType) {
-           case 'fate':
+    if (!telegramBotToken || !activeChatId) return;
+
+    let telegramMessage;
+    switch (messageType) {
+        // ... other cases ...
+        case 'fate':
                telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
                break;
            
@@ -1683,7 +1684,7 @@ async function sendToTelegram(messageType, data) {
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
 
-         case 'changingLines':
+        case 'changingLines':
             telegramMessage =
                 `🌀 *Changing Lines Revealed* 🌀\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
@@ -1694,21 +1695,24 @@ async function sendToTelegram(messageType, data) {
                 `#AuldEwe #FateCast`;
             break;
 
-       try {
-           const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                   chat_id: activeChatId,
-                   text: telegramMessage,
-                   parse_mode: 'Markdown'
-               })
-           });
-           if (!response.ok) console.error('Telegram API error:', await response.text());
-       } catch (error) {
-           console.error('Error sending to Telegram:', error);
-       }
-   }
+        // ... other cases ...
+    }
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: activeChatId,
+                text: telegramMessage,
+                parse_mode: 'Markdown'
+            })
+        });
+        if (!response.ok) console.error('Telegram API error:', await response.text());
+    } catch (error) {
+        console.error('Error sending to Telegram:', error);
+    }
+}
 
 function addFatePoint() {
     const current = parseInt(document.getElementById('fatePoints').value);
