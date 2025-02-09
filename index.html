@@ -1756,6 +1756,7 @@ function showChangingLines() {
     }
 
     if (confirm("This action costs 1 Fate Point\nProceed?")) {
+        // Deduct Fate Point and update the display
         document.getElementById('fatePoints').value = fatePoints - 1;
         document.getElementById('changingLines').style.display = 'block';
         document.getElementById('changingLines').innerHTML = `
@@ -1764,6 +1765,24 @@ function showChangingLines() {
         `;
         updateFateStorage();
         startInactivityTimer();
+
+        // Prepare data for the Telegram message.
+        // (You might need to adjust what you pass as originalRoll/originalOutcome based on your app logic)
+        const telegramData = {
+            originalRoll: currentHexagramNumber,
+            // For demonstration, we’ll use the outcome of the roll based on the die type.
+            // (You might want to store the original outcome globally in rollDiceAndHexagram instead.)
+            originalOutcome: getOutcome(
+                // Here we assume the original die roll was used to determine the outcome;
+                // you may need to store and pass the actual dieRoll if desired.
+                currentHexagramNumber, 
+                parseInt(document.getElementById('dieType').value)
+            ),
+            changedLines: currentChangingLines
+        };
+
+        // Now send the message to Telegram
+        sendToTelegram('changingLines', telegramData);
     }
 }
 
