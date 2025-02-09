@@ -1683,34 +1683,32 @@ async function sendToTelegram(messageType, data) {
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
 
-        case 'changingLines':
+case 'changingLines':
+            const transformedLines = data.changingLines.map(lineNumber => {
+                const newOutcome = getTransformedLineOutcome(data.originalOutcome, lineNumber);
+                return `${lineNumber} (${data.originalOutcome} → ${newOutcome})`;
+            }).join("\n");
+
             telegramMessage =
                 `🌀 *Changing Lines Revealed* 🌀\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `🎲 Original Roll: ${data.originalRoll} (${data.originalOutcome})\n` +
-                `🔮 Changed Lines:\n` +
-                `${data.changedLines.join('\n')}\n` +
+                `🎲 *Original Roll:* ${data.originalRoll} (${data.originalOutcome})\n` +
+                `🔮 *Changed Lines:*\n${transformedLines}\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
                 `#AuldEwe #FateCast`;
             break;
-
        }
 
-       try {
-           const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                   chat_id: activeChatId,
-                   text: telegramMessage,
-                   parse_mode: 'Markdown'
-               })
-           });
-           if (!response.ok) console.error('Telegram API error:', await response.text());
-       } catch (error) {
-           console.error('Error sending to Telegram:', error);
-       }
-   }
+await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: activeChatId,
+            text: telegramMessage,
+            parse_mode: "Markdown"
+        })
+    });
+}
 
 function addFatePoint() {
     const current = parseInt(document.getElementById('fatePoints').value);
@@ -1795,6 +1793,25 @@ function getTransformedLineOutcome(originalOutcome, lineNumber) {
 
     return transformationRules[originalOutcome]?.[lineNumber] || 'Unknown';
 }
+
+function displayChangingLines(data) {
+    const changingLinesDiv = document.getElementById('changingLines');
+    const transformedLines = data.changingLines.map(lineNumber => {
+        const newOutcome = getTransformedLineOutcome(data.originalOutcome, lineNumber);
+        return `${lineNumber} (${data.originalOutcome} → ${newOutcome})`;
+    }).join("<br>");
+
+    changingLinesDiv.innerHTML = `
+        <strong>🌀 Changing Lines Revealed 🌀</strong><br>
+        ▫️▫️▫️▫️▫️▫️▫️▫️▫️<br>
+        🎲 <strong>Original Roll:</strong> ${data.originalRoll} (${data.originalOutcome})<br>
+        🔮 <strong>Changed Lines:</strong><br>${transformedLines}<br>
+        ▫️▫️▫️▫️▫️▫️▫️▫️▫️<br>
+        <em>#AuldEwe #FateCast</em>
+    `;
+    changingLinesDiv.style.display = "block";
+}
+
 
 // Add this helper function near the other helper functions, before rollDiceAndHexagram()
 
