@@ -1672,9 +1672,10 @@ async function sendToTelegram(messageType, data) {
 
     let telegramMessage;
     switch(messageType) {
-        case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
-            break;
+
+case 'fate':
+    telegramMessage = `✨ *Fate Point Added* ✨\n👤 *Player:* ${playerName}\nNew total: ${data.points}`;
+    break;
 
         case 'roll': {
             const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
