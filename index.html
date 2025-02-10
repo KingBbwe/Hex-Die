@@ -1464,7 +1464,10 @@
 };
     
         // Complete Hexagram Configuration
-        const hexagramLookup = {
+// ------------------------------
+// King Wen Sequence Mapping
+// ------------------------------
+const hexagramLookup = {
     1: [1,1,1,1,1,1],
     2: [0,0,0,0,0,0],
     3: [1,0,0,0,1,0],
@@ -1530,115 +1533,122 @@
     63: [1,0,1,0,1,0],
     64: [0,1,0,1,0,1]
 };
-    // Game Configuration
-    const outcomeThresholds = {
-        4: { triumph: [4], conflict: [3,2], disaster: [1] },
-        6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
-        8: { triumph: [8,7], conflict: [6,5,4], disaster: [3,2,1] },
-        12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
-        20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
-        100: {
-            triumph: Array.from({ length: 20 }, (_, i) => 100 - i),
-            conflict: Array.from({ length: 60 }, (_, i) => 80 - i),
-            disaster: Array.from({ length: 20 }, (_, i) => 20 - i)
-        }
-    };
 
-// In the stepDownConfig object
+// ------------------------------
+// Game Configuration
+// ------------------------------
+const outcomeThresholds = {
+    4: { triumph: [4], conflict: [3,2], disaster: [1] },
+    6: { triumph: [6], conflict: [5,4], disaster: [3,2,1] },
+    8: { triumph: [8,7], conflict: [6,5,4], disaster: [3,2,1] },
+    12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
+    20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
+    100: {
+        triumph: Array.from({ length: 20 }, (_, i) => 100 - i),
+        conflict: Array.from({ length: 60 }, (_, i) => 80 - i),
+        disaster: Array.from({ length: 20 }, (_, i) => 20 - i)
+    }
+};
+
 const stepDownConfig = {
     4: [4, 1],
-    6: [4, 2], // Changed from [6, 2] to [4, 2]
+    6: [4, 2],
     8: [6, 4],
     12: [8, 8],
     20: [12, 10],
     100: [20, 20]
 };
 
+// ------------------------------
 // Game State
+// ------------------------------
 let currentHexagramNumber = null;
 let currentChangingLines = [];
 let currentOutcome = null;
 
+// (Other global constants such as CHAT_STORAGE_KEY, DEFAULT_CHAT_ID, FATE_STORAGE_KEY, BASE_FATE_POINTS, MAX_FATE_POINTS, INACTIVITY_TIMEOUT, telegramBotToken, hexagramNames, personalNarratives, generalNarratives, actionNarratives, etc. are assumed to be defined elsewhere)
 
+// ------------------------------
 // Chat Management Functions
-   function generateGMCode() {
-       return 'GM_' + Math.random().toString(36).substr(2, 9).toUpperCase();
-   }
+// ------------------------------
+function generateGMCode() {
+    return 'GM_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
 
-   function saveNewChat(name, chatId) {
-       const gmCode = generateGMCode();
-       const chatConfig = new ChatConfig(name, chatId, gmCode);
-       
-       let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
-       chats[gmCode] = chatConfig;
-       localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
-       
-       return gmCode;
-   }
+function saveNewChat(name, chatId) {
+    const gmCode = generateGMCode();
+    const chatConfig = new ChatConfig(name, chatId, gmCode);
 
-   function getActiveChatId(gmCode) {
-       const chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
-       return chats[gmCode]?.chatId || DEFAULT_CHAT_ID;
-   }
+    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    chats[gmCode] = chatConfig;
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
 
-   function showChatIdInstructions() {
-       alert(
-           "To get your Telegram Chat ID:\n\n" +
-           "1. Add @RawDataBot to your group\n" +
-           "2. Type /start in the group\n" +
-           "3. Look for 'Chat ID' in the bot's response\n" +
-           "4. Remove the bot after getting the ID\n\n" +
-           "Note: Make sure to add the AuldEwe bot to your group as well!"
-       );
-   }
+    return gmCode;
+}
 
-   function setupNewGameGroup() {
-       const groupName = document.getElementById('groupName').value;
-       const chatId = document.getElementById('chatId').value;
-       
-       if (!groupName || !chatId) {
-           alert('Please fill in both group name and chat ID');
-           return;
-       }
-       
-       const gmCode = saveNewChat(groupName, chatId);
-       
-       const gmCodeDisplay = document.getElementById('gmCodeDisplay');
-       const gmCodeText = document.getElementById('gmCodeText');
-       gmCodeText.textContent = gmCode;
-       gmCodeDisplay.style.display = 'block';
-   }
+function getActiveChatId(gmCode) {
+    const chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    return chats[gmCode]?.chatId || DEFAULT_CHAT_ID;
+}
 
-   function joinGameGroup() {
-       const gmCode = document.getElementById('gmCode').value;
-       const playerName = document.getElementById('playerName').value;
-       
-       if (!gmCode || !playerName) {
-           alert('Please fill in both GM code and your name');
-           return;
-       }
-       
-       let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
-       if (!chats[gmCode]) {
-           alert('Invalid GM code');
-           return;
-       }
-       
-       // Store player's active group
-       localStorage.setItem('activeGMCode', gmCode);
-       localStorage.setItem('playerName', playerName);
-       
-       // Add player to group's player list
-       chats[gmCode].players.push({
-           name: playerName,
-           joinedAt: Date.now()
-       });
-       localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
-       
-       alert(`Successfully joined ${chats[gmCode].name}'s group!`);
-   }
+function showChatIdInstructions() {
+    alert(
+        "To get your Telegram Chat ID:\n\n" +
+        "1. Add @RawDataBot to your group\n" +
+        "2. Type /start in the group\n" +
+        "3. Look for 'Chat ID' in the bot's response\n" +
+        "4. Remove the bot after getting the ID\n\n" +
+        "Note: Make sure to add the AuldEwe bot to your group as well!"
+    );
+}
 
+function setupNewGameGroup() {
+    const groupName = document.getElementById('groupName').value;
+    const chatId = document.getElementById('chatId').value;
+
+    if (!groupName || !chatId) {
+        alert('Please fill in both group name and chat ID');
+        return;
+    }
+
+    const gmCode = saveNewChat(groupName, chatId);
+
+    const gmCodeDisplay = document.getElementById('gmCodeDisplay');
+    const gmCodeText = document.getElementById('gmCodeText');
+    gmCodeText.textContent = gmCode;
+    gmCodeDisplay.style.display = 'block';
+}
+
+function joinGameGroup() {
+    const gmCode = document.getElementById('gmCode').value;
+    const playerName = document.getElementById('playerName').value;
+
+    if (!gmCode || !playerName) {
+        alert('Please fill in both GM code and your name');
+        return;
+    }
+
+    let chats = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '{}');
+    if (!chats[gmCode]) {
+        alert('Invalid GM code');
+        return;
+    }
+
+    localStorage.setItem('activeGMCode', gmCode);
+    localStorage.setItem('playerName', playerName);
+
+    chats[gmCode].players.push({
+        name: playerName,
+        joinedAt: Date.now()
+    });
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
+
+    alert(`Successfully joined ${chats[gmCode].name}'s group!`);
+}
+
+// ------------------------------
 // Core Functions
+// ------------------------------
 function initializeFatePoints() {
     const storedData = localStorage.getItem(FATE_STORAGE_KEY);
     const now = Date.now();
@@ -1684,33 +1694,102 @@ function startInactivityTimer() {
     }, INACTIVITY_TIMEOUT);
 }
 
-// Update the helper function to check for Legendary Feats with DC validation
+// Legendary Feat helper
 function isLegendaryFeat(outcome, total, dc, hexagramNumber) {
-    // First verify that a valid DC was entered
     if (!dc || dc < 1) return false;
-    
-    // Only proceed if it's a Triumph
     if (outcome !== 'Triumph') return false;
-    
-    // Get roll result details
     const rollResult = determineRollResult(total, dc, hexagramNumber);
-    
-    // Check if it's a success based on the roll type (ROS or RUS)
     return rollResult.success;
 }
 
+// ------------------------------
+// Hexagram Generation
+// ------------------------------
+// Update your generateHexagramLines function to work with the King Wen array
+function generateHexagramLines(hexagramNumber) {
+    const sequence = hexagramLookup[hexagramNumber];
+    return sequence.map(value => value === 1 ? 'Solid' : 'Broken');
+}
+
+// ------------------------------
+// Changing Lines & Outcome Transformation
+// ------------------------------
+function determineChangingLines() {
+    return Array.from({ length: 6 }, (_, i) => Math.random() < 0.25 ? i + 1 : null).filter(Boolean);
+}
+
+function getActiveNarratives() {
+    const activeMode = document.querySelector('.mode-button.active').id;
+    return {
+        personalMode: personalNarratives,
+        generalMode: generalNarratives,
+        actionMode: actionNarratives
+    }[activeMode];
+}
+
+function getOutcome(dieRoll, dieType) {
+    const thresholds = outcomeThresholds[dieType];
+    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
+    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
+    return 'Disaster';
+}
+
+// Use a single definition of getTransformedLineOutcome
 function getTransformedLineOutcome(originalOutcome, lineNumber) {
-    if (lineNumber >= 1 && lineNumber <= 3) {
-        return "Disaster";
-    } else if (lineNumber === 4 || lineNumber === 5) {
-        return "Conflict";
-    } else if (lineNumber === 6) {
-        return "Triumph";
-    } else {
-        return "Unknown";
+    const transformationRules = {
+        'Disaster': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' },
+        'Conflict': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' },
+        'Triumph':  { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' }
+    };
+    return transformationRules[originalOutcome]?.[lineNumber] || 'Unknown';
+}
+
+// Display function for Changing Lines (web UI)
+function displayChangingLines(data) {
+    const changingLinesDiv = document.getElementById('changingLines');
+    const transformedLines = (data.changedLines && data.changedLines.length > 0)
+        ? data.changedLines.map(lineNumber => {
+              const newOutcome = getTransformedLineOutcome(data.originalOutcome, lineNumber);
+              return `${lineNumber} (${data.originalOutcome} → ${newOutcome})`;
+          }).join("<br>")
+        : "None";
+
+    changingLinesDiv.innerHTML = `
+        <strong>🌀 Changing Lines Revealed 🌀</strong><br>
+        ▫️▫️▫️▫️▫️▫️▫️▫️▫️<br>
+        🎲 <strong>Original Hexagram:</strong> ${data.originalRoll} (${data.originalOutcome})<br>
+        🔮 <strong>Changed Lines:</strong><br>${transformedLines}<br>
+        ▫️▫️▫️▫️▫️▫️▫️▫️▫️<br>
+        <em>#AuldEwe #FateCast</em>
+    `;
+    changingLinesDiv.style.display = "block";
+}
+
+function showChangingLines() {
+    const fatePoints = parseInt(document.getElementById('fatePoints').value);
+    if (fatePoints < 1) {
+        alert("Not enough Fate Points!");
+        return;
+    }
+    if (confirm("This action costs 1 Fate Point\nProceed?")) {
+        document.getElementById('fatePoints').value = fatePoints - 1;
+        updateFateStorage();
+        startInactivityTimer();
+
+        const telegramData = {
+            originalRoll: currentHexagramNumber,
+            originalOutcome: currentOutcome,
+            changedLines: currentChangingLines
+        };
+
+        displayChangingLines(telegramData);
+        sendToTelegram('changingLines', telegramData);
     }
 }
 
+// ------------------------------
+// Telegram Messaging
+// ------------------------------
 async function sendToTelegram(messageType, data) {
     const gmCode = localStorage.getItem('activeGMCode');
     const activeChatId = getActiveChatId(gmCode);
@@ -1721,15 +1800,14 @@ async function sendToTelegram(messageType, data) {
     let telegramMessage;
     switch(messageType) {
         case 'fate':
-            telegramMessage = `✨ *Fate Point Added* ✨\nNew total: ${data.points}`;
+            telegramMessage = `✨ *Fate Point Added* ✨\n👤 *Player:* ${playerName}\nNew total: ${data.points}`;
             break;
-
         case 'roll': {
             const telegramRollResult = determineRollResult(data.total, data.dc, data.originalHexagram);
             telegramMessage =
                 `✨ Harmonized Hex & Die ✨\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
-                `👤 *Player*: ${playerName}\n` +
+                `👤 *Player:* ${playerName}\n` +
                 `🌌 Hexagram: ${data.originalHexagram}\n` +
                 `🎲 Die: d${data.dieType} → ${data.dieRoll}\n` +
                 (data.stepDownUsed ? `⚡ Step Down: -${data.hexagramReduction}\n` : '') +
@@ -1743,15 +1821,13 @@ async function sendToTelegram(messageType, data) {
         case 'legendary':
             telegramMessage = `🌟 *LEGENDARY FEAT* 🌟\n${data.message}`;
             break;
-
         case 'changingLines': {
-            // Transform each changed line:
-            const transformedLines = data.changedLines.map(lineNumber => {
-                const newOutcome = getTransformedLineOutcome(data.originalOutcome, lineNumber);
-                // For example, if originalOutcome is "Disaster", line 2 becomes "2 (Disaster → Disaster)"
-                return `${lineNumber} (${data.originalOutcome} → ${newOutcome})`;
-            }).join("\n");
-
+            const transformedLines = (data.changedLines && data.changedLines.length > 0)
+                ? data.changedLines.map(lineNumber => {
+                      const newOutcome = getTransformedLineOutcome(data.originalOutcome, lineNumber);
+                      return `${lineNumber} (${data.originalOutcome} → ${newOutcome})`;
+                  }).join("\n")
+                : "None";
             telegramMessage =
                 `🌀 *Changing Lines Revealed* 🌀\n` +
                 `▫️▫️▫️▫️▫️▫️▫️▫️▫️\n` +
@@ -1778,6 +1854,7 @@ async function sendToTelegram(messageType, data) {
         console.error('Error sending to Telegram:', error);
     }
 }
+
 function addFatePoint() {
     const current = parseInt(document.getElementById('fatePoints').value);
     if (current < MAX_FATE_POINTS) {
@@ -1789,94 +1866,20 @@ function addFatePoint() {
     startInactivityTimer();
 }
 
-
-function getActiveNarratives() {
-    const activeMode = document.querySelector('.mode-button.active').id;
-    return {
-        personalMode: personalNarratives,
-        generalMode: generalNarratives,
-        actionMode: actionNarratives
-    }[activeMode];
-}
-
-function getOutcome(dieRoll, dieType) {
-    const thresholds = outcomeThresholds[dieType];
-    if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-    if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-    return 'Disaster';
-}
-
-function showChangingLines() {
-    const fatePoints = parseInt(document.getElementById('fatePoints').value);
-    if (fatePoints < 1) {
-        alert("Not enough Fate Points!");
-        return;
-    }
-    if (confirm("This action costs 1 Fate Point\nProceed?")) {
-        document.getElementById('fatePoints').value = fatePoints - 1;
-        updateFateStorage();
-        startInactivityTimer();
-
-        // Use the globally stored outcome
-        const telegramData = {
-            originalRoll: currentHexagramNumber,
-            originalOutcome: currentOutcome,
-            changedLines: currentChangingLines
-        };
-
-        displayChangingLines(telegramData);
-        sendToTelegram('changingLines', telegramData);
-    }
-}
-
-
-function getTransformedLineOutcome(originalOutcome, lineNumber) {
-    const transformationRules = {
-        'Disaster': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' },
-        'Conflict': { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' },
-        'Triumph':  { 1: 'Disaster', 2: 'Disaster', 3: 'Disaster', 4: 'Conflict', 5: 'Conflict', 6: 'Triumph' }
-    };
-    return transformationRules[originalOutcome]?.[lineNumber] || 'Unknown';
-}
-
-function displayChangingLines(data) {
-    const changingLinesDiv = document.getElementById('changingLines');
-    // If there are no changed lines, show "None"; otherwise, map and join the transformed lines.
-    const transformedLines = (data.changedLines && data.changedLines.length > 0)
-        ? data.changedLines.map(lineNumber => {
-              const newOutcome = getTransformedLineOutcome(data.originalOutcome, lineNumber);
-              return `${lineNumber} (${data.originalOutcome} → ${newOutcome})`;
-          }).join("<br>")
-        : "None";
-    
-    changingLinesDiv.innerHTML = `
-        <strong>🌀 Changing Lines Revealed 🌀</strong><br>
-        ▫️▫️▫️▫️▫️▫️▫️▫️▫️<br>
-        🎲 <strong>Original Hexagram:</strong> ${data.originalRoll} (${data.originalOutcome})<br>
-        🔮 <strong>Changed Lines:</strong><br>${transformedLines}<br>
-        ▫️▫️▫️▫️▫️▫️▫️▫️▫️<br>
-        <em>#AuldEwe #FateCast</em>
-    `;
-    changingLinesDiv.style.display = "block";
-}
-
-// Add this helper function near the other helper functions, before rollDiceAndHexagram()
-
+// ------------------------------
+// Roll Dice & Hexagram
+// ------------------------------
 function determineRollResult(total, dc, hexagramNumber) {
-    // CORRECTED: Check DC ranges instead of hexagram number
-    const isRollOver = (dc >= 1 && dc <= 16) || 
-                      (dc >= 33 && dc <= 47);
-
-    // CORRECTED: Use strict inequalities
+    const isRollOver = (dc >= 1 && dc <= 16) || (dc >= 33 && dc <= 47);
     if (isRollOver) {
         return {
-            result: total > dc ? 'ROS' : 'ROF',    // Strict >
+            result: total > dc ? 'ROS' : 'ROF',
             color: total > dc ? '#28a745' : '#fd7e14',
             success: total > dc
         };
     } else {
         return {
-            result: total < dc ? 'RUS' : 'RUF',    // Strict <
+            result: total < dc ? 'RUS' : 'RUF',
             color: total < dc ? '#28a745' : '#fd7e14',
             success: total < dc
         };
@@ -1913,14 +1916,13 @@ function rollDiceAndHexagram() {
 
     // Compute the outcome based on the die roll and type.
     const outcome = getOutcome(dieRoll, dieType);
-    currentOutcome = outcome;  // Store the outcome globally for use when revealing changing lines.
+    currentOutcome = outcome;  // Store globally for use when revealing changing lines.
 
     const total = adjustedHex + dieRoll + mod;
-
     const narratives = getActiveNarratives();
     const narrative = narratives[currentHexagramNumber]?.[outcome.toLowerCase()] || 'No narrative available';
 
-    // Determine which lines will change (an array of line numbers).
+    // Determine which lines will change.
     currentChangingLines = determineChangingLines();
 
     if (navigator.vibrate) {
@@ -1929,7 +1931,6 @@ function rollDiceAndHexagram() {
 
     const rollResult = determineRollResult(total, dc, currentHexagramNumber);
 
-    // Update the result display on the web page.
     document.getElementById('result').innerHTML = `
         <strong>Mode:</strong> ${document.querySelector('.mode-button.active').textContent}<br>
         <strong>Original Hexagram:</strong> ${currentHexagramNumber} (${hexagramNames[currentHexagramNumber]})<br>
@@ -1941,14 +1942,12 @@ function rollDiceAndHexagram() {
         <strong>Narrative:</strong> ${narrative}
     `;
 
-    // If a legendary feat is achieved, update display and Telegram.
     if (isLegendaryFeat(outcome, total, dc, currentHexagramNumber)) {
         const legendaryMessage = "Legendary Feat attained! The Sentient grows in renown.";
         document.getElementById('result').innerHTML += `<div class="legendary-feat">${legendaryMessage}</div>`;
         sendToTelegram('legendary', { message: legendaryMessage });
     }
 
-    // Send roll information to Telegram.
     sendToTelegram('roll', {
         originalDieType: originalDieType,
         originalHexagram: currentHexagramNumber,
@@ -1967,90 +1966,63 @@ function rollDiceAndHexagram() {
     startInactivityTimer();
 }
 
-// Shake State
+// ------------------------------
+// Shake Detection & Activity Listeners
+// ------------------------------
 let shakeEnabled = false;
 let isShaking = false;
 let shakeStartTime = 0;
-let lastShakeTime = 0; // Add this if not already present
+let lastShakeTime = 0;
 let inactivityTimer;
 let shouldClearOnNextRoll = false;
 
-// Shake Configuration
 const MIN_SHAKE_DURATION = 2000;
 const SHAKE_END_TIMEOUT = 500;
 const SHAKE_THRESHOLD = 15;
 const SHAKE_COOLDOWN = 1000;
 
-// Modified handleShake function
 function handleShake(event) {
     if (!shakeEnabled) return;
-
     const now = Date.now();
     const acceleration = event.accelerationIncludingGravity;
-    const magnitude = Math.sqrt(
-        acceleration.x ** 2 +
-        acceleration.y ** 2 +
-        acceleration.z ** 2
-    );
+    const magnitude = Math.sqrt(acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2);
 
-    // Check if we're above the shake threshold
     if (magnitude > SHAKE_THRESHOLD) {
-        // Start tracking shake duration if not already shaking
         if (!isShaking) {
             isShaking = true;
             shakeStartTime = now;
             document.getElementById('shakeStatus').textContent = "Shaking detected...";
-            
-            // Initial vibration feedback
             if (navigator.vibrate) {
                 navigator.vibrate(100);
             }
         }
-
-        // Reset the cooldown timer
         lastShakeTime = now;
     }
 
-    // Check if shaking has stopped
     if (isShaking && now - lastShakeTime > SHAKE_END_TIMEOUT) {
         const shakeDuration = now - shakeStartTime;
-
         if (shakeDuration >= MIN_SHAKE_DURATION) {
-            // Successful shake
-            if (shouldClearOnNextRoll) {
-                resetFormFields();
-            }
-
+            if (shouldClearOnNextRoll) resetFormFields();
             rollDiceAndHexagram();
-
-            // Success vibration feedback
             if (navigator.vibrate) {
                 navigator.vibrate([200, 50, 100]);
             }
-
             document.getElementById('shakeStatus').textContent = "Roll completed!";
             shouldClearOnNextRoll = true;
         } else {
-            // Insufficient shake duration
             document.getElementById('shakeStatus').textContent = "Shake harder! (2+ seconds)";
-
-            // Feedback for insufficient shake
             if (navigator.vibrate) {
                 navigator.vibrate(100);
             }
         }
-
-        // Reset shake state
         isShaking = false;
         shakeStartTime = 0;
     }
 }
 
-// Modified enableShakeDetection function
 function enableShakeDetection() {
     if (typeof DeviceMotionEvent !== 'undefined') {
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
-            // iOS 13+ devices
             DeviceMotionEvent.requestPermission()
                 .then(permission => {
                     if (permission === 'granted') {
@@ -2066,7 +2038,6 @@ function enableShakeDetection() {
                     document.getElementById('shakeStatus').textContent = 'Error enabling shake detection';
                 });
         } else {
-            // Non-iOS devices
             window.addEventListener('devicemotion', handleShake);
             shakeEnabled = true;
             document.getElementById('shakeStatus').textContent = 'Shake to roll!';
@@ -2084,7 +2055,6 @@ function setupActivityListeners() {
             startInactivityTimer();
         });
     });
-
     document.querySelectorAll('.mode-button').forEach(button => {
         button.addEventListener('click', () => {
             document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
@@ -2093,26 +2063,23 @@ function setupActivityListeners() {
             startInactivityTimer();
         });
     });
-
     document.getElementById('howToPlayBtn').addEventListener('click', (e) => {
         e.preventDefault();
         alert('How to Play:\n\n1. Set DC\n2. Choose die type\n3. Add modifiers\n4. Toggle Step Down\n5. Select mode\n6. Shake or press Harmonize!\n7. Use Oraclize (costs 1 Fate Point) to reveal changing lines');
     });
-
     document.querySelector('button[onclick="rollDiceAndHexagram()"]').addEventListener('click', () => {
-        if (shouldClearOnNextRoll) {
-            resetFormFields();
-        }
+        if (shouldClearOnNextRoll) resetFormFields();
     });
 }
 
-// Initialize App
+// ------------------------------
+// App Initialization
+// ------------------------------
 initializeFatePoints();
 setupActivityListeners();
 startInactivityTimer();
 document.getElementById('dieType').value = '6';
 
-// Add shake status element if not already in HTML
 if (!document.getElementById('shakeStatus')) {
     const status = document.createElement('div');
     status.id = 'shakeStatus';
