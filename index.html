@@ -378,43 +378,56 @@
         font-size: 1.1em;
         margin-bottom: 20px;
     }
-
-    .stats {
-        gap: 15px;
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;  /* Stack stats vertically */
-        align-items: center;      /* Center stats horizontally */
-    }
-
+ 
     .stat {
         display: flex;
         flex-direction: column;
-        align-items: center;     /* Center all child elements horizontally */
-        text-align: center;      /* Center text content */
+        align-items: center;
         width: 100%;
-    }
-
-    /* Specific targeting for Fate Points elements */
-    .stat:nth-child(2) {        /* Assuming Fate Points is the second stat */
-        margin: 10px 0;
+        padding: 0 15px; /* Constrain width for better alignment */
     }
 
     .stat p:first-child {
         font-size: 1.1em;
-        margin-bottom: 8px;      /* Space between label and hexagon */
+        margin-bottom: 8px;
+        width: 100%; /* Full width container for text alignment */
+        text-align: center;
     }
 
     .hexagon {
-        margin: 0 auto;          /* Center hexagon horizontally */
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Hexagon text alignment */
+    .hexagon span {
+        width: 100%; /* Force text to stay within centered container */
+        text-align: center;
+        padding: 0 5px; /* Prevent text overflow */
     }
 
     .stat button {
-        margin: 8px auto 0;     /* Center button under hexagon */
-        width: max-content;     /* Prevent button from stretching full width */
+        margin: 8px auto 0;
+        width: 100%;
+        max-width: 120px; /* Match hexagon width */
+        padding: 8px 12px;
+        white-space: nowrap; /* Prevent button text wrapping */
     }
 
-    /* ... (rest of previous mobile styles) ... */
+    /* Specific Fate Points section adjustment */
+    .stat:nth-child(2) {
+        margin: 10px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat:nth-child(2) p:first-child {
+        margin-bottom: 12px; /* Space between "Fate Points" label and hexagon */
+    }
 }
     </style>
 </head>
