@@ -380,32 +380,41 @@
     }
 
     .stats {
-        gap: 12px;
+        gap: 15px;
         margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;  /* Stack stats vertically */
+        align-items: center;      /* Center stats horizontally */
+    }
+
+    .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;     /* Center all child elements horizontally */
+        text-align: center;      /* Center text content */
+        width: 100%;
+    }
+
+    /* Specific targeting for Fate Points elements */
+    .stat:nth-child(2) {        /* Assuming Fate Points is the second stat */
+        margin: 10px 0;
     }
 
     .stat p:first-child {
         font-size: 1.1em;
+        margin-bottom: 8px;      /* Space between label and hexagon */
     }
 
-    .stat p:last-child {
-        font-size: 0.9em;
+    .hexagon {
+        margin: 0 auto;          /* Center hexagon horizontally */
     }
 
-    .buttons {
-        flex-direction: column;
-        gap: 12px;
+    .stat button {
+        margin: 8px auto 0;     /* Center button under hexagon */
+        width: max-content;     /* Prevent button from stretching full width */
     }
 
-    button {
-        padding: 10px 20px;
-        font-size: 1em;
-    }
-
-    #result {
-        margin-top: 20px;
-        padding: 15px;
-    }
+    /* ... (rest of previous mobile styles) ... */
 }
     </style>
 </head>
