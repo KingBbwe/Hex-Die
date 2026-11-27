@@ -74,3 +74,16 @@ Telegram notifications (roll, Fate Point, Legendary Feat, line reveal); 3-minute
 
 ## Not carried over
 Cyber's "scaling table" for changing lines (replaced by the canon line reveal), and its `outcomeThresholds` for d4/d10/d100.
+
+## Character import (from identify-eweself)
+- A Character arrives by **URL fragment** (`#character=...`, cleared after load), the **file picker**, or the copy remembered from
+  the last visit. It is validated on arrival; a file whose DC modes disagree with this engine's bands is **rejected, not repaired**.
+- Picking **Intellectual / Physical / Emotional / Spiritual** fills the DC, shows its Roll-Over/Under mode, labels the result and the
+  Telegram message ("Physical check") and names the character in Telegram. Editing the DC by hand drops the label.
+- The Character's `dieTier` preselects the die; it remains editable for GM-granted tiers and testing.
+- `engine/character.js` is **vendored** from identify-eweself (its header says so). `tests/character-import.test.js` fails if the
+  two repos' Roll-Over/Under bands ever drift apart.
+- Not done: writing results back to the Character (level-up, Skulduggery, Grace). That belongs to the SentientHub contract (Move 5/6).
+
+- Vendored `engine/allocation.js` joins `engine/character.js`; refreshed from identify-eweself (rolls, 32-point allocation, zero floor, bands `18-36` / `36-50+`). Fixture regenerated. Not done: warning on an incomplete allocation at import.
+- Vendored `engine/skills.js`. The roll panel gets a skill picker (the Character's skills first, the rest at −2); the skill modifier adds to the manual modifier.

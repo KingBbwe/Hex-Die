@@ -37,3 +37,9 @@ npm i -D jsdom && npm run smoke   # end-to-end page test (rolls, Telegram, GM co
 
 Telegram (optional): copy `config.example.js` to `config.local.js` and fill in your bot token and default chat ID.
 `config.local.js` is gitignored. Never commit it.
+
+## Loading a character
+
+Forge one in identify-eweself and use **Open in Hex-Die** (or download the JSON and pick the file here). Then tap a domain
+(Intellectual, Physical, Emotional, Spiritual) to set your Personal DC and its Roll-Over/Under mode.
+

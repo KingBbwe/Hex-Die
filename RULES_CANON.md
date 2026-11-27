@@ -283,3 +283,13 @@ Interpretations the engine had to make are logged in `DESIGN_DECISIONS.md` (Hex-
 **The surviving engine is neither existing engine.** It is a merge: DC comparison (from the dead
 file's concept) + per-die tier tables (from the live file) + FP/line reveal + damage lines + gated
 step-down. Build it fresh per Move 3; port nothing wholesale.
+
+## 6D. COMMANDER RULINGS ON CHARACTER CREATION — 2026-11-27
+
+1. **Soul-pattern roll**: 2d6 as a fraction. If the pair is not one of the twelve valid profiles, keep the first die and reroll the second until valid. This makes the twelve exactly equiprobable.
+2. **Core-trait rolls**: two independent 2d8 rolls, hexagram = (first − 1) × 8 + second. *Flagged interpretation*: method undocumented in the source corpus; duplicates possible.
+3. **32-point allocation**: nine attributes, each 1–5, 32 points in total. Default is lineage-seeded (the seed is the floor and the points to spend bring the total to 32); free build starts at all 1s with 23 to spend. *Flagged interpretation*: supersedes the old `surplus: 10` values.
+4. **Zero floor**: each reroll beyond the second in 24 h costs one point, but the budget never drops below the sum of the floors: `budget = max(floorSum, 32 − penalty)`. Points to spend never go negative.
+5. **Age bands**: `18-36` (ages 18–35) and `36-50+` (36 and over). Supersedes `0-50` / `50+`. SentientHub's `18-35` / `36-50` labels must be aligned.
+6. **Skills** (canonical list supplied 2026-11-27, TCoAE_Character_Creation_Skills.docx): six domains, 34 groups, 111 skills; 36 are linked to an attribute (4 each) by the integration table, the other 75 carry no attribute. Default modifier −2; randomly assigned skills start at 0. *Flagged interpretations*: 3 skills are assigned at creation (count not stated); the table's parentheticals (Reason, Charisma, Strength...) disagree with the skills they sit beside, so the attribute name governs; Artistry and Command (named in the rules text, absent from the list) are kept as `rules-text` entries; no Internal/External split is stored; Acquired Skillsets are unbuilt. In Hex-Die a chosen skill adds its modifier to the roll.
+7. **Skill follow-up rulings (2026-11-27)**: 3 random starter skills confirmed; the integration table's parentheticals are ignored; the 76 skills without a document link were assigned an attribute by the build (open to review, one word each in `skills.js`); every skill now has an attribute. Journey split (1-32 / 33-64) unchanged. **Acquired Skillsets** are built: only Emotional Reading and Rapport Building (both Emotion) exist; held at modifier 0, earned in play, none at creation; `linkedSkill` stays null until ruled.
