@@ -130,10 +130,12 @@
         <p>Simplicity meets mysticism—forge legends in seconds.</p>
     </div>
 
+    <script src="config.local.js"></script>
     <script>
-        // Telegram Configuration (REPLACE THESE VALUES)
-        const telegramBotToken = 'YOUR_TELEGRAM_BOT_TOKEN';
-        const chatId = 'YOUR_CHAT_ID';
+        // Telegram Configuration — real values live in config.local.js (gitignored, not committed).
+        // See config.example.js for the template.
+        const telegramBotToken = window.TELEGRAM_BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
+        const chatId = window.TELEGRAM_CHAT_ID || 'YOUR_CHAT_ID';
 
         // Game Configuration
         const outcomeThresholds = {
@@ -620,7 +622,7 @@ const hexagramLookup = {
             displayHexagramLines();
 
             // Telegram notification
-            if (telegramBotToken && chatId && telegramBotToken !== '7510560361:AAH9-j-ryabgvTHo525VQLTx87M-0DXrYso') {
+            if (telegramBotToken && chatId && telegramBotToken !== 'YOUR_TELEGRAM_BOT_TOKEN') {
                 const msg = `New Roll:\nHex: ${currentHexagramNumber} (Adj: ${adjustedHex})\nDie: d${dieType} → ${dieRoll}\nTotal: ${total}\nOutcome: ${outcome}`;
                 fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
             }
