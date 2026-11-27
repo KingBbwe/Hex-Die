@@ -85,3 +85,4 @@ Cyber's "scaling table" for changing lines (replaced by the canon line reveal), 
   two repos' Roll-Over/Under bands ever drift apart.
 - Not done: writing results back to the Character (level-up, Skulduggery, Grace). That belongs to the SentientHub contract (Move 5/6).
 
+- Vendored `engine/allocation.js` joins `engine/character.js`; refreshed from identify-eweself (rolls, 32-point allocation, zero floor, bands `18-36` / `36-50+`). Fixture regenerated. Not done: warning on an incomplete allocation at import.

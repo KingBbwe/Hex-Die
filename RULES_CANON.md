@@ -283,3 +283,11 @@ Interpretations the engine had to make are logged in `DESIGN_DECISIONS.md` (Hex-
 **The surviving engine is neither existing engine.** It is a merge: DC comparison (from the dead
 file's concept) + per-die tier tables (from the live file) + FP/line reveal + damage lines + gated
 step-down. Build it fresh per Move 3; port nothing wholesale.
+
+## 6D. COMMANDER RULINGS ON CHARACTER CREATION — 2026-11-27
+
+1. **Soul-pattern roll**: 2d6 as a fraction. If the pair is not one of the twelve valid profiles, keep the first die and reroll the second until valid. This makes the twelve exactly equiprobable.
+2. **Core-trait rolls**: two independent 2d8 rolls, hexagram = (first − 1) × 8 + second. *Flagged interpretation*: method undocumented in the source corpus; duplicates possible.
+3. **32-point allocation**: nine attributes, each 1–5, 32 points in total. Default is lineage-seeded (the seed is the floor and the points to spend bring the total to 32); free build starts at all 1s with 23 to spend. *Flagged interpretation*: supersedes the old `surplus: 10` values.
+4. **Zero floor**: each reroll beyond the second in 24 h costs one point, but the budget never drops below the sum of the floors: `budget = max(floorSum, 32 − penalty)`. Points to spend never go negative.
+5. **Age bands**: `18-36` (ages 18–35) and `36-50+` (36 and over). Supersedes `0-50` / `50+`. SentientHub's `18-35` / `36-50` labels must be aligned.
