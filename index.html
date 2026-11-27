@@ -154,6 +154,7 @@
 <script src="engine/allocation.js"></script>
 <script src="engine/skills.js"></script>
 <script src="engine/character.js"></script>
+<script src="engine/haptics.js"></script>
 <script>
 // The Chronicles of Auld Ewe — Harmonized Hex & Die page.
 // All resolution rules live in engine/hexdie.js; this file is UI, Fate Point bookkeeping,
@@ -361,7 +362,7 @@
         if (b === null) { $('result').textContent = 'Enter a Personal DC from 1 to 64.'; return; }
         var a = adjusted();
         last = H.rollCheck(rng, { die: +$('dieType').value, mod: mods(), dc: a.dc, modeDc: b, stepDown: $('stepDownToggle').checked });
-        if (navigator.vibrate) navigator.vibrate(last.tier === 'T' ? [60, 40, 140] : last.tier === 'D' ? [220] : [90]);
+        window.AuldEweHaptic(last.tier === 'T' ? [60, 40, 140] : last.tier === 'D' ? [220] : [90]);   // Android: vibration; iPhone (iOS 18+): system tick
         show(last, a.shift ? 'Wounds have shifted your DC by ' + (a.dc - b > 0 ? '+' : '') + (a.dc - b) + '.' : '');
         $('changingLines').style.display = 'none';
         paintFate(); startInactivityTimer();
@@ -476,7 +477,7 @@
         if (!shakeEnabled) return;
         var a = ev.accelerationIncludingGravity; if (!a) return;
         var now = Date.now(), mag = Math.sqrt((a.x || 0) * (a.x || 0) + (a.y || 0) * (a.y || 0) + (a.z || 0) * (a.z || 0));
-        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; document.body.classList.add('shaking'); } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
+        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; document.body.classList.add('shaking'); window.AuldEweHaptic(30); } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
         else if (isShaking && now - lastShake > 500) { isShaking = false; document.body.classList.remove('shaking'); if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); else shakeMsg('Too short: shake for about 2 seconds.'); }
     }
 
