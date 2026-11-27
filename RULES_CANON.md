@@ -302,3 +302,8 @@ Ruled by the commander:
 4. Skulduggery can be gained and lost by actions (sources: Ovine Fury +5, Skyrend Strike +10, Final Stand +10, Doshi magic; sinks: Defensive Chant, Honorable Yield, Purifying Light, Bleat of Unity). Sinks reduce the uncrystallised meter only, never Taints. 2 Fate Points spent still add 1 Skulduggery.
 PLACEHOLDERS (engine values, awaiting ruling): Resilience = 20 + 4 x Will; Disquiet cap 10, -1 to the modifier per point; Tongue Power pool 6, cost 2 or 3 per Tongue, burnout on a Disaster, master ability once per rest, a long rest resets all; effect "when" readings (triumph / conflict / disaster / always) taken literally.
 UNRULED and not built: phase-check dice and hexagram ranges, the L1-L6 line-effect table, Doshi "Skulduggery deficit/step-down" rules, Ganga/Doshi spell-level dice.
+
+## 6F. FATE OVERRIDES AT CHARACTER CREATION — COMMANDER RULING 2026-11-27
+Ram/Ewe and the age band are left to fate (unchosen, even odds). Choosing either is an override of the game's no-choice ethos and costs
+1 attribute point from the 32-point budget, in the same 24-hour session as rerolls (2 free rerolls, then 1 point each; zero floor).
+Before a forge the choice is a preference; after a forge it reforges at once (and counts as a reroll). Recorded in `creation.fateOverrides` / `creation.chosen`.
