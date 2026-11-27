@@ -402,6 +402,11 @@
                 <input type="number" id="modifier" value="0">
             </div>
 
+            <div class="input-group" id="skillGroup" style="display:none">
+                <label for="skillSelect">Skill (adds its modifier)</label>
+                <select id="skillSelect"></select>
+            </div>
+
 <div class="toggle-group">
     <div class="checkbox-wrapper">
         <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
@@ -477,6 +482,7 @@
 <script src="engine/narratives.js"></script>
 <script src="engine/hexdie.js"></script>
 <script src="engine/allocation.js"></script>
+<script src="engine/skills.js"></script>
 <script src="engine/character.js"></script>
 <script>
 // The Chronicles of Auld Ewe — Harmonized Hex & Die page.
@@ -534,7 +540,7 @@
     }
 
     // ---------------- Character import (from identify-eweself) ----------------
-    var CH = window.AuldEweCharacter;
+    var CH = window.AuldEweCharacter, SK = window.AuldEweSkills;
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
     function loadCharacter(c, remember) {
         var v = CH.validateCharacter(c);
@@ -544,7 +550,7 @@
             var d = c.dc[CH.DOMAINS[i]];
             if (H.modeForDC(d.value) !== d.mode) { $('characterInfo').textContent = 'Rejected: ' + CH.DOMAINS[i] + ' DC ' + d.value + ' is ' + d.mode + ' in the file but ' + H.modeForDC(d.value) + ' in this engine.'; return false; }
         }
-        character = c; domain = null;
+        character = c; domain = null; fillSkills();
         if (remember) sset(CHAR_KEY, JSON.stringify(c));
         $('characterInfo').textContent = c.name + ' · ' + (c.soul.profileId || '') + ' ' + (c.soul.profileName || '') + ' · d' + c.dieTier;
         var box = $('domainBtns'); box.textContent = ''; box.style.display = '';
@@ -577,7 +583,23 @@
 
     // ---------------- inputs ----------------
     function baseDc() { var v = parseInt($('dc').value, 10); return (v >= 1 && v <= 64) ? v : null; }
-    function mods() { var m = parseInt($('modifier').value, 10); return isNaN(m) ? 0 : m; }
+    function skillMod() {
+        var n = $('skillSelect').value;
+        return n && character ? SK.modifier(character.skills, n) : 0;
+    }
+    function mods() { var m = parseInt($('modifier').value, 10); return (isNaN(m) ? 0 : m) + skillMod(); }
+    // Skills picker: the character's assigned skills first (modifier 0), then every other catalogue skill (default -2).
+    function fillSkills() {
+        var sel = $('skillSelect'); sel.textContent = '';
+        function opt(parent, name, label) { var o = document.createElement('option'); o.value = name; o.textContent = label; parent.appendChild(o); }
+        opt(sel, '', '— no skill —');
+        var mine = Object.keys(character.skills || {});
+        if (mine.length) { var g = document.createElement('optgroup'); g.label = 'Your skills'; mine.forEach(function (n) { opt(g, n, n + ' (' + (character.skills[n] >= 0 ? '+' : '') + character.skills[n] + ')'); }); sel.appendChild(g); }
+        var groups = {};
+        SK.CATALOGUE.forEach(function (k) { if (mine.indexOf(k.name) === -1) (groups[k.domain || 'Other'] = groups[k.domain || 'Other'] || []).push(k.name); });
+        Object.keys(groups).forEach(function (dn) { var g = document.createElement('optgroup'); g.label = dn + ' (−2)'; groups[dn].forEach(function (n) { opt(g, n, n + ' (−2)'); }); sel.appendChild(g); });
+        $('skillGroup').style.display = '';
+    }
     function adjusted() { var b = baseDc(); return b === null ? null : H.adjustDC(b, H.modeForDC(b), dmg); }
     function modeLabel(m) { return 'Roll-' + (m === 'over' ? 'Over' : 'Under'); }
     function activeSet() {

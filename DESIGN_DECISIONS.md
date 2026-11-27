@@ -86,3 +86,4 @@ Cyber's "scaling table" for changing lines (replaced by the canon line reveal), 
 - Not done: writing results back to the Character (level-up, Skulduggery, Grace). That belongs to the SentientHub contract (Move 5/6).
 
 - Vendored `engine/allocation.js` joins `engine/character.js`; refreshed from identify-eweself (rolls, 32-point allocation, zero floor, bands `18-36` / `36-50+`). Fixture regenerated. Not done: warning on an incomplete allocation at import.
+- Vendored `engine/skills.js`. The roll panel gets a skill picker (the Character's skills first, the rest at −2); the skill modifier adds to the manual modifier.

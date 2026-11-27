@@ -99,6 +99,24 @@ function load(pre, url) {
   const future = JSON.parse(JSON.stringify(fx)); future.version = 2;
   await feed(JSON.stringify(future)); ok('an unknown schema version is rejected', /version/.test($('characterInfo').textContent));
 
+  // skills: picker, modifier arithmetic
+  w = await load(); $ = id => w.document.getElementById(id);
+  ok('skill picker hidden until a Character loads', $('skillGroup').style.display === 'none');
+  await feed(JSON.stringify(fx));
+  ok('skill picker appears with a Character', $('skillGroup').style.display === '');
+  const mine = Object.keys(fx.skills);
+  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $('skillSelect').querySelectorAll('option').length === 1 + 113, $('skillSelect').querySelectorAll('option').length);
+  const other = [...$('skillSelect').querySelectorAll('option')].map(o => o.value).find(v => v && !mine.includes(v));
+  async function formulaFor(skill, modv) {
+    $('dieType').value = '6'; $('modifier').value = String(modv); $('skillSelect').value = skill; $('dc').value = '40';
+    $('rollButton').click(); await new Promise(r => setTimeout(r, 30));
+    return [...$('result').querySelectorAll('p')].map(p => p.textContent).find(t => /=|\+/.test(t) && /dc|DC|vs/i.test(t)) || $('result').textContent;
+  }
+  const fMine = await formulaFor(mine[0], 0), fOther = await formulaFor(other, 0), fOther3 = await formulaFor(other, 3), fNone = await formulaFor('', 0);
+  ok('an assigned skill adds nothing (modifier 0)', /^\d+ \+ (\d+|\(−\d+ Bolt\)) = /.test(fMine), fMine);
+  ok('an unassigned skill subtracts 2', /^\d+ \+ (\d+|\(−\d+ Bolt\)) − 2 = /.test(fOther), fOther);
+  ok('the skill modifier stacks with the manual modifier (3 + -2 = +1)', /^\d+ \+ (\d+|\(−\d+ Bolt\)) \+ 1 = /.test(fOther3), fOther3);
+  ok('no skill selected adds nothing', /^\d+ \+ (\d+|\(−\d+ Bolt\)) = /.test(fNone), fNone);
   console.log(checks.map(c => c.join('  ')).join('\n'));
   console.log('JS errors:', errors.length ? errors : 'none');
   process.exit(checks.some(c => c[0] === 'FAIL') || errors.length ? 1 : 0);
