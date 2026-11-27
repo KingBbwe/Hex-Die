@@ -762,17 +762,21 @@
     }
 
     // ---------------- Shake-to-roll ----------------
+    function shakeMsg(t) { var el = document.getElementById('shakeStatus'); if (el) el.textContent = t; }
     function enableShakeDetection() {
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            DeviceMotionEvent.requestPermission().then(function (s) { if (s === 'granted') { shakeEnabled = true; alert('Shake detection enabled!'); } }).catch(console.error);
-        } else { shakeEnabled = true; alert('Shake detection enabled!'); }
+            DeviceMotionEvent.requestPermission().then(function (s) {
+                if (s === 'granted') { shakeEnabled = true; shakeMsg('Shake-to-roll is on: shake for about 2 seconds, then hold still.'); var b = document.getElementById('enableMotion'); if (b) b.style.display = 'none'; }
+                else shakeMsg('Motion access was refused. Allow it in browser settings, or press Harmonize!');
+            }).catch(function (e) { shakeMsg('Shake is unavailable here (needs HTTPS and a motion sensor). Press Harmonize!'); console.error(e); });
+        } else { shakeEnabled = true; shakeMsg('Shake-to-roll is on: shake for about 2 seconds, then hold still.'); }
     }
     function handleShake(ev) {
         if (!shakeEnabled) return;
         var a = ev.accelerationIncludingGravity; if (!a) return;
         var now = Date.now(), mag = Math.sqrt((a.x || 0) * (a.x || 0) + (a.y || 0) * (a.y || 0) + (a.z || 0) * (a.z || 0));
-        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; } lastShake = now; }
-        else if (isShaking && now - lastShake > 500) { isShaking = false; if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); }
+        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
+        else if (isShaking && now - lastShake > 500) { isShaking = false; if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); else shakeMsg('Too short: shake for about 2 seconds.'); }
     }
 
     // ---------------- wiring ----------------
@@ -806,7 +810,8 @@
         });
         if (typeof DeviceMotionEvent !== 'undefined') {
             window.addEventListener('devicemotion', handleShake);
-            if (typeof DeviceMotionEvent.requestPermission === 'function') $('enableMotion').style.display = 'block';
+            if (typeof DeviceMotionEvent.requestPermission === 'function') { $('enableMotion').style.display = 'block'; shakeMsg('Tap Enable Shake-to-Roll to allow motion.'); }
+            else enableShakeDetection();                 // Android and others need no permission: switch it on
         }
     });
 })();
