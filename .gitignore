@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 node_modules/
+
+# Secrets — real bot token/chat ID live here, never committed
+config.local.js
