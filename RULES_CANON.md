@@ -240,6 +240,20 @@ Roll-Under domains:  Cast  ≤  DC + Die + Mod      ("your agency raises the cei
 
 ---
 
+## 6B. THE JOIN — PROPOSED fixed table for pass/fail x Outcome Tier (closes the open gap)
+
+The PASS decides what happens; the TIER decides what it costs and how it feels. Implemented in
+`engine/hexdie.js` (`CONFIG.join`), awaiting ratification. Names and rules are one-line edits.
+
+| | Triumph | Conflict | Disaster |
+|---|---|---|---|
+| **PASS** | **Green Pasture**: clean success; on an attack, Force a Line | **Hard-Won Ground**: success with a complication | **The Wolf's Bargain**: success at a serious price; Fate Points may mitigate |
+| **FAIL** | **The Noble Stumble**: no penalty, learn something, next attempt +1 (once) | **Slipped Hold**: situation holds; retry at a price | **The Cliff Edge**: a consequence lands; GM may offer success for +1 Skulduggery |
+
+Interpretations the engine had to make are logged in `DESIGN_DECISIONS.md` (Hex-Die repo, PR #2).
+
+---
+
 ## 7. Consequences for the existing code
 
 | Repo | Status under this canon |
