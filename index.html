@@ -328,7 +328,7 @@
         add('p', r.join.rule);
         var strip = add('div', null, 'stat-strip');
         function stat(k, v, sub, cls) { var b = add('div', null, 'stat' + (cls ? ' ' + cls : ''), strip); add('span', k, 'k', b); add('span', v, 'v', b); if (sub) add('span', sub, 's', b); }
-        stat('HEXAGRAM', String(r.castAdj), D.names[r.castAdj] || '');
+        stat('HEXAGRAM', String(r.cast), D.names[r.cast] || '');
         stat('D' + r.die, r.bolted ? 'BOLT' : String(r.roll), r.stepDownUsed ? 'from d' + r.declaredDie : '');
         var push = r.bolted ? -r.die : r.roll, mod = r.input.mod || 0;
         stat('TOTAL', String(r.mode === 'over' ? r.castAdj + push + mod : r.input.dc + push + mod), r.mode === 'over' ? 'need ≥ ' + r.input.dc : 'cast must be ≤', r.pass ? 'pass' : 'fail');
