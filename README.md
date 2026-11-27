@@ -43,3 +43,10 @@ Telegram (optional): copy `config.example.js` to `config.local.js` and fill in y
 Forge one in identify-eweself and use **Open in Hex-Die** (or download the JSON and pick the file here). Then tap a domain
 (Intellectual, Physical, Emotional, Spiritual) to set your Personal DC and its Roll-Over/Under mode.
 
+
+## Deploy on Render
+
+`render.yaml` defines a static site. In Render choose **New > Blueprint**, pick this repo and branch, and apply.
+The build (`scripts/render-build.sh`) copies the app into `dist/` and writes a public `config.local.js` containing **no secrets**:
+Telegram sending is off on the hosted copy because anything in a static site is readable by visitors. Run locally with your own
+`config.local.js` for Telegram. Optional `HEXDIE_URL` (identify-eweself only): set it to the deployed Hex-Die URL, with a trailing slash, to enable "Open in Hex-Die".

@@ -1,0 +1,6 @@
+services:
+  - type: web
+    runtime: static
+    name: hex-die
+    buildCommand: sh scripts/render-build.sh
+    staticPublishPath: dist

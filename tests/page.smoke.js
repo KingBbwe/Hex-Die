@@ -105,7 +105,7 @@ function load(pre, url) {
   await feed(JSON.stringify(fx));
   ok('skill picker appears with a Character', $('skillGroup').style.display === '');
   const mine = Object.keys(fx.skills);
-  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $("skillSelect").querySelectorAll("option").length === 1 + 113, $('skillSelect').querySelectorAll('option').length);
+  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $("skillSelect").querySelectorAll("option").length === 1 + 134, $('skillSelect').querySelectorAll('option').length);
   const other = [...$('skillSelect').querySelectorAll('option')].map(o => o.value).find(v => v && !mine.includes(v));
   async function formulaFor(skill, modv) {
     $('dieType').value = '6'; $('modifier').value = String(modv); $('skillSelect').value = skill; $('dc').value = '40';
