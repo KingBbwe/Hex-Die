@@ -76,6 +76,14 @@ function load(pre, url) {
   ok('four domain buttons with DC and mode', $('domainBtns').children.length === 4 && /Intellectual 5 · Over/.test($('domainBtns').children[0].textContent) && /Physical 20 · Under/.test($('domainBtns').children[1].textContent), [...$('domainBtns').children].map(b => b.textContent).join(' | '));
   $('domain-physical').click();
   ok('picking a domain fills the DC and shows its mode', $('dc').value === '20' && /Roll-Under/.test($('modeHint').textContent), $('modeHint').textContent);
+  ok('narrative mode opens at General', $('generalMode').classList.contains('active') && !$('personalMode').classList.contains('active'));
+  ok('picking a profile leaves the narrative mode alone', $('generalMode').classList.contains('active') && $('domain-physical').classList.contains('active'));
+  ok('the DC label names the profile it came from', /Physical profile/.test($('dcSource').textContent), $('dcSource').textContent);
+  $('actionMode').click();
+  ok('changing narrative mode keeps the profile and its DC', $('domain-physical').classList.contains('active') && $('dc').value === '20' && $('actionMode').classList.contains('active'));
+  $('domain-emotional').click();
+  ok('a second profile replaces the DC', $('dc').value === String(fx.dc.emotional.value) && !$('domain-physical').classList.contains('active') && $('actionMode').classList.contains('active'), $('dc').value);
+  $('domain-physical').click(); $('generalMode').click();
   ok('character die tier preselects the die', $('dieType').value === String(fx.dieTier));
   w.__fetches.length = 0; w.TELEGRAM_BOT_TOKEN = 'T'; w.TELEGRAM_CHAT_ID = '-1000000000001';
   $('rollButton').click();

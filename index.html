@@ -44,13 +44,14 @@
                 <label for="characterFile">Load from identify-eweself</label>
                 <input type="file" id="characterFile" accept="application/json,.json">
                 <div id="characterInfo"></div>
-                <div id="domainBtns" class="mode-group" style="display:none"></div>
+                <div id="domainBtns" class="domain-grid" style="display:none"></div>
+                <small class="domain-hint" id="domainHint" style="display:none">Tap a profile to set the DC for the check below.</small>
             </div>
 
             <div class="card">
                 <p class="card-title">The Check</p>
                 <div class="input-group">
-                    <label for="dc">Difficulty Class (DC)</label>
+                    <label for="dc">Difficulty Class (DC) <span id="dcSource" class="dc-source"></span></label>
                     <input type="number" id="dc" placeholder="1 – 64" min="1" max="64" inputmode="numeric">
                     <small id="modeHint"></small>
                 </div>
@@ -83,7 +84,7 @@
             </div>
 
             <p class="mode-title">Narrative Mode</p>
-            <div class="mode-group">
+            <div class="mode-group" id="modeGroup">
                 <button class="mode-button" id="personalMode">Personal</button>
                 <button class="mode-button active" id="generalMode">General</button>
                 <button class="mode-button" id="actionMode">Action</button>
@@ -235,7 +236,7 @@
         var box = $('domainBtns'); box.textContent = ''; box.style.display = '';
         CH.DOMAINS.forEach(function (name) {
             var b = document.createElement('button'), d = c.dc[name];
-            b.className = 'mode-button ' + d.mode; b.id = 'domain-' + name; b.type = 'button';
+            b.className = 'domain-tile ' + d.mode; b.id = 'domain-' + name; b.type = 'button';
             [['dn', cap(name)], ['dv', String(d.value)], ['dm', d.mode === 'over' ? 'Over' : 'Under']].forEach(function (x, i) {
                 if (i) b.appendChild(document.createTextNode(' '));
                 var sp = document.createElement('span'); sp.className = x[0];
@@ -245,12 +246,13 @@
             b.addEventListener('click', function () { pickDomain(name); });
             box.appendChild(b);
         });
+        $('domainHint').style.display = '';
         if ([6, 8, 12, 20].indexOf(c.dieTier) !== -1) $('dieType').value = String(c.dieTier);
         startInactivityTimer();
         return true;
     }
     function clearDomain() {
-        domain = null;
+        domain = null; if ($('dcSource')) $('dcSource').textContent = '';
         CH.DOMAINS.forEach(function (n) { var b = $('domain-' + n); if (b) b.classList.remove('active'); });
     }
     function pickDomain(name) {
@@ -258,6 +260,9 @@
         domain = name;
         CH.DOMAINS.forEach(function (n) { var b = $('domain-' + n); if (b) b.classList.toggle('active', n === name); });
         $('dc').value = character.dc[name].value; paintHint(); paintDmg(''); startInactivityTimer();
+        var dc = $('dc'); dc.classList.remove('filled'); void dc.offsetWidth; dc.classList.add('filled');   // flash the field it filled
+        $('dcSource').textContent = 'from ' + cap(name) + ' profile';
+        if (dc.scrollIntoView && dc.getBoundingClientRect && dc.getBoundingClientRect().bottom > (window.innerHeight || 0)) dc.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function readCharacterFile(file) {
         var fr = new FileReader();
@@ -291,11 +296,11 @@
     function adjusted() { var b = baseDc(); return b === null ? null : H.adjustDC(b, H.modeForDC(b), dmg); }
     function modeLabel(m) { return 'Roll-' + (m === 'over' ? 'Over' : 'Under'); }
     function activeSet() {
-        var b = document.querySelector('.mode-button.active');
+        var b = document.querySelector('#modeGroup .mode-button.active');
         var id = b ? b.id : 'generalMode';
         return { personalMode: D.personal, generalMode: D.general, actionMode: D.action }[id] || D.general;
     }
-    function activeSetName() { var b = document.querySelector('.mode-button.active'); return b ? b.textContent : 'General'; }
+    function activeSetName() { var b = document.querySelector('#modeGroup .mode-button.active'); return b ? b.textContent : 'General'; }
     function paintHint() {
         var b = baseDc();
         $('modeHint').textContent = b === null ? '' :
@@ -482,16 +487,16 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         loadFate(); paintFate(); paintHint(); paintDmg(''); $('dieType').value = '6'; startInactivityTimer();
-        document.querySelectorAll('.mode-button').forEach(function (btn) {
+        document.querySelectorAll('#modeGroup .mode-button').forEach(function (btn) {
+            btn.classList.toggle('active', btn.id === 'generalMode');      // narrative mode always opens at General
             btn.addEventListener('click', function () {
-                document.querySelectorAll('.mode-button').forEach(function (b) { b.classList.remove('active'); });
+                document.querySelectorAll('#modeGroup .mode-button').forEach(function (b) { b.classList.remove('active'); });
                 btn.classList.add('active'); if (last) show(last); startInactivityTimer();
             });
         });
         ['dc', 'modifier', 'stepDownToggle', 'dieType'].forEach(function (id) {
             $(id).addEventListener('input', function () { startInactivityTimer(); if (id === 'dc') { if (domain && +$('dc').value !== character.dc[domain].value) clearDomain(); paintHint(); paintDmg(''); } });
         });
-        $('stepDownToggle').addEventListener('change', function () { this.parentElement.style.backgroundColor = this.checked ? 'var(--primary-hover)' : 'var(--bg-darker)'; });
         $('mitigateBtn').addEventListener('click', mitigate);
         $('characterFile').addEventListener('change', function () { if (this.files && this.files[0]) readCharacterFile(this.files[0]); });
         var fromHash = CH.fromFragment(location.hash);
