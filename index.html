@@ -3,654 +3,818 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Chronicles of Auld Ewe</title>
-    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet>
+    <title>The Chronicles of Auld Ewe - Cyberpunk Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #1a1a2e;
-            color: #eaeaea;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        nav {
-            background-color: #16213e;
-        }
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.3rem;
-        }
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
-        }
-        h3 {
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-        button {
-            background-color: #0f3460;
-            color: #eaeaea;
-        }
-        .oraclize-btn {
-            background-color: #21bf73;
-            color: #fff;
-        }
-        #result {
-            white-space: pre-wrap;
-            background-color: #16213e;
-            padding: 5px;
-            border-radius: 10px;
-            margin-top: 10px;
-            font-size: 0.8rem;
-            line-height: 1.2;
-        }
-        #howToPlayContent {
-            display: none;
-            padding: 5px;
-            background-color: #16213e;
-            margin-top: 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-        }
-        .grid {
+    :root {
+        --primary: #6b46c1;
+        --primary-hover: #553c9a;
+        --bg-dark: #1a1a2e;
+        --bg-darker: #16213e;
+        --text-light: #e2e8f0;
+    }
+
+    body {
+        background: linear-gradient(45deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+        color: var(--text-light);
+        font-family: 'Orbitron', system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+        min-height: 100vh;
+    }
+
+    nav {
+        background: rgba(22, 33, 62, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid var(--primary);
+        box-shadow: 0 0 15px rgba(107, 70, 193, 0.3);
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    nav ul {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(26, 26, 46, 0.9);
+        border: 1px solid var(--primary);
+        box-shadow: 0 0 30px rgba(107, 70, 193, 0.2);
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+    }
+
+    h1, h2, h3 {
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(107, 70, 193, 0.5);
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+        color: #cbd5e1;
+        text-align: center;
+    }
+
+    h3 {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        color: #94a3b8;
+        text-align: center;
+    }
+
+    .input-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
+    }
+
+    input, select {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid var(--primary) !important;
+        border-radius: 0.375rem;
+        background: rgba(22, 33, 62, 0.8) !important;
+        color: var(--text-light) !important;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease !important;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #21bf73 !important;
+        box-shadow: 0 0 15px rgba(107, 70, 193, 0.4) !important;
+    }
+
+    .toggle-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0.75rem;
+        background-color: var(--bg-darker);
+        border: 1px solid var(--primary);
+        border-radius: 0.375rem;
+        box-shadow: inset 0 0 10px rgba(107, 70, 193, 0.2);
+    }
+
+    .mode-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .mode-button {
+        flex: 1;
+        padding: 0.6rem;
+        border: 2px solid var(--primary) !important;
+        border-radius: 0.375rem;
+        background-color: transparent;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: all 0.2s;
+        clip-path: polygon(90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%, 10% 0);
+    }
+
+    .mode-button.active {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .mode-button:hover {
+        background-color: var(--primary-hover);
+    }
+
+    button {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 1.0rem;
+        transition: all 0.3s ease;
+        margin-bottom: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid var(--primary) !important;
+        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
+    }
+
+    button:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+    }
+
+    button::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(107, 70, 193, 0.2), transparent);
+        transform: rotate(45deg);
+        transition: all 0.5s;
+    }
+
+    button:hover::before {
+        animation: cyber-glow 1.5s infinite;
+    }
+
+    .oraclize-btn {
+        background-color: #21bf73;
+    }
+
+    #result {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: rgba(22, 33, 62, 0.8);
+        border-radius: 0.375rem;
+        border: 1px solid var(--primary);
+        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1),
+                    0 0 20px rgba(107, 70, 193, 0.1);
+        position: relative;
+    }
+
+    #result strong {
+        color: #a78bfa;
+    }
+
+    #changingLines {
+        text-align: left;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(22, 33, 62, 0.8);
+        border-radius: 0.375rem;
+        display: none;
+        border: 1px solid var(--primary);
+        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
+    }
+
+    .fate-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .fate-points {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    #fatePoints {
+        width: 60px;
+        font-weight: bold;
+        text-align: center;
+        font-family: 'Orbitron', sans-serif;
+        border: 2px solid var(--primary) !important;
+        background: rgba(22, 33, 62, 0.9) !important;
+    }
+
+    .add-fate {
+        background-color: #21bf73 !important;
+        width: auto !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+                .checkbox-wrapper {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 8px;
         }
-        label, input, select {
-            font-size: 0.8rem;
+
+        .step-down-toggle {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin: 0;
         }
+
+        .step-down-toggle:checked {
+            background-color: #39FF14;
+            border-color: #39FF14;
+        }
+
+        .step-down-toggle:checked::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+    .chat-manager-container {
+        margin-top: 2rem;
+        padding: 1rem;
+        border-top: 1px solid var(--primary);
+        background-color: var(--bg-darker);
+        border-radius: 0.375rem;
+        border: 1px solid var(--primary);
+        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
+    }
+
+    .chat-manager-details {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .chat-manager-details summary {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--primary);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: var(--bg-dark);
+        transition: background-color 0.2s;
+        border: 1px solid var(--primary);
+        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
+    }
+
+    .chat-manager-details summary:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+    .chat-setup-form,
+    .player-setup-form {
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: var(--bg-dark);
+        border-radius: 0.375rem;
+        border: 1px solid var(--primary);
+    }
+
+    #gmCodeDisplay {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: var(--bg-dark);
+        border: 1px solid var(--primary);
+        border-radius: 0.375rem;
+        text-align: center;
+    }
+
+    @keyframes cyber-glow {
+        0% { left: -50%; }
+        100% { left: 150%; }
+    }
+
+    @keyframes border-pulse {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
+    .jinx { font-style: italic; color: #f6ad55; }
+    #fateStats { margin: 0 0 1rem; font-size: 0.85rem; }
+    #modeHint { display: block; margin-top: 0.25rem; }
+    #result pre { line-height: 1.1; }
+    #result blockquote { margin: 0.75rem 0; padding-left: 1rem; border-left: 3px solid var(--primary); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
     </style>
 </head>
 <body>
-    <nav class="container-fluid">
+    <nav>
         <ul>
-            <li><strong>The Chronicles of Auld Ewe</strong></li>
-        </ul>
-        <ul>
-            <li><a href="#" id="howToPlayBtn">How to Play</a></li>
+            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
+            <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
         </ul>
     </nav>
+
     <main class="container">
-        <div class="grid">
-            <section>
-                <h1>The Chronicles of Auld Ewe</h1>
-                <h2>Harmonized Hex & Die System</h2>
-                <h3>Cast a Hexagram and Roll your Die to Play</h3>
-                
-                <label for="dc">Set Difficulty Class (DC):</label>
-                <input type="number" id="dc" placeholder="Enter DC value">
-                
-                <label for="dieType">Select Die Type:</label>
+        <section>
+            <div class="fate-controls">
+                <div class="fate-points">
+                    <label for="fatePoints">Fate Points:</label>
+                    <input type="number" id="fatePoints" value="3" min="0" max="5" readonly>
+                </div>
+                <button class="add-fate" onclick="addFatePoint()">Add +1</button>
+            </div>
+            <p id="fateStats">Spent: <span id="fpSpent">0</span> · Skulduggery: +<span id="skul">0</span></p>
+
+            <h1>The Chronicles of Auld Ewe</h1>
+            <h2>Harmonized Hex & Die System</h2>
+            <h3>Shake device or click Harmonize!</h3>
+
+            <div id="shakeStatus"></div>
+
+            <div class="input-group" id="characterBox">
+                <label for="characterFile">Character (from identify-eweself)</label>
+                <input type="file" id="characterFile" accept="application/json,.json">
+                <div id="characterInfo"></div>
+                <div id="domainBtns" class="mode-group" style="display:none"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="dc">Difficulty Class (DC)</label>
+                <input type="number" id="dc" placeholder="Enter DC" min="1" max="64">
+                <small id="modeHint"></small>
+            </div>
+
+            <div class="input-group">
+                <label for="dieType">Die Type</label>
                 <select id="dieType">
                     <option value="6">d6</option>
                     <option value="8">d8</option>
-                    <option value="10">d10</option>
                     <option value="12">d12</option>
                     <option value="20">d20</option>
-                    <option value="100">d100</option>
                 </select>
+            </div>
 
-                <label for="modifier">Apply Modifier (+/-):</label>
+            <div class="input-group">
+                <label for="modifier">Modifier (+/-)</label>
                 <input type="number" id="modifier" value="0">
+            </div>
 
-                <button onclick="rollDiceAndHexagram()">Harmonize</button>
-                <button onclick="analyzeResult()">Analyze Outcome</button>
-                <button class="oraclize-btn" onclick="oraclizeFunction()">Oraclize</button>
+            <div class="input-group" id="skillGroup" style="display:none">
+                <label for="skillSelect">Skill (adds its modifier)</label>
+                <select id="skillSelect"></select>
+            </div>
 
-                <div id="result"></div>
-            </section>
-        </div>
+<div class="toggle-group">
+    <div class="checkbox-wrapper">
+        <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
+        <label for="stepDownToggle" style="margin: 0;">Step Down</label>
+    </div>
+</div>
+
+            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
+            <div class="mode-group">
+                <button class="mode-button" id="personalMode">Personal</button>
+                <button class="mode-button active" id="generalMode">General</button>
+                <button class="mode-button" id="actionMode">Action</button>
+            </div>
+
+            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
+            <button id="rollButton" onclick="rollDiceAndHexagram()">Harmonize</button>
+            <button class="oraclize-btn" id="oraclizeBtn" onclick="showChangingLines()">Oraclize</button>
+            <button id="mitigateBtn">Avert Disaster</button>
+            <button id="newSceneBtn">New Scene</button>
+
+            <div id="result"></div>
+            <div id="changingLines"></div>
+
+            <details id="damageBox" class="chat-manager-details">
+                <summary>Wounds (damage lines)</summary>
+                <div class="input-group"><label for="advSel">Roll</label>
+                    <select id="advSel"><option value="">Normal</option><option value="adv">Advantage</option><option value="dis">Disadvantage</option></select></div>
+                <button id="dmgBtn">Roll damage line</button> <button id="dmgReset">Heal all</button>
+                <p id="dmgOut"></p>
+            </details>
+
+            <div id="chatManager" class="chat-manager-container">
+                <details class="chat-manager-details">
+                    <summary>Game Master Settings</summary>
+                    <div class="chat-setup-form">
+                        <h3>Set Up New Game Group</h3>
+                        <div class="input-group">
+                            <label for="groupName">Group Name:</label>
+                            <input type="text" id="groupName" placeholder="Enter your group name">
+                        </div>
+                        <div class="input-group">
+                            <label for="chatId">Telegram Chat ID:</label>
+                            <input type="text" id="chatId" placeholder="Enter your Telegram chat ID">
+                            <button onclick="showChatIdInstructions()">How to get Chat ID?</button>
+                        </div>
+                        <button onclick="setupNewGameGroup()">Create Game Group</button>
+
+                        <div id="gmCodeDisplay" style="display: none;">
+                            <h4>Your GM Code:</h4>
+                            <p id="gmCodeText"></p>
+                            <p class="instructions">Share this code with your players to connect them to your group.</p>
+                        </div>
+                    </div>
+
+                    <div class="player-setup-form">
+                        <h3>Player Settings</h3>
+                        <div class="input-group">
+                            <label for="gmCode">GM Code:</label>
+                            <input type="text" id="gmCode" placeholder="Enter your GM's code">
+                        </div>
+                        <div class="input-group">
+                            <label for="playerName">Your Name:</label>
+                            <input type="text" id="playerName" placeholder="Enter your name">
+                        </div>
+                        <button onclick="joinGameGroup()">Join Game Group</button>
+                    </div>
+                </details>
+            </div>
+        </section>
     </main>
 
-    <footer class="container">
-        <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
-    </footer>
+<script src="config.local.js"></script>
+<script src="engine/narratives.js"></script>
+<script src="engine/hexdie.js"></script>
+<script src="engine/allocation.js"></script>
+<script src="engine/skills.js"></script>
+<script src="engine/character.js"></script>
+<script>
+// The Chronicles of Auld Ewe — Harmonized Hex & Die page.
+// All resolution rules live in engine/hexdie.js; this file is UI, Fate Point bookkeeping,
+// Telegram notification and the table (GM-code) features carried over from the Cyber edition.
+(function () {
+    'use strict';
+    var H = window.HexDie, D = window.HexDieData;
+    function $(id) { return document.getElementById(id); }
 
-    <div id="howToPlayContent">
-        <h3>How to Play: One-Click Hex & Die App</h3>
-        <p>Weave Fate and Choice in Auld Ewe’s Cosmos</p>
-        <h4>Cast & Roll (One Tap):</h4>
-        <p>Tap the Harmonize button to simultaneously:</p>
-        <ul>
-            <li><strong>Cast a Hexagram:</strong> The app generates one of 64 l-Ching archetypes (e.g., Hexagram 29: The Abysmal for danger).</li>
-            <li><strong>Roll Your Die:</strong> Automatically uses your selected die type (d6 to d100).</li>
-        </ul>
-        <h4>Add Modifiers (Optional):</h4>
-        <p>Input bonuses/penalties. The app calculates your Total Value (Hexagram + Die Roll + Modifier).</p>
-        <h4>Interpret the Cosmic Threads:</h4>
-        <p><strong>Triumph/Conflict/Disaster:</strong> Determined by your die roll.</p>
-        <p><strong>DC Met/Exceeded?</strong> The hexagram’s lines shape consequences (e.g., Line 5 = peak success, Line 6 = cosmic irony).</p>
-        <h4>Example Playthrough:</h4>
-        <p>Tap Harmonize → Casts Hexagram 29 (The Abysmal) + Rolls d20 (Triumph: 18) + Modifier +2 = Total 49 (DC 29 Exceeded).</p>
-        <p>Outcome: Leap the chasm with feral grace (Line 5), but trigger a rockslide (Line 6).</p>
-        <h4>Begin Your Saga:</h4>
-        <p>One tap. Infinite stories. What will the cosmos reveal?</p>
-        <p><strong>[Harmonize Now]</strong></p>
-        <p>Simplicity meets mysticism—forge legends in seconds.</p>
-    </div>
+    // ---- table conventions carried over from the Cyber edition (not in RULES_CANON; flagged) ----
+    var MAX_FATE_POINTS = 5, DAILY_FATE_POINTS = 3, DAY_MS = 24 * 3600 * 1000;
+    var INACTIVITY_MS = 180000, SHAKE_THRESHOLD = 15, MIN_SHAKE_MS = 2000;
+    var FATE_KEY = 'auldEweFatePoints', CHAT_KEY = 'fateGameChats';
 
-    <script src="config.local.js"></script>
-    <script>
-        // Telegram Configuration — real values live in config.local.js (gitignored, not committed).
-        // See config.example.js for the template.
-        const telegramBotToken = window.TELEGRAM_BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
-        const chatId = window.TELEGRAM_CHAT_ID || 'YOUR_CHAT_ID';
+    var fate = H.newFate(DAILY_FATE_POINTS), lastRegen = Date.now(), last = null;
+    var dmg = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    var character = null, domain = null, CHAR_KEY = 'auldEweActiveCharacter';
+    var inactivityTimer = null, shakeEnabled = false, isShaking = false, shakeStart = 0, lastShake = 0;
 
-        // Game Configuration
-        const outcomeThresholds = {
-            6:  { triumph: [6],       conflict: [5,4],   disaster: [3,2,1] },
-            8:  { triumph: [8,7],     conflict: [6,5,4], disaster: [3,2,1] },
-            12: { triumph: [12,11,10], conflict: [9,8,7,6,5], disaster: [4,3,2,1] },
-            20: { triumph: [20,19,18,17,16], conflict: [15,14,13,12,11,10], disaster: [9,8,7,6,5,4,3,2,1] },
-            100: { 
-                triumph: Array.from({length: 20}, (_, i) => 100 - i),
-                conflict: Array.from({length: 60}, (_, i) => 80 - i),
-                disaster: Array.from({length: 20}, (_, i) => 20 - i)
-            }
-        };
+    function rng() { var a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; }
+    function tryJSON(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+    // localStorage can throw (private mode, blocked file:// storage): never let that break a roll.
+    function sget(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function sset(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-        const stepDownConfig = {
-            6:  [6, 2],
-            8:  [6, 4],
-            12: [8, 8],
-            20: [12, 10],
-            100: [20, 20]
-        };
-
-        let currentHexagramNumber;
-        let currentHexagramLines = [];
-      
-// Hexagram-related data
-const hexagramNarratives = {
-    1: { 
-        triumph: "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose.",
-        conflict: "Ambition clashes with humility; allies question the leader’s goals.",
-        disaster: "Trust erodes as the Sentient’s actions grow self-serving, leaving their party fractured."
-    },
-    2: { 
-        triumph: "The Sentient fosters resilience through patience, teaching their party to find strength in reflection.",
-        conflict: "Passivity risks enabling harm; the group debates when to act and when to yield.",
-        disaster: "The party grows complacent, their voice silenced by fear of overstepping."
-    },
-    3: { 
-        triumph: "The Sentient transforms chaos into solidarity, rallying their party to overcome obstacles together.",
-        conflict: "Divided visions threaten cohesion; the group struggles to find unity.",
-        disaster: "Confusion reigns as fractured purpose leaves the party lost and vulnerable."
-    },
-    4: { 
-        triumph: "The Sentient turns naivety into wisdom, mentoring others to avoid their past mistakes.",
-        conflict: "Overcorrection breeds rigidity; the group struggles to balance caution with openness.",
-        disaster: "Fear of failure stifles growth, leaving the party stagnant and risk-averse."
-    },
-    5: { 
-        triumph: "The Sentient exemplifies patience, teaching their party the value of waiting for the right moment.",
-        conflict: "Hasty actions create setbacks; the group debates when to strike.",
-        disaster: "Impatience leads to ruin as opportunities are squandered."
-    },
-    6: { 
-        triumph: "The Sentient finds resolution through mediation, turning discord into understanding.",
-        conflict: "Conflict breeds resentment; the group struggles to reconcile differences.",
-        disaster: "Discord escalates into chaos, fracturing the party irreparably."
-    },
-    7: { 
-        triumph: "The Sentient’s strategic planning ensures victory, uniting the party under a common cause.",
-        conflict: "Poor coordination weakens resolve; the group debates leadership.",
-        disaster: "Lack of direction leaves the party scattered and defeated."
-    },
-    8: { 
-        triumph: "The Sentient forges strong alliances, strengthening the party’s unity and resolve.",
-        conflict: "Mistrust undermines collaboration; the group questions loyalties.",
-        disaster: "Betrayal shatters the party, leaving allies estranged."
-    },
-    9: { 
-        triumph: "The Sentient brings clarity, helping the party navigate uncertain times with precision.",
-        conflict: "Small conflicts grow into larger issues; the group debates priorities.",
-        disaster: "Neglected tensions erupt, scattering the party into disarray."
-    },
-    10: { 
-        triumph: "The Sentient leads with integrity, navigating treacherous paths while safeguarding their party.",
-        conflict: "Risk-taking creates friction; the group questions the leader’s judgment.",
-        disaster: "Recklessness leads to disaster, endangering the entire party."
-    },
-    11: { 
-        triumph: "The Sentient harmonizes opposing forces, creating prosperity and peace for their party.",
-        conflict: "Internal disputes disrupt unity; the group struggles to find balance.",
-        disaster: "Chaos consumes the party as balance is lost entirely."
-    },
-    12: { 
-        triumph: "The Sentient perseveres, bringing light to darkness and hope to despair.",
-        conflict: "Isolation breeds doubt; the group struggles to stay motivated.",
-        disaster: "Despair overwhelms the party, extinguishing all hope."
-    },
-    13: { 
-        triumph: "The Sentient inspires camaraderie, forging deep connections among the party.",
-        conflict: "Misunderstandings strain relationships; the group debates trust.",
-        disaster: "Bonds break under pressure, leaving the party fragmented."
-    },
-    14: { 
-        triumph: "The Sentient shares their bounty, ensuring all benefit from their success.",
-        conflict: "Resource disputes create tension; the group debates fairness.",
-        disaster: "Greed and mismanagement lead to scarcity, weakening the party."
-    },
-    15: { 
-        triumph: "The Sentient’s humility earns respect, fostering cooperation and mutual growth.",
-        conflict: "Pride tempts the leader; allies question whether their actions serve the greater good.",
-        disaster: "Arrogance alienates allies, leaving the party divided."
-    },
-    16: { 
-        triumph: "The Sentient’s passion ignites inspiration, motivating the party to pursue bold visions.",
-        conflict: "Overconfidence risks disaster; the group debates caution versus ambition.",
-        disaster: "Hubris blinds the party to danger, leading to their downfall."
-    },
-    17: { 
-        triumph: "The Sentient adapts to changing circumstances, ensuring the party’s continued success.",
-        conflict: "Resistance to change creates tension; the group struggles to stay cohesive.",
-        disaster: "Stubbornness prevents progress, leaving the party stagnant."
-    },
-    18: { 
-        triumph: "The Sentient revitalizes their party through renewal, transforming decay into growth.",
-        conflict: "Neglect breeds resentment; the group debates accountability.",
-        disaster: "Corruption festers, causing the party to collapse from within."
-    },
-    19: { 
-        triumph: "The Sentient seizes opportunities, leading their party to seize the moment and achieve greatness.",
-        conflict: "Impulsiveness creates setbacks; the group debates risk versus reward.",
-        disaster: "Missed opportunities leave the party disillusioned and adrift."
-    },
-    20: { 
-        triumph: "The Sentient fosters clarity and understanding, helping the party gain a broader perspective.",
-        conflict: "Narrow focus creates blind spots; the group debates priorities.",
-        disaster: "Shortsightedness leads to failure as critical details are overlooked."
-    },
-    21: { 
-        triumph: "The Sentient brings justice, resolving disputes and restoring harmony to the party.",
-        conflict: "Lingering tensions disrupt unity; the group debates fairness.",
-        disaster: "Unresolved conflicts fester, fracturing the party beyond repair."
-    },
-    22: { 
-        triumph: "The Sentient enriches the party’s journey with beauty and meaning, inspiring creativity.",
-        conflict: "Excess breeds superficiality; the group debates substance versus appearance.",
-        disaster: "Vanity and neglect of priorities lead to ruin and disarray."
-    },
-    23: { 
-        triumph: "The Sentient removes obstacles, enabling their party to rebuild stronger foundations.",
-        conflict: "Resistance to change causes stagnation; the group struggles to adapt.",
-        disaster: "The foundations crumble, leaving the party vulnerable and exposed."
-    },
-    24: { 
-        triumph: "The Sentient restores vitality, guiding the party toward renewal and growth.",
-        conflict: "Missed opportunities delay progress; the group debates when to act.",
-        disaster: "Apathy takes hold, leaving the party directionless and adrift."
-    },
-    25: { 
-        triumph: "The Sentient cultivates sincerity, ensuring the party stays true to their values.",
-        conflict: "Misaligned intentions create mistrust; the group questions motives.",
-        disaster: "Deceit and dishonesty corrode the party’s bonds, leading to betrayal."
-    },
-    26: { 
-        triumph: "The Sentient’s discipline ensures preparation and resilience, fortifying the party for challenges.",
-        conflict: "Impatience undermines preparation; the group debates strategy.",
-        disaster: "Unpreparedness leads to failure, leaving the party vulnerable."
-    },
-    27: { 
-        triumph: "The Sentient nurtures the party’s needs, ensuring sustenance and balance for all.",
-        conflict: "Scarcity breeds tension; the group debates resource allocation.",
-        disaster: "Neglect of essentials weakens the party, leading to discord."
-    },
-    28: { 
-        triumph: "The Sentient’s bold leadership stabilizes the party during moments of extreme pressure.",
-        conflict: "Overextension creates risk; the group debates boundaries.",
-        disaster: "The strain proves too great, causing collapse and disarray."
-    },
-    29: { 
-        triumph: "The Sentient’s resilience guides the party through treacherous times, turning danger into triumph.",
-        conflict: "Fear and doubt disrupt cohesion; the group struggles to maintain morale.",
-        disaster: "Despair overwhelms the party, leaving them trapped in adversity."
-    },
-    30: { 
-        triumph: "The Sentient ignites passion and purpose, fueling the party’s collective drive for greatness.",
-        conflict: "Overzealousness creates friction; the group debates direction.",
-        disaster: "Unchecked ambition leads to burnout, leaving the party in turmoil."
-    },
-    31: { 
-        triumph: "The Sentient inspires harmony and connection, strengthening the party’s unity.",
-        conflict: "Misunderstandings create rifts; the group debates communication.",
-        disaster: "Discord shatters unity, leaving the party divided and weakened."
-    },
-    32: { 
-        triumph: "The Sentient ensures longevity and stability, guiding the party through enduring challenges.",
-        conflict: "Resistance to change causes stagnation; the group struggles to evolve.",
-        disaster: "Inflexibility leads to obsolescence, leaving the party unable to adapt."
-    },
-    33: { 
-        triumph: "The Sentient’s wisdom enables strategic withdrawal, preserving the party’s strength.",
-        conflict: "Fear of loss disrupts decision-making; the group debates retreat versus persistence.",
-        disaster: "A poorly timed retreat leads to ruin, leaving the party exposed."
-    },
-    34: { 
-        triumph: "The Sentient channels strength into decisive action, ensuring the party’s success.",
-        conflict: "Overconfidence risks setbacks; the group debates caution versus boldness.",
-        disaster: "Reckless use of power causes harm, leaving the party weakened."
-    },
-    35: { 
-        triumph: "The Sentient’s vision inspires rapid progress, propelling the party toward success.",
-        conflict: "Haste creates errors; the group debates the pace of advancement.",
-        disaster: "Rushing ahead leads to missteps, leaving the party vulnerable."
-    },
-    36: { 
-        triumph: "The Sentient perseveres through hardship, leading the party with quiet determination.",
-        conflict: "Adversity causes tension; the group struggles to stay united.",
-        disaster: "Despair and disillusionment leave the party fragmented and lost."
-    },
-    37: { 
-        triumph: "The Sentient fosters a sense of belonging, creating a strong and supportive party.",
-        conflict: "Family-like bonds are tested by conflict; the group debates loyalty.",
-        disaster: "Fractured relationships weaken the party, leaving them divided."
-    },
-    38: { 
-        triumph: "The Sentient finds common ground, resolving differences and strengthening the party.",
-        conflict: "Polarized views create division; the group struggles to reconcile.",
-        disaster: "Irreconcilable differences tear the party apart, leaving them isolated."
-    },
-    39: { 
-        triumph: "The Sentient’s determination turns obstacles into opportunities for growth.",
-        conflict: "Hesitation causes delays; the group debates risk versus reward.",
-        disaster: "Insurmountable obstacles overwhelm the party, leaving them stranded."
-    },
-    40: { 
-        triumph: "The Sentient resolves lingering tensions, liberating the party from burdens and strife.",
-        conflict: "Unfinished business creates anxiety; the group debates priorities.",
-        disaster: "Unresolved issues weigh down the party, hindering progress."
-    },
-    41: { 
-        triumph: "The Sentient’s resourcefulness ensures the party thrives despite limitations.",
-        conflict: "Resource scarcity creates friction; the group debates allocation.",
-        disaster: "Neglect of essentials leads to depletion, leaving the party weakened."
-    },
-    42: { 
-        triumph: "The Sentient’s generosity fosters abundance, strengthening the party’s bonds.",
-        conflict: "Unequal contributions create tension; the group debates fairness.",
-        disaster: "Greed and imbalance disrupt harmony, leaving the party fractured."
-    },
-    43: { 
-        triumph: "The Sentient’s decisiveness overcomes hesitation, driving the party to decisive action.",
-        conflict: "Confusion delays progress; the group debates priorities.",
-        disaster: "Indecision leads to missed opportunities, leaving the party stagnant."
-    },
-    44: { 
-        triumph: "The Sentient’s foresight allows the party to anticipate challenges and adapt swiftly.",
-        conflict: "Overconfidence blinds the party to subtle threats; the group debates vigilance.",
-        disaster: "Hidden dangers strike, catching the party unprepared and vulnerable."
-    },
-    45: { 
-        triumph: "The Sentient fosters unity through shared rituals and traditions, solidifying bonds.",
-        conflict: "Disagreements over customs create friction; the group debates inclusivity.",
-        disaster: "Division weakens the group as traditions become a source of conflict."
-    },
-    46: { 
-        triumph: "The Sentient advances with determination, guiding their party to achieve greatness.",
-        conflict: "Impulsiveness causes mistakes; the group debates caution versus boldness.",
-        disaster: "Recklessness undermines progress, causing the party to lose ground."
-    },
-    47: { 
-        triumph: "The Sentient’s resilience inspires hope, helping the party endure adversity.",
-        conflict: "Persistent struggles sap morale; the group debates perseverance versus retreat.",
-        disaster: "Despair overcomes the party, leaving them unable to continue."
-    },
-    48: { 
-        triumph: "The Sentient ensures the party is nourished by wisdom, replenishing their strength.",
-        conflict: "Scarcity breeds tension; the group debates how to manage resources.",
-        disaster: "Depletion leaves the party weakened, unable to face their challenges."
-    },
-    49: { 
-        triumph: "The Sentient leads a bold transformation, inspiring the party to embrace change.",
-        conflict: "Resistance to change causes friction; the group struggles to adapt.",
-        disaster: "Fear of change stagnates the party, leaving them unable to move forward."
-    },
-    50: { 
-        triumph: "The Sentient refines the party’s skills, honing their collective potential.",
-        conflict: "Disputes over priorities create tension; the group debates focus.",
-        disaster: "Disorganization leaves the party ill-prepared to face challenges."
-    },
-    51: { 
-        triumph: "The Sentient channels chaos into energy, motivating the party to take bold action.",
-        conflict: "Shock creates uncertainty; the group struggles to regain focus.",
-        disaster: "Panic spreads, leaving the party unable to act effectively."
-    },
-    52: { 
-        triumph: "The Sentient fosters stillness and reflection, helping the party find inner clarity.",
-        conflict: "Restlessness disrupts focus; the group debates action versus patience.",
-        disaster: "Inaction breeds frustration, leaving the party disheartened."
-    },
-    53: { 
-        triumph: "The Sentient’s steady guidance enables gradual progress toward shared goals.",
-        conflict: "Impatience threatens stability; the group debates pace versus outcomes.",
-        disaster: "Rushing ahead causes setbacks, leaving the party vulnerable."
-    },
-    54: { 
-        triumph: "The Sentient transforms unfavorable circumstances into opportunities for growth.",
-        conflict: "Imbalance creates friction; the group debates fairness and equality.",
-        disaster: "Unfair treatment divides the party, leaving bonds fractured."
-    },
-    55: { 
-        triumph: "The Sentient’s vision illuminates new possibilities, inspiring the party to act boldly.",
-        conflict: "Overextension risks burnout; the group debates how much to take on.",
-        disaster: "Excess ambition overwhelms the party, leading to collapse."
-    },
-    56: { 
-        triumph: "The Sentient adapts to unfamiliar terrain, guiding the party through challenges with grace.",
-        conflict: "Disorientation causes confusion; the group debates direction.",
-        disaster: "A lack of preparation leaves the party lost and vulnerable."
-    },
-    57: { 
-        triumph: "The Sentient influences through subtlety and persistence, achieving long-term success.",
-        conflict: "Ambiguity creates uncertainty; the group debates clarity versus subtlety.",
-        disaster: "Confusion and indecision weaken the party, leaving them ineffective."
-    },
-    58: { 
-        triumph: "The Sentient fosters joy and camaraderie, energizing the party for the journey ahead.",
-        conflict: "Overindulgence creates distractions; the group debates discipline versus enjoyment.",
-        disaster: "Distractions derail progress, leaving the party unprepared."
-    },
-    59: { 
-        triumph: "The Sentient dissolves barriers, fostering understanding and cooperation within the party.",
-        conflict: "Miscommunication causes tension; the group debates trust and openness.",
-        disaster: "Divisions harden, leaving the party fractured and ineffective."
-    },
-    60: { 
-        triumph: "The Sentient balances ambition with practicality, ensuring steady progress for the party.",
-        conflict: "Imposed limitations create tension; the group debates freedom versus discipline.",
-        disaster: "Overcommitment leads to failure, leaving the party drained and disheartened."
-    },
-    61: { 
-        triumph: "The Sentient fosters inner harmony, helping the party align with their shared purpose.",
-        conflict: "Divergent motivations create tension; the group debates priorities.",
-        disaster: "Misaligned goals scatter the party, leaving them unfocused and ineffective."
-    },
-    62: { 
-        triumph: "The Sentient ensures attention to detail, safeguarding the party from avoidable mistakes.",
-        conflict: "Overanalysis causes delays; the group debates action versus planning.",
-        disaster: "Neglected details lead to failure, leaving the party vulnerable."
-    },
-    63: { 
-        triumph: "The Sentient completes their mission with precision, ensuring the party’s success.",
-        conflict: "Complacency risks setbacks; the group debates vigilance versus celebration.",
-        disaster: "Premature celebration causes failure, leaving the party unprepared."
-    },
-    64: { 
-        triumph: "The Sentient embraces uncertainty, guiding the party toward the promise of new beginnings.",
-        conflict: "Hesitation creates delays; the group struggles to find clarity.",
-        disaster: "Unfinished business leaves the party adrift, unable to move forward."
-    }
-};
-
-
-const hexagramLookup = {
-1: '111111', // Qian (The Creative)
-2: '000000', // Kun (The Receptive)
-3: '010010', // Zhun (Difficulty at the Beginning)
-4: '001001', // Meng (Youthful Folly)
-5: '100110', // Xu (Waiting)
-6: '011011', // Song (Conflict 
-
-7: '101101', // Shi (The Army)
-8: '010101', // Xi (Holding Together)
-9: '111010', // Xiao Chu (Small Taming)
-10: '010111', // Lu (Treading)
-11: '100001', // Tai (Peace)
-12: '001000', // Pi (Stagnation)
-13: '110110', // Tong Ren (Fellowship)
-14: '001111', // Da You (Possession in Great Measure)
-15: '111000', // Qian (Modesty)
-16: '000111', // Yu (Enthusiasm)
-17: '010100', // Sui (Following)
-18: '001010', // Gu (Work on the Decayed)
-19: '101011', // Lin (Approach)
-20: '110001', // Guan (Contemplation)
-21: '110100', // Shi He (Biting Through)
-22: '001001', // Bi (Grace)
-23: '010110', // Bo (Splitting Apart)
-24: '101110', // Fu (Return)
-25: '111001', // Wu Wang (Without Embroiling)
-26: '100011', // Da Xu (Great Accumulating)
-27: '001101', // Yi (Nourishment)
-28: '110010', // Da Guo (Great Exceeding)
-29: '100101', // Kan (The Abysmal)
-30: '101001', // Li (The Clinging)
-31: '110011', // Xian (Influence)
-32: '001110', // Heng (Duration)
-33: '111100', // Dun (Retreat)
-34: '000011', // Da Zhuang (Great Strength)
-35: '100010', // Jin (Progress)
-36: '010001', // Ming Yi (Darkening of the Light)
-37: '101100', // Jia Ren (The Family)
-38: '011000', // Kui (Opposition)
-39: '100000', // Jian (Limping)
-40: '000100', // Xie (Deliverance)
-41: '101010', // Sun (Decrease)
-42: '010011', // Yi (Increase)
-43: '110000', // Guai (Break-through)
-44: '000110', // Gou (Coming to Meet)
-45: '111011', // Cui (Gathering Together)
-46: '110101', // Sheng (Pushing Upward)
-47: '001011', // Kun (Oppression)
-48: '110010', // Jing (The Well)
-49: '011001', // Ge (Change)
-50: '101111', // Ding (The Cauldron)
-51: '111101', // Zhen (The Arousing)
-52: '001100', // Gen (Keeping Still)
-53: '100011', // Jian (Gradual Progress 
-
-54: '011010', // Guimei (The Marrying Maiden)
-55: '101101', // Feng (Abundance)
-56: '010110', // Lu (Wandering)
-57: '001011', // Sun (Penetration)
-58: '110001', // Dui (The Joyous)
-59: '100110', // Huan (Dispersion)
-60: '011011', // Jie (Limitation)
-61: '101001', // Zhong Fu (Inner Truth)
-62: '110100', // Xiao Guo (Small Exceeding)
-63: '001101', // Ji Ji (Completion)
-64: '010101' // Wei Ji (Before Completion)
-}; 
-
-       function generateHexagramLines(hexagramNumber) {
-            const binary = hexagramLookup[hexagramNumber];
-            return binary.split('').map(b => b === '1' ? 'Solid' : 'Broken');
+    // ---------------- Fate Points ----------------
+    function saveFate() {
+        sset(FATE_KEY, JSON.stringify({ fp: fate.fp, spent: fate.spent, sceneMitigation: fate.sceneMitigation, lastRegen: lastRegen }));
+    }
+    function loadFate() {
+        var s = tryJSON(sget(FATE_KEY));
+        var now = Date.now();
+        if (!s) { fate = H.newFate(DAILY_FATE_POINTS); lastRegen = now; saveFate(); return; }
+        // Accepts the Cyber edition's {points, timestamp} shape as well as the engine shape.
+        var fp = typeof s.fp === 'number' ? s.fp : (typeof s.points === 'number' ? s.points : DAILY_FATE_POINTS);
+        fate = { fp: Math.max(0, Math.min(fp, MAX_FATE_POINTS)), spent: s.spent || 0, sceneMitigation: s.sceneMitigation || 0 };
+        lastRegen = s.lastRegen || s.timestamp || now;
+        if (now - lastRegen >= DAY_MS) {                       // daily top-up, capped
+            fate.fp = Math.min(fate.fp + DAILY_FATE_POINTS, MAX_FATE_POINTS);
+            lastRegen = now; saveFate();
         }
+    }
+    function paintFate() {
+        $('fatePoints').value = fate.fp;
+        $('fpSpent').textContent = fate.spent;
+        $('skul').textContent = H.skulduggeryFromFate(fate);
+        var live = !!last, cap = H.CONFIG.fate.disasterMitigationCapPerScene;
+        $('oraclizeBtn').disabled = !live || fate.fp < 1;
+        $('mitigateBtn').disabled = !live || fate.fp < 1 || last.tier !== 'D' || fate.sceneMitigation >= cap;
+    }
+    function addFatePoint() {
+        if (fate.fp < MAX_FATE_POINTS) { fate.fp++; saveFate(); paintFate(); sendToTelegram('fate', { points: fate.fp }); }
+        startInactivityTimer();
+    }
 
-        function determineChangingLines() {
-            return Array.from({length: 6}, (_, i) => 
-                Math.random() < 0.25 ? i+1 : null
-            ).filter(Boolean);
+    // ---------------- Character import (from identify-eweself) ----------------
+    var CH = window.AuldEweCharacter, SK = window.AuldEweSkills;
+    function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    function loadCharacter(c, remember) {
+        var v = CH.validateCharacter(c);
+        if (!v.ok) { $('characterInfo').textContent = 'Not a usable Character: ' + v.errors.join('; '); return false; }
+        // The engine owns the bands. If the file disagrees with it, trust neither silently.
+        for (var i = 0; i < CH.DOMAINS.length; i++) {
+            var d = c.dc[CH.DOMAINS[i]];
+            if (H.modeForDC(d.value) !== d.mode) { $('characterInfo').textContent = 'Rejected: ' + CH.DOMAINS[i] + ' DC ' + d.value + ' is ' + d.mode + ' in the file but ' + H.modeForDC(d.value) + ' in this engine.'; return false; }
         }
-
-        function applyLineChanges(lines) {
-            lines.forEach(line => {
-                const idx = line - 1;
-                currentHexagramLines[idx] = currentHexagramLines[idx] === 'Solid' ? 'Broken' : 'Solid';
-            });
-        }
-
-        function getOutcome(dieRoll, dieType) {
-            const thresholds = outcomeThresholds[dieType] || {triumph: [], conflict: [], disaster: []};
-            if (thresholds.triumph.includes(dieRoll)) return 'Triumph';
-            if (thresholds.conflict.includes(dieRoll)) return 'Conflict';
-            return 'Disaster';
-        }
-
-        function applyStepDown(currentDie) {
-            const [newDie, reduction] = stepDownConfig[currentDie] || [currentDie, 0];
-            return { newDieType: newDie, hexagramReduction: reduction };
-        }
-
-        function rollDiceAndHexagram() {
-            const dc = parseInt(document.getElementById('dc').value) || 0;
-            let dieType = parseInt(document.getElementById('dieType').value);
-            const mod = parseInt(document.getElementById('modifier').value) || 0;
-
-            // Apply step-down mechanics
-            const { newDieType, hexagramReduction } = applyStepDown(dieType);
-            dieType = newDieType;
-
-            // Generate hexagram
-            currentHexagramNumber = Math.floor(Math.random() * 64) + 1;
-            currentHexagramLines = generateHexagramLines(currentHexagramNumber);
-            const adjustedHex = Math.max(1, currentHexagramNumber - hexagramReduction);
-
-            // Roll die
-            const dieRoll = Math.floor(Math.random() * dieType) + 1;
-            const outcome = getOutcome(dieRoll, dieType);
-            const total = adjustedHex + dieRoll + mod;
-
-            // Determine changing lines
-            const changingLines = determineChangingLines();
-            applyLineChanges(changingLines);
-
-            // Display results
-            const result = document.getElementById('result');
-            result.innerHTML = `
-                Original Hexagram: ${currentHexagramNumber}<br>
-                Adjusted Hexagram: ${adjustedHex} (-${hexagramReduction})<br>
-                Die Roll: d${dieType} → ${dieRoll}<br>
-                Modifier: ${mod}<br>
-                Total: ${total} vs DC ${dc}<br>
-                Outcome: ${outcome}<br>
-                ${hexagramNarratives[currentHexagramNumber][outcome.toLowerCase()]}
-            `;
-            displayHexagramLines();
-
-            // Telegram notification
-            if (telegramBotToken && chatId && telegramBotToken !== 'YOUR_TELEGRAM_BOT_TOKEN') {
-                const msg = `New Roll:\nHex: ${currentHexagramNumber} (Adj: ${adjustedHex})\nDie: d${dieType} → ${dieRoll}\nTotal: ${total}\nOutcome: ${outcome}`;
-                fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
-            }
-        }
-
-        function displayHexagramLines() {
-            const result = document.getElementById('result');
-            result.innerHTML += `<br>Hexagram Lines:<br>${currentHexagramLines.join('<br>')}`;
-        }
-
-        function analyzeResult() {
-            document.getElementById('result').innerHTML += "<br>Analysis: The threads of fate reveal hidden consequences...";
-        }
-
-        function oraclizeFunction() {
-            const changing = determineChangingLines();
-            document.getElementById('result').innerHTML += `<br>Oraclize: Changing Lines ${changing.join(', ')}`;
-        }
-
-        document.getElementById('howToPlayBtn').addEventListener('click', () => {
-            document.getElementById('howToPlayContent').style.display = 
-                document.getElementById('howToPlayContent').style.display === 'none' ? 'block' : 'none';
+        character = c; domain = null; fillSkills();
+        if (remember) sset(CHAR_KEY, JSON.stringify(c));
+        $('characterInfo').textContent = c.name + ' · ' + (c.soul.profileId || '') + ' ' + (c.soul.profileName || '') + ' · d' + c.dieTier;
+        var box = $('domainBtns'); box.textContent = ''; box.style.display = '';
+        CH.DOMAINS.forEach(function (name) {
+            var b = document.createElement('button'), d = c.dc[name];
+            b.className = 'mode-button'; b.id = 'domain-' + name; b.type = 'button';
+            b.textContent = cap(name) + ' ' + d.value + ' · ' + (d.mode === 'over' ? 'Over' : 'Under');
+            b.addEventListener('click', function () { pickDomain(name); });
+            box.appendChild(b);
         });
+        if ([6, 8, 12, 20].indexOf(c.dieTier) !== -1) $('dieType').value = String(c.dieTier);
+        startInactivityTimer();
+        return true;
+    }
+    function clearDomain() {
+        domain = null;
+        CH.DOMAINS.forEach(function (n) { var b = $('domain-' + n); if (b) b.classList.remove('active'); });
+    }
+    function pickDomain(name) {
+        if (!character) return;
+        domain = name;
+        CH.DOMAINS.forEach(function (n) { var b = $('domain-' + n); if (b) b.classList.toggle('active', n === name); });
+        $('dc').value = character.dc[name].value; paintHint(); paintDmg(''); startInactivityTimer();
+    }
+    function readCharacterFile(file) {
+        var fr = new FileReader();
+        fr.onload = function () { var o = null; try { o = JSON.parse(fr.result); } catch (e) {} if (!o) { $('characterInfo').textContent = 'That file is not valid JSON.'; return; } loadCharacter(o, true); };
+        fr.readAsText(file);
+    }
 
-        // Initialize defaults
-        document.getElementById('dieType').value = '20';
-        document.getElementById('dc').value = '35';
-    </script>
+    // ---------------- inputs ----------------
+    function baseDc() { var v = parseInt($('dc').value, 10); return (v >= 1 && v <= 64) ? v : null; }
+    function skillMod() {
+        var n = $('skillSelect').value;
+        if (!n || !character) return 0;
+        if (SK.findAcquired(n)) { var am = SK.acquiredModifier(character.acquired, n); return am === null ? 0 : am; }
+        return SK.modifier(character.skills, n);
+    }
+    function mods() { var m = parseInt($('modifier').value, 10); return (isNaN(m) ? 0 : m) + skillMod(); }
+    // Skills picker: the character's assigned skills first (modifier 0), then every other catalogue skill (default -2).
+    function fillSkills() {
+        var sel = $('skillSelect'); sel.textContent = '';
+        function opt(parent, name, label) { var o = document.createElement('option'); o.value = name; o.textContent = label; parent.appendChild(o); }
+        opt(sel, '', '— no skill —');
+        var mine = Object.keys(character.skills || {});
+        if (mine.length) { var g = document.createElement('optgroup'); g.label = 'Your skills'; mine.forEach(function (n) { opt(g, n, n + ' · ' + SK.find(n).attribute + ' (' + (character.skills[n] >= 0 ? '+' : '') + character.skills[n] + ')'); }); sel.appendChild(g); }
+        var held = SK.ACQUIRED_NAMES.filter(function (n) { return SK.acquiredModifier(character.acquired, n) !== null; });
+        if (held.length) { var ga = document.createElement('optgroup'); ga.label = 'Acquired skillsets'; held.forEach(function (n) { opt(ga, n, n + ' (+0)'); }); sel.appendChild(ga); }
+        var groups = {};
+        SK.CATALOGUE.forEach(function (k) { if (mine.indexOf(k.name) === -1) (groups[k.domain || 'Other'] = groups[k.domain || 'Other'] || []).push(k); });
+        Object.keys(groups).forEach(function (dn) { var g = document.createElement('optgroup'); g.label = dn + ' (−2)'; groups[dn].forEach(function (k) { opt(g, k.name, k.name + ' · ' + k.attribute + ' (−2)'); }); sel.appendChild(g); });
+        $('skillGroup').style.display = '';
+    }
+    function adjusted() { var b = baseDc(); return b === null ? null : H.adjustDC(b, H.modeForDC(b), dmg); }
+    function modeLabel(m) { return 'Roll-' + (m === 'over' ? 'Over' : 'Under'); }
+    function activeSet() {
+        var b = document.querySelector('.mode-button.active');
+        var id = b ? b.id : 'generalMode';
+        return { personalMode: D.personal, generalMode: D.general, actionMode: D.action }[id] || D.general;
+    }
+    function activeSetName() { var b = document.querySelector('.mode-button.active'); return b ? b.textContent : 'General'; }
+    function paintHint() {
+        var b = baseDc();
+        $('modeHint').textContent = b === null ? '' :
+            modeLabel(H.modeForDC(b)) + (H.twilight(b) ? ' · Twilight DC — the Ovine Pull may stir' : '');
+    }
+    function resetFormFields() {
+        $('dc').value = ''; $('modifier').value = '0'; $('stepDownToggle').checked = false; clearDomain();
+        $('changingLines').style.display = 'none'; $('changingLines').textContent = ''; paintHint();
+    }
+    function startInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(function () { resetFormFields(); $('result').textContent = ''; last = null; paintFate(); }, INACTIVITY_MS);
+    }
+
+    // ---------------- rendering ----------------
+    function formula(r) {
+        var push = r.bolted ? -r.die : r.roll, mod = r.input.mod || 0, cast = r.castAdj;
+        var ms = mod ? (mod > 0 ? ' + ' : ' − ') + Math.abs(mod) : '';
+        var pushS = r.bolted ? '(−' + r.die + ' Bolt)' : String(r.roll);
+        return r.mode === 'over'
+            ? cast + ' + ' + pushS + ms + ' = ' + (cast + push + mod) + '  vs  DC ' + r.input.dc + ' (need ≥)'
+            : cast + '  vs  DC ' + r.input.dc + ' + ' + pushS + ms + ' = ' + (r.input.dc + push + mod) + ' (need ≤)';
+    }
+    function show(r, note) {
+        var el = $('result'); el.textContent = '';
+        function add(tag, t, cls) { var n = document.createElement(tag); n.textContent = t; if (cls) n.className = cls; el.appendChild(n); return n; }
+        add('h3', r.join.name + ' — ' + (r.pass ? 'PASS' : 'FAIL') + ' · ' + r.tierName);
+        add('p', r.join.rule);
+        add('p', (domain ? cap(domain) + ' check · ' : '') + 'Mode: ' + activeSetName() + '  |  Hexagram ' + r.cast + ' (' + (D.names[r.cast] || '') + ')' +
+            (r.castAdj !== r.cast ? ' → stepped ' + (r.castAdj < r.cast ? 'down' : 'up') + ' to ' + r.castAdj + ' (' + (D.names[r.castAdj] || '') + ')' : '') + '  |  d' + r.die +
+            (r.stepDownUsed ? ' (stepped down from d' + r.declaredDie + ')' : '') + ' → ' + r.roll + '  |  ' + modeLabel(r.mode));
+        add('p', formula(r));
+        if (r.pulled) add('p', 'The Ovine Pull: instinct dragged this check into ' + modeLabel(r.mode) + '.', 'jinx');
+        if (r.bolted) add('p', 'The Bolt: a natural 1. Agency turned against you.', 'jinx');
+        if (r.revealedLine) add('p', 'Line ' + r.revealedLine + ' revealed: the die result was rewritten.');
+        if (note) add('p', note);
+        add('blockquote', (activeSet()[r.cast] || {})[r.tierName.toLowerCase()] || 'No narrative available');
+        if (r.pass && r.tier === 'T') add('div', 'Legendary Feat attained! The Sentient grows in renown.', 'legendary-feat');
+        var rows = (D.lookup[r.cast] || '').split('').map(function (b) { return b === '1' ? '━━━━━━' : '━━  ━━'; }).reverse();
+        add('pre', rows.join('\n'));
+    }
+
+    // ---------------- core actions ----------------
+    function rollDiceAndHexagram() {
+        var b = baseDc();
+        if (b === null) { $('result').textContent = 'Enter a Personal DC from 1 to 64.'; return; }
+        var a = adjusted();
+        last = H.rollCheck(rng, { die: +$('dieType').value, mod: mods(), dc: a.dc, modeDc: b, stepDown: $('stepDownToggle').checked });
+        if (navigator.vibrate) navigator.vibrate(100);
+        show(last, a.shift ? 'Wounds have shifted your DC by ' + (a.dc - b > 0 ? '+' : '') + (a.dc - b) + '.' : '');
+        $('changingLines').style.display = 'none';
+        paintFate(); startInactivityTimer();
+        if (last.pass && last.tier === 'T') sendToTelegram('legendary', { message: 'Legendary Feat attained! The Sentient grows in renown.' });
+        sendToTelegram('roll', last);
+    }
+    // "Oraclize": spend 1 Fate Point, reveal a line (d6). Substitutes the die result only when it improves the tier.
+    function showChangingLines() {
+        if (!last) return;
+        if (fate.fp < 1) { alert('Not enough Fate Points!'); return; }
+        if (!confirm('This costs 1 Fate Point (every 2 spent adds +1 Skulduggery).\nProceed?')) return;
+        fate = H.spendFate(fate, 1);
+        var line = Math.floor(rng() * 6) + 1, v = H.revealLine(last, line);
+        if (v.applied) last = v.result;
+        var msg = 'You reveal a line of value ' + line + (v.applied ? ' — the tier rises.' : ' — the original roll stands.');
+        show(last, msg);
+        var box = $('changingLines'); box.style.display = 'block'; box.textContent = 'Oraclize: ' + msg;
+        saveFate(); paintFate(); startInactivityTimer();
+        sendToTelegram('oraclize', { line: line, applied: v.applied, result: last });
+    }
+    function mitigate() {
+        if (!last) return;
+        var m = H.mitigateDisaster(last, fate, 1);
+        if (!m.used) return;
+        last = m.result; fate = m.fate;
+        show(last, 'Fate Point spent: the roll is nudged up by ' + m.used + '.');
+        saveFate(); paintFate(); startInactivityTimer();
+    }
+    function newScene() { fate = H.newScene(fate); saveFate(); paintFate(); }
+    function paintDmg(msg) {
+        var a = adjusted(), parts = [];
+        for (var L = 1; L <= 6; L++) if (dmg[L]) parts.push(dmg[L] + '×L' + L);
+        $('dmgOut').textContent = (msg ? msg + ' ' : '') + 'Wounds: ' + (parts.join(', ') || 'none') + (a ? ' · effective DC ' + a.dc + ' (base ' + baseDc() + ')' : '');
+    }
+    function rollDamage() {
+        var b = baseDc(), mode = b === null ? 'over' : H.modeForDC(b);
+        var r = H.rollDamageLine(rng, mode, $('advSel').value || null);
+        dmg[r.line]++; paintDmg('Rolled ' + r.dice.join(' & ') + ' → L' + r.line + '.');
+    }
+
+    // ---------------- Telegram (token and default chat come only from config.local.js) ----------------
+    function activeChatId() {
+        var c = tryJSON(sget('activeChat') || 'null');
+        return (c && c.chatId) || window.TELEGRAM_CHAT_ID || '';
+    }
+    function sendToTelegram(type, d) {
+        var token = window.TELEGRAM_BOT_TOKEN, chat = activeChatId();
+        if (!token || token === 'YOUR_TELEGRAM_BOT_TOKEN' || !chat || chat === 'YOUR_CHAT_ID') return;
+        var pn = sget('playerName'), who = character ? character.name + (pn ? ' (' + pn + ')' : '') : (pn || 'Anonymous'), text;
+        if (type === 'fate') text = '✨ Fate Point added ✨\nNew total: ' + d.points;
+        else if (type === 'legendary') text = '🌟 LEGENDARY FEAT 🌟\n' + d.message;
+        else if (type === 'oraclize') text = '🌀 Line revealed 🌀\n👤 ' + who + '\nLine value ' + d.line + (d.applied ? ' — tier rose to ' + d.result.tierName + ' (' + d.result.join.name + ')' : ' — the roll stands');
+        else if (type === 'roll') text = '✨ Harmonized Hex & Die ✨\n▫️▫️▫️▫️▫️▫️▫️▫️▫️\n👤 Player: ' + who +
+            (domain ? '\n🧭 ' + cap(domain) + ' check' : '') + '\n🌌 Hexagram: ' + d.cast + ' (' + (D.names[d.cast] || 'Unknown') + ')\n🎲 Die: d' + d.die + ' → ' + d.roll + ' · ' + modeLabel(d.mode) + ' · DC ' + d.input.dc +
+            '\n📜 ' + (d.pass ? 'PASS' : 'FAIL') + ' · ' + d.tierName + ' — ' + d.join.name +
+            (d.pulled ? '\n🐑 The Ovine Pull stirred' : '') + (d.bolted ? '\n⚡ The Bolt' : '') + '\n▫️▫️▫️▫️▫️▫️▫️▫️▫️\n#AuldEwe #FateCast';
+        else return;
+        try {
+            fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chat, text: text, disable_web_page_preview: true })   // plain text: narratives contain Markdown-breaking characters
+            }).then(function (res) { if (!res.ok) res.json().then(function (e) { console.error('Telegram API error', res.status, e.description); }); })
+              .catch(function (e) { console.error('Telegram network error', e); });
+        } catch (e) { console.error(e); }
+    }
+
+    // ---------------- Game groups (GM codes) ----------------
+    // A GM code now carries the group name and chat ID inside it, so a player on ANOTHER device can join.
+    // (The Cyber edition kept codes only in the GM's own localStorage, so joining worked on one browser only.)
+    var CHAT_ID_RE = /^(-?\d{5,20}|@[A-Za-z0-9_]{5,32})$/;
+    function b64e(o) { return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+    function b64d(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return tryJSON(decodeURIComponent(escape(atob(s)))); }
+    function makeGMCode(name, chatId) { return 'GM_' + b64e({ n: name, c: chatId }); }
+    function readGMCode(code) {
+        code = (code || '').trim();
+        if (code.indexOf('GM_') !== 0) return null;
+        var o = null; try { o = b64d(code.slice(3)); } catch (e) {}
+        if (o && typeof o.n === 'string' && CHAT_ID_RE.test(String(o.c))) return { name: o.n, chatId: String(o.c) };
+        var legacy = (tryJSON(sget(CHAT_KEY) || '{}') || {})[code];     // codes made by the Cyber edition on this device
+        return legacy ? { name: legacy.name, chatId: legacy.chatId } : null;
+    }
+    function showChatIdInstructions() {
+        alert('To get your Telegram Chat ID:\n\n1. Add @RawDataBot to your group\n2. Type /start in the group\n3. Look for "Chat ID" in the bot\'s response\n4. Remove the bot after getting the ID\n\nNote: make sure the Auld Ewe bot is in your group as well.');
+    }
+    function setupNewGameGroup() {
+        var name = $('groupName').value.trim(), chatId = $('chatId').value.trim();
+        if (!name || !chatId) { alert('Please fill in both group name and chat ID'); return; }
+        if (!CHAT_ID_RE.test(chatId)) { alert('That does not look like a Telegram chat ID (e.g. -1001234567890).'); return; }
+        $('gmCodeText').textContent = makeGMCode(name, chatId);
+        $('gmCodeDisplay').style.display = 'block';
+    }
+    function joinGameGroup() {
+        var code = $('gmCode').value.trim(), player = $('playerName').value.trim();
+        if (!code || !player) { alert('Please fill in both GM code and your name'); return; }
+        var g = readGMCode(code);
+        if (!g) { alert('Invalid GM code'); return; }
+        sset('activeGMCode', code); sset('playerName', player); sset('activeChat', JSON.stringify(g));
+        alert('Successfully joined ' + g.name + '\'s group!');
+    }
+
+    // ---------------- Shake-to-roll ----------------
+    function shakeMsg(t) { var el = document.getElementById('shakeStatus'); if (el) el.textContent = t; }
+    function enableShakeDetection() {
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            DeviceMotionEvent.requestPermission().then(function (s) {
+                if (s === 'granted') { shakeEnabled = true; shakeMsg('Shake-to-roll is on: shake for about 2 seconds, then hold still.'); var b = document.getElementById('enableMotion'); if (b) b.style.display = 'none'; }
+                else shakeMsg('Motion access was refused. Allow it in browser settings, or press Harmonize!');
+            }).catch(function (e) { shakeMsg('Shake is unavailable here (needs HTTPS and a motion sensor). Press Harmonize!'); console.error(e); });
+        } else { shakeEnabled = true; shakeMsg('Shake-to-roll is on: shake for about 2 seconds, then hold still.'); }
+    }
+    function handleShake(ev) {
+        if (!shakeEnabled) return;
+        var a = ev.accelerationIncludingGravity; if (!a) return;
+        var now = Date.now(), mag = Math.sqrt((a.x || 0) * (a.x || 0) + (a.y || 0) * (a.y || 0) + (a.z || 0) * (a.z || 0));
+        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
+        else if (isShaking && now - lastShake > 500) { isShaking = false; if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); else shakeMsg('Too short: shake for about 2 seconds.'); }
+    }
+
+    // ---------------- wiring ----------------
+    window.addFatePoint = addFatePoint; window.rollDiceAndHexagram = rollDiceAndHexagram; window.showChangingLines = showChangingLines;
+    window.enableShakeDetection = enableShakeDetection; window.showChatIdInstructions = showChatIdInstructions;
+    window.setupNewGameGroup = setupNewGameGroup; window.joinGameGroup = joinGameGroup;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadFate(); paintFate(); paintHint(); paintDmg(''); $('dieType').value = '6'; startInactivityTimer();
+        document.querySelectorAll('.mode-button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.mode-button').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active'); if (last) show(last); startInactivityTimer();
+            });
+        });
+        ['dc', 'modifier', 'stepDownToggle', 'dieType'].forEach(function (id) {
+            $(id).addEventListener('input', function () { startInactivityTimer(); if (id === 'dc') { if (domain && +$('dc').value !== character.dc[domain].value) clearDomain(); paintHint(); paintDmg(''); } });
+        });
+        $('stepDownToggle').addEventListener('change', function () { this.parentElement.style.backgroundColor = this.checked ? 'var(--primary-hover)' : 'var(--bg-darker)'; });
+        $('mitigateBtn').addEventListener('click', mitigate);
+        $('characterFile').addEventListener('change', function () { if (this.files && this.files[0]) readCharacterFile(this.files[0]); });
+        var fromHash = CH.fromFragment(location.hash);
+        if (fromHash) { if (loadCharacter(fromHash, true)) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; } } }
+        else { var saved = tryJSON(sget(CHAR_KEY)); if (saved) loadCharacter(saved, false); }
+        $('newSceneBtn').addEventListener('click', newScene);
+        $('dmgBtn').addEventListener('click', rollDamage);
+        $('dmgReset').addEventListener('click', function () { dmg = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }; paintDmg(''); });
+        $('howToPlayBtn').addEventListener('click', function (e) {
+            e.preventDefault();
+            alert('How to Play:\n\n1. Set your Personal DC (1–64)\n2. Choose a die\n3. Add modifiers\n4. Tick Step Down only if the GM calls for it\n5. Pick Personal, General or Action narratives\n6. Shake or press Harmonize!\n7. Oraclize (1 Fate Point) reveals a line and may lift the tier\n8. Avert Disaster spends a Fate Point to nudge a Disaster up (2 per scene)');
+        });
+        if (typeof DeviceMotionEvent !== 'undefined') {
+            window.addEventListener('devicemotion', handleShake);
+            if (typeof DeviceMotionEvent.requestPermission === 'function') { $('enableMotion').style.display = 'block'; shakeMsg('Tap Enable Shake-to-Roll to allow motion.'); }
+            else enableShakeDetection();                 // Android and others need no permission: switch it on
+        }
+    });
+})();
+</script>
 </body>
 </html>
-

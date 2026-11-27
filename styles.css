@@ -52,3 +52,5 @@ button {
 label, input, select {
     font-size: 0.8rem;
 }
+
+#shakeStatus { margin: 0.5rem 0; min-height: 1.4em; }

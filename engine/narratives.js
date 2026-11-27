@@ -1,0 +1,1106 @@
+// narratives.js — hexagram names, line patterns and the three narrative sets (General / Personal / Action).
+// Recovered from branch `Cyber-with-ROnRU-Revised` (main had only a single shortened set).
+// Classic script: exposes window.HexDieData (browser) or module.exports (Node).
+(function (root) {
+  var data = {
+ "names": {
+  "1": "The Creative",
+  "2": "The Receptive",
+  "3": "Difficulty at the Beginning",
+  "4": "Youthful Folly",
+  "5": "Waiting",
+  "6": "Conflict",
+  "7": "Army",
+  "8": "Holding Together",
+  "9": "Small Taming",
+  "10": "Treading",
+  "11": "Peace",
+  "12": "Standstill",
+  "13": "Fellowship",
+  "14": "Great Possession",
+  "15": "Modesty",
+  "16": "Enthusiasm",
+  "17": "Following",
+  "18": "Work on the Decayed",
+  "19": "Approach",
+  "20": "Contemplation",
+  "21": "Biting Through",
+  "22": "Grace",
+  "23": "Splitting Apart",
+  "24": "Return",
+  "25": "Innocence",
+  "26": "Great Taming",
+  "27": "Nourishment",
+  "28": "Great Preponderance",
+  "29": "The Abysmal",
+  "30": "The Clinging",
+  "31": "Influence",
+  "32": "Duration",
+  "33": "Retreat",
+  "34": "Great Power",
+  "35": "Progress",
+  "36": "Darkening of the Light",
+  "37": "Family",
+  "38": "Opposition",
+  "39": "Obstruction",
+  "40": "Deliverance",
+  "41": "Decrease",
+  "42": "Increase",
+  "43": "Breakthrough",
+  "44": "Coming to Meet",
+  "45": "Gathering",
+  "46": "Pushing Upward",
+  "47": "Oppression",
+  "48": "The Well",
+  "49": "Revolution",
+  "50": "The Cauldron",
+  "51": "The Arousing",
+  "52": "Keeping Still",
+  "53": "Development",
+  "54": "The Marrying Maiden",
+  "55": "Abundance",
+  "56": "The Wanderer",
+  "57": "The Gentle",
+  "58": "The Joyous",
+  "59": "Dispersion",
+  "60": "Limitation",
+  "61": "Inner Truth",
+  "62": "Small Preponderance",
+  "63": "After Completion",
+  "64": "Before Completion"
+ },
+ "general": {
+  "1": {
+   "triumph": "The Sentient inspires others through visionary leadership, uniting their party under a shared purpose that elevates all.",
+   "conflict": "Ambition clashes with humility; allies question whether their leader’s goals serve the many or the self.",
+   "disaster": "Trust erodes as the Sentient’s actions grow self-serving, leaving their party fractured and disillusioned."
+  },
+  "2": {
+   "triumph": "The Sentient fosters resilience through patience, teaching their party to find strength in stillness and reflection.",
+   "conflict": "Passivity risks enabling harm; the group debates when to act and when to yield.",
+   "disaster": "The party grows complacent, their voice silenced by fear of overstepping."
+  },
+  "3": {
+   "triumph": "The Sentient guides their party through chaos with empathy, transforming uncertainty into solidarity.",
+   "conflict": "Competing visions divide the group; some push for haste, others for caution.",
+   "disaster": "The party fractures into factions, their shared purpose lost to infighting."
+  },
+  "4": {
+   "triumph": "The Sentient turns naivety into wisdom, mentoring others to avoid their past mistakes.",
+   "conflict": "Overcorrection breeds rigidity; the group struggles to balance caution with openness.",
+   "disaster": "Fear of failure stifles growth, leaving the party stagnant and risk-averse."
+  },
+  "5": {
+   "triumph": "The Sentient’s patience rewards the party with a hard-won harvest, proving the value of collective endurance.",
+   "conflict": "Impatience tempts some to hoard resources, testing the group’s unity.",
+   "disaster": "Greed poisons camaraderie, turning allies into rivals over dwindling gains."
+  },
+  "6": {
+   "triumph": "The Sentient mediates disputes with fairness, restoring harmony through compromise and accountability.",
+   "conflict": "Old grudges resurface; the group debates justice versus mercy.",
+   "disaster": "Fear of the unknown hinders progress, trapping the party in familiar but ineffective strategies."
+  },
+  "7": {
+   "triumph": "The Sentient leads with humility, earning loyalty through shared sacrifice and transparency.",
+   "conflict": "Authority is challenged; whispers of favoritism threaten cohesion.",
+   "disaster": "Leadership becomes authoritarian, allies reduced to obedient followers."
+  },
+  "8": {
+   "triumph": "The Sentient bridges differences, creating a coalition stronger than its individual parts.",
+   "conflict": "Cultural clashes strain bonds; the group grapples with assimilation versus autonomy.",
+   "disaster": "The coalition dissolves into distrust, differences weaponized instead of celebrated."
+  },
+  "9": {
+   "triumph": "The Sentient teaches moderation, helping the party thrive through balanced stewardship of resources.",
+   "conflict": "Scarcity breeds selfishness; the group debates equity versus survival.",
+   "disaster": "Hoarding destroys reciprocity, isolating individuals in self-imposed scarcity."
+  },
+  "10": {
+   "triumph": "The Sentient models integrity, their actions aligning perfectly with their principles.",
+   "conflict": "A moral compromise tempts them—should they bend rules for a greater good?",
+   "disaster": "Hypocrisy taints their reputation, followers losing faith in their ideals."
+  },
+  "11": {
+   "triumph": "The Sentient nurtures a culture of mutual aid, where every voice feels heard and valued.",
+   "conflict": "Growth strains inclusivity; some feel marginalized by shifting priorities.",
+   "disaster": "The party splinters into cliques, unity replaced by silent resentment."
+  },
+  "12": {
+   "triumph": "The Sentient reignites hope in a stagnant party, proving progress is possible through small, brave acts.",
+   "conflict": "Cynicism spreads; efforts to inspire are met with apathy or mockery.",
+   "disaster": "The party resigns itself to despair, rejecting all attempts at change."
+  },
+  "13": {
+   "triumph": "The Sentient builds a sanctuary of belonging, where outsiders find kinship and purpose.",
+   "conflict": "Newcomers disrupt traditions; the group debates openness versus preservation.",
+   "disaster": "Fear of the 'other' hardens hearts, the sanctuary collapsing into exclusion."
+  },
+  "14": {
+   "triumph": "The Sentient redistributes abundance selflessly, uplifting the marginalized and reinforcing the party’s bonds.",
+   "conflict": "Envy stirs; some demand recognition for their contributions.",
+   "disaster": "Resentment festers, generosity seen as manipulation, and unity unravels."
+  },
+  "15": {
+   "triumph": "The Sentient’s humility disarms egos, fostering a culture where collaboration eclipses competition.",
+   "conflict": "False modesty masks insecurity; others question their authenticity.",
+   "disaster": "The party adopts performative humility, eroding trust in genuine intent."
+  },
+  "16": {
+   "triumph": "The Sentient channels enthusiasm into collective action, uniting the party around a joyful cause.",
+   "conflict": "Passion borders on zealotry; dissenters fear being drowned out.",
+   "disaster": "Joy curdles into dogma, stifling creativity and critical thought."
+  },
+  "17": {
+   "triumph": "The Sentient adapts traditions to meet new challenges, honoring the past while embracing innovation.",
+   "conflict": "Change alarms traditionalists; the group debates progress versus heritage.",
+   "disaster": "The party fractures between rigid traditionalism and reckless novelty."
+  },
+  "18": {
+   "triumph": "The Sentient heals old wounds through truth and reconciliation, mending fractured relationships.",
+   "conflict": "Unearthing the past reopens scars; some resist forgiveness.",
+   "disaster": "The truth is buried anew, cycles of harm repeating in silence."
+  },
+  "19": {
+   "triumph": "The Sentient prepares their party for looming trials, fostering resilience through shared purpose.",
+   "conflict": "Preparation breeds paranoia; the group debates vigilance versus fearmongering.",
+   "disaster": "The party grows rigid, mistrusting even allies in their obsession with control."
+  },
+  "20": {
+   "triumph": "The Sentient reflects on past experiences, guiding their party through wisdom and insight.",
+   "conflict": "Nostalgia tempts the party; they debate tradition versus innovation.",
+   "disaster": "Clutching to the past prevents progress, leaving the party stagnant."
+  },
+  "21": {
+   "triumph": "The Sentient resolves conflicts through fairness, restoring harmony through justice and accountability.",
+   "conflict": "Old grudges resurface; the group debates justice versus mercy.",
+   "disaster": "Unresolved anger calcifies into permanent divisions, eroding trust."
+  },
+  "22": {
+   "triumph": "The Sentient beautifies their surroundings, inspiring others through creativity and elegance.",
+   "conflict": "Excess breeds superficiality; the group debates substance versus appearance.",
+   "disaster": "Focus on appearance over substance weakens the party, making them vulnerable to criticism."
+  },
+  "23": {
+   "triumph": "The Sentient transforms decay into growth, revitalizing their party through renewal and innovation.",
+   "conflict": "Fear of change paralyzes action; the group debates stability versus progress.",
+   "disaster": "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+  },
+  "24": {
+   "triumph": "The Sentient helps the party learn from past failures, turning regret into wisdom.",
+   "conflict": "Some resist introspection, clinging to nostalgia for an idealized past.",
+   "disaster": "The party repeats its mistakes, trapped in cycles of denial."
+  },
+  "25": {
+   "triumph": "The Sentient leads with integrity, proving that ethical choices strengthen the party’s bonds.",
+   "conflict": "A pragmatic shortcut tempts them—will they compromise values for expediency?",
+   "disaster": "Pragmatism becomes cynicism, and the party loses faith in ideals."
+  },
+  "26": {
+   "triumph": "The Sentient accumulates strength through perseverance, guiding their party to achieve greatness.",
+   "conflict": "Overconfidence breeds complacency; the group debates ambition versus humility.",
+   "disaster": "Arrogance alienates allies, leaving the party isolated and vulnerable."
+  },
+  "27": {
+   "triumph": "The Sentient nourishes their party through care, fostering growth and well-being.",
+   "conflict": "Overindulgence weakens the party; they debate abundance versus austerity.",
+   "disaster": "Excess leads to dependency, undermining the party’s resilience."
+  },
+  "28": {
+   "triumph": "The Sentient exceeds expectations through bold action, inspiring their party to strive for excellence.",
+   "conflict": "Impulsiveness causes mistakes; the group debates caution versus boldness.",
+   "disaster": "Recklessness undermines progress, causing the party to lose ground."
+  },
+  "29": {
+   "triumph": "The Sentient navigates danger with courage, leading their party through perilous times.",
+   "conflict": "Fear tempts the party; they debate risk versus safety.",
+   "disaster": "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
+  },
+  "30": {
+   "triumph": "The Sentient illuminates their path through clarity, guiding their party with insight and wisdom.",
+   "conflict": "Confusion tempts the party; they debate clarity versus ambiguity.",
+   "disaster": "Uncertainty paralyzes action, causing the party to lose direction."
+  },
+  "31": {
+   "triumph": "The Sentient influences others through empathy, fostering harmony and cooperation.",
+   "conflict": "Divergent interests threaten unity; the group debates cooperation versus competition.",
+   "disaster": "Selfishness prevails, turning allies into adversaries."
+  },
+  "32": {
+   "triumph": "The Sentient endures through perseverance, teaching their party to find strength in persistence.",
+   "conflict": "Complacency breeds stagnation; the group debates stability versus progress.",
+   "disaster": "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+  },
+  "33": {
+   "triumph": "The Sentient retreats with wisdom, preserving strength for future challenges.",
+   "conflict": "Pride tempts the party; they debate honor versus prudence.",
+   "disaster": "Egoism leads to reckless decisions, undermining the party’s safety."
+  },
+  "34": {
+   "triumph": "The Sentient demonstrates strength through resilience, inspiring their party to overcome adversity.",
+   "conflict": "Overconfidence breeds complacency; the group debates ambition versus humility.",
+   "disaster": "Arrogance alienates allies, leaving the party isolated and vulnerable."
+  },
+  "35": {
+   "triumph": "The Sentient progresses with adaptability, turning challenges into opportunities through flexibility.",
+   "conflict": "Resistance to change hinders progress; the group debates tradition versus innovation.",
+   "disaster": "Inflexibility traps the party in outdated strategies, causing them to fall behind."
+  },
+  "36": {
+   "triumph": "The Sentient illuminates darkness through insight, guiding their party through challenging times.",
+   "conflict": "Fear tempts the party; they debate risk versus safety.",
+   "disaster": "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
+  },
+  "37": {
+   "triumph": "The Sentient fosters unity through shared values, creating a bond that transcends differences.",
+   "conflict": "Divergent interests threaten cohesion; the group debates loyalty versus self-interest.",
+   "disaster": "Selfishness erodes trust, leaving the party fragmented and vulnerable."
+  },
+  "38": {
+   "triumph": "The Sentient resolves conflicts through fairness, restoring harmony through justice and accountability.",
+   "conflict": "Old grudges resurface; the group debates justice versus mercy.",
+   "disaster": "Unresolved anger calcifies into permanent divisions, eroding trust."
+  },
+  "39": {
+   "triumph": "The Sentient navigates obstacles with resilience, guiding their party through challenging times.",
+   "conflict": "Fear tempts the party; they debate risk versus safety.",
+   "disaster": "Cowardice leads to missed opportunities, trapping the party in a cycle of fear."
+  },
+  "40": {
+   "triumph": "The Sentient liberates their party from constraints, freeing them to pursue new opportunities.",
+   "conflict": "Complacency breeds stagnation; the group debates stability versus progress.",
+   "disaster": "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+  },
+  "41": {
+   "triumph": "The Sentient reduces excess through simplicity, focusing their party on what truly matters.",
+   "conflict": "Frugality tempts the party; they debate thrift versus generosity.",
+   "disaster": "Austerity leads to resentment, undermining the party’s morale."
+  },
+  "42": {
+   "triumph": "The Sentient increases their party’s strength through strategic alliances, forging powerful bonds.",
+   "conflict": "Overreliance on others breeds dependency; the group debates independence versus collaboration.",
+   "disaster": "Loss of autonomy undermines the party’s effectiveness."
+  },
+  "43": {
+   "triumph": "The Sentient breaks through barriers with courage, inspiring their party to overcome adversity.",
+   "conflict": "Fear of change paralyzes action; the group debates tradition versus innovation.",
+   "disaster": "Inflexibility traps the party in outdated strategies, causing them to fall behind."
+  },
+  "44": {
+   "triumph": "The Sentient attracts allies through charisma, building a coalition that amplifies their influence.",
+   "conflict": "Overconfidence breeds complacency; the group debates ambition versus humility.",
+   "disaster": "Arrogance alienates allies, leaving the party isolated and vulnerable."
+  },
+  "45": {
+   "triumph": "The Sentient gathers resources through strategic planning, preparing their party for future challenges.",
+   "conflict": "Excess breeds complacency; the group debates abundance versus austerity.",
+   "disaster": "Overindulgence weakens the party, making them vulnerable to external threats."
+  },
+  "46": {
+   "triumph": "The Sentient advances with determination, guiding their party to achieve greatness.",
+   "conflict": "Impulsiveness causes mistakes; the group debates caution versus boldness.",
+   "disaster": "Recklessness undermines progress, causing the party to lose ground."
+  },
+  "47": {
+   "triumph": "The Sentient perseveres through adversity, teaching their party to find strength in resilience.",
+   "conflict": "Despair tempts the party; they debate hope versus despair.",
+   "disaster": "Loss of hope leads to surrender, causing the party to abandon their quest."
+  },
+  "48": {
+   "triumph": "The Sentient revitalizes their party through renewal, transforming decay into growth.",
+   "conflict": "Fear of change paralyzes action; the group debates stability versus progress.",
+   "disaster": "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+  },
+  "49": {
+   "triumph": "The Sentient transforms their party through change, turning challenges into opportunities.",
+   "conflict": "Resistance to change hinders progress; the group debates tradition versus innovation.",
+   "disaster": "Inflexibility traps the party in outdated strategies, causing them to fall behind."
+  },
+  "50": {
+   "triumph": "The Sentient nourishes their party through care, fostering growth and well-being.",
+   "conflict": "Overindulgence weakens the party; they debate abundance versus austerity.",
+   "disaster": "Excess leads to dependency, undermining the party’s resilience."
+  },
+  "51": {
+   "triumph": "The Sentient awakens their party to new possibilities, inspiring them to strive for excellence.",
+   "conflict": "Overexuberance leads to recklessness; the group debates passion versus prudence.",
+   "disaster": "Impulsiveness causes mistakes, undermining the party’s progress."
+  },
+  "52": {
+   "triumph": "The Sentient finds stillness in the midst of chaos, guiding their party to inner peace.",
+   "conflict": "Complacency breeds stagnation; the group debates stability versus progress.",
+   "disaster": "Inaction leads to stagnation, causing the party to miss crucial opportunities."
+  },
+  "53": {
+   "triumph": "The Sentient progresses gradually, teaching their party the value of patience and persistence.",
+   "conflict": "Impatience tempts the party; they debate speed versus deliberation.",
+   "disaster": "Rushing leads to mistakes, undermining the party’s progress."
+  },
+  "54": {
+   "triumph": "The Sentient marries wisdom with action, guiding their party to make informed decisions.",
+   "conflict": "Indecision paralyzes action; the group debates analysis versus instinct.",
+   "disaster": "Overanalysis leads to inaction, causing the party to miss opportunities."
+  },
+  "55": {
+   "triumph": "The Sentient radiates abundance, inspiring their party to share their wealth and wisdom.",
+   "conflict": "Excess breeds complacency; the group debates abundance versus austerity.",
+   "disaster": "Overindulgence weakens the party, making them vulnerable to external threats."
+  },
+  "56": {
+   "triumph": "The Sentient wanders with purpose, guiding their party to explore new horizons.",
+   "conflict": "Restlessness tempts the party; they debate exploration versus stability.",
+   "disaster": "Drifting leads to disorientation, causing the party to lose direction."
+  },
+  "57": {
+   "triumph": "The Sentient penetrates obstacles with insight, guiding their party to overcome challenges.",
+   "conflict": "Obstacles seem insurmountable; the group debates perseverance versus surrender.",
+   "disaster": "Despair leads to defeat, causing the party to abandon their quest."
+  },
+  "58": {
+   "triumph": "The Sentient delights in joy, inspiring their party to find happiness in simplicity.",
+   "conflict": "Excess breeds superficiality; the group debates substance versus appearance.",
+   "disaster": "Focus on appearance over substance weakens the party, making them vulnerable to criticism."
+  },
+  "59": {
+   "triumph": "The Sentient disperses obstacles with clarity, guiding their party to find solutions.",
+   "conflict": "Confusion tempts the party; they debate clarity versus ambiguity.",
+   "disaster": "Uncertainty paralyzes action, causing the party to lose direction."
+  },
+  "60": {
+   "triumph": "The Sentient sets limits with wisdom, guiding their party to balance freedom with responsibility.",
+   "conflict": "Overindulgence leads to chaos; the group debates freedom versus structure.",
+   "disaster": "Lack of boundaries undermines the party’s cohesion."
+  },
+  "61": {
+   "triumph": "The Sentient finds inner truth through reflection, guiding their party to authenticity.",
+   "conflict": "Dishonesty tempts the party; they debate integrity versus expediency.",
+   "disaster": "Deception erodes trust, causing the party to lose faith in each other."
+  },
+  "62": {
+   "triumph": "The Sentient exceeds expectations with humility, revealing hidden paths through careful observation.",
+   "conflict": "Overcaution leads to missed opportunities; the group debates risk versus reward.",
+   "disaster": "Indecision paralyzes progress, leaving the party stranded at crossroads."
+  },
+  "63": {
+   "triumph": "The Sentient celebrates the party’s journey, weaving past lessons into a tapestry of shared identity.",
+   "conflict": "Completion feels bittersweet; some mourn what was lost to achieve it.",
+   "disaster": "The party grows complacent, assuming their work is done, and stagnation sets in."
+  },
+  "64": {
+   "triumph": "The Sentient helps the party reflect on past cycles, weaving hard-won lessons into a blueprint for renewal.",
+   "conflict": "Old habits resurface; the group struggles to break free from familiar mistakes.",
+   "disaster": "The cycle repeats, but this time, the party resigns itself to futility."
+  }
+ },
+ "personal": {
+  "1": {
+   "triumph": "Drawing upon inner creative force, the Sentient manifests their vision with unprecedented clarity and purpose.",
+   "conflict": "The weight of creative power threatens to overwhelm as the Sentient struggles to channel it properly.",
+   "disaster": "Raw creative force turns inward destructively as the Sentient loses control of their power."
+  },
+  "2": {
+   "triumph": "The Sentient's receptive nature reveals hidden paths and opportunities previously unseen.",
+   "conflict": "Excessive passivity causes the Sentient to miss crucial moments for action.",
+   "disaster": "Complete surrender to circumstances leaves the Sentient directionless and vulnerable."
+  },
+  "3": {
+   "triumph": "Initial chaos crystallizes into order as the Sentient masters their first steps.",
+   "conflict": "The Sentient stumbles through difficulty, learning harsh but necessary lessons.",
+   "disaster": "Inexperience leads to critical errors as the Sentient fails to heed early warnings."
+  },
+  "4": {
+   "triumph": "The Sentient's patience nurtures growth, allowing wisdom to emerge naturally.",
+   "conflict": "Youthful impulses clash with the need for measured development.",
+   "disaster": "Immaturity leads to rash decisions with far-reaching consequences."
+  },
+  "5": {
+   "triumph": "The Sentient's focused waiting culminates in perfectly timed action.",
+   "conflict": "Anticipation breeds anxiety as the Sentient struggles to maintain patience.",
+   "disaster": "Missed timing leads to wasted resources and lost opportunities."
+  },
+  "6": {
+   "triumph": "The Sentient resolves internal conflict, finding strength in balanced opposition.",
+   "conflict": "Inner tensions surface, forcing the Sentient to confront their contradictions.",
+   "disaster": "Unresolved internal strife paralyzes the Sentient's ability to act."
+  },
+  "7": {
+   "triumph": "The Sentient marshals their forces effectively, achieving victory through discipline.",
+   "conflict": "Maintaining control requires more energy than the Sentient can sustainably expend.",
+   "disaster": "The weight of leadership crushes the Sentient's resolve."
+  },
+  "8": {
+   "triumph": "Natural solidarity emerges as the Sentient aligns with their true path.",
+   "conflict": "The Sentient struggles to maintain authentic connections while pursuing their goals.",
+   "disaster": "Forced unity crumbles, revealing the hollowness of artificial bonds."
+  },
+  "9": {
+   "triumph": "The Sentient's gentle persistence accumulates small gains into significant progress.",
+   "conflict": "Minor setbacks threaten to derail carefully laid plans.",
+   "disaster": "Accumulated neglect reaches a breaking point, causing systemic failure."
+  },
+  "10": {
+   "triumph": "The Sentient treads difficult paths with grace, maintaining dignity in challenging circumstances.",
+   "conflict": "Careful progress becomes precarious as the Sentient navigates dangerous territory.",
+   "disaster": "A misstep on treacherous ground leads to a devastating fall."
+  },
+  "11": {
+   "triumph": "The Sentient harmonizes with natural forces, experiencing a period of smooth prosperity.",
+   "conflict": "Surface tranquility masks growing tensions within.",
+   "disaster": "Apparent peace shatters as underlying problems emerge explosively."
+  },
+  "12": {
+   "triumph": "The Sentient finds unexpected opportunity in stagnation, transforming limitation into strength.",
+   "conflict": "Isolation tests the Sentient's resilience and self-reliance.",
+   "disaster": "Stagnation becomes permanent as the Sentient loses hope of progress."
+  },
+  "13": {
+   "triumph": "The Sentient builds fellowship through authentic connection and shared purpose.",
+   "conflict": "True fellowship requires sacrifices the Sentient struggles to make.",
+   "disaster": "False harmony dissolves, leaving the Sentient isolated."
+  },
+  "14": {
+   "triumph": "Great possession becomes possible as the Sentient learns to handle abundance wisely.",
+   "conflict": "Wealth brings responsibility the Sentient isn't fully prepared to bear.",
+   "disaster": "Abundance breeds corruption, poisoning the Sentient's character."
+  },
+  "15": {
+   "triumph": "The Sentient's modesty attracts natural respect and genuine admiration.",
+   "conflict": "True humility requires painful recognition of personal limitations.",
+   "disaster": "False modesty reveals itself, destroying hard-won respect."
+  },
+  "16": {
+   "triumph": "The Sentient's enthusiasm inspires extraordinary achievement through joyful effort.",
+   "conflict": "Excessive excitement clouds judgment and wastes energy.",
+   "disaster": "Blind enthusiasm leads to catastrophic overextension."
+  },
+  "17": {
+   "triumph": "The Sentient follows changing circumstances with perfect timing and adaptation.",
+   "conflict": "Following requires sacrificing personal preferences for necessity.",
+   "disaster": "Blind following leads down a path of self-destruction."
+  },
+  "18": {
+   "triumph": "The Sentient transforms decay into renewal through diligent attention to fundamentals.",
+   "conflict": "The work of restoration proves more demanding than anticipated.",
+   "disaster": "Attempts at repair reveal damage too severe to mend."
+  },
+  "19": {
+   "triumph": "The Sentient's approach brings unexpected advancement and recognition.",
+   "conflict": "Progress requires uncomfortable changes in established patterns.",
+   "disaster": "Approaching danger remains unseen until too late."
+  },
+  "20": {
+   "triumph": "The Sentient's contemplation reveals profound insights and hidden truths.",
+   "conflict": "Deep observation paralyzes action as complexity becomes overwhelming.",
+   "disaster": "Lost in contemplation, the Sentient misses crucial moments for action."
+  },
+  "21": {
+   "triumph": "The Sentient bites through obstacles with fierce determination.",
+   "conflict": "The task of breaking through proves more challenging than expected.",
+   "disaster": "Resistance proves too strong, breaking the Sentient's resolve."
+  },
+  "22": {
+   "triumph": "The Sentient's grace transforms ordinary moments into expressions of beauty.",
+   "conflict": "Maintaining grace under pressure strains personal resources.",
+   "disaster": "Surface beauty fails to mask underlying corruption."
+  },
+  "23": {
+   "triumph": "The Sentient recognizes when to step back, preserving strength for future action.",
+   "conflict": "Necessary retreat feels like personal failure.",
+   "disaster": "Delayed splitting apart becomes a complete collapse."
+  },
+  "24": {
+   "triumph": "The Sentient returns to strength through recognition of natural cycles.",
+   "conflict": "The path of return requires facing past mistakes.",
+   "disaster": "The point of return passes unrecognized, leaving recovery impossible."
+  },
+  "25": {
+   "triumph": "The Sentient's innocence attracts extraordinary good fortune.",
+   "conflict": "Maintaining innocence requires difficult sacrifices.",
+   "disaster": "Lost innocence reveals a harsh world of consequences."
+  },
+  "26": {
+   "triumph": "The Sentient tames great forces through patient accumulation of power.",
+   "conflict": "Containing power requires more strength than the Sentient possesses.",
+   "disaster": "Accumulated power breaks free destructively."
+  },
+  "27": {
+   "triumph": "The Sentient provides nourishment that sustains genuine growth.",
+   "conflict": "Meeting others' needs depletes personal resources.",
+   "disaster": "Improper nourishment leads to weakness and decay."
+  },
+  "28": {
+   "triumph": "The Sentient's pressure creates transformation, like coal into diamonds.",
+   "conflict": "Excessive pressure threatens to break rather than transform.",
+   "disaster": "Critical pressure points shatter, releasing chaos."
+  },
+  "29": {
+   "triumph": "The Sentient navigates dangerous depths, finding wisdom in dark places.",
+   "conflict": "Repeated challenges test the limits of endurance.",
+   "disaster": "The abyss proves deeper than the Sentient's strength to endure."
+  },
+  "30": {
+   "triumph": "The Sentient's radiance illuminates the path forward for all.",
+   "conflict": "Maintaining brightness depletes inner fire.",
+   "disaster": "Inner light extinguishes, leaving only darkness."
+  },
+  "31": {
+   "triumph": "The Sentient's influence creates natural harmony through mutual attraction.",
+   "conflict": "Influence requires more subtlety than the Sentient can maintain.",
+   "disaster": "Attempted influence reveals underlying weakness."
+  },
+  "32": {
+   "triumph": "The Sentient maintains consistency through changing circumstances.",
+   "conflict": "Endurance requires sacrificing growth for stability.",
+   "disaster": "Rigid consistency breaks under pressure to change."
+  },
+  "33": {
+   "triumph": "The Sentient's strategic retreat preserves essential strength.",
+   "conflict": "Withdrawal feels like abandoning important responsibilities.",
+   "disaster": "Retreat becomes a rout as organization breaks down."
+  },
+  "34": {
+   "triumph": "The Sentient's power manifests naturally, without forced effort.",
+   "conflict": "Great power brings great responsibility and inner conflict.",
+   "disaster": "Uncontrolled power turns destructive."
+  },
+  "35": {
+   "triumph": "The Sentient progresses rapidly through alignment with favorable conditions.",
+   "conflict": "Quick advancement creates gaps in foundation.",
+   "disaster": "Rapid progress leads to devastating setbacks."
+  },
+  "36": {
+   "triumph": "The Sentient preserves inner light despite external darkness.",
+   "conflict": "Maintaining brightness in darkness depletes vital energy.",
+   "disaster": "Inner light fails, leaving the Sentient lost in darkness."
+  },
+  "37": {
+   "triumph": "The Sentient establishes proper roles and relationships naturally.",
+   "conflict": "Family obligations conflict with personal growth.",
+   "disaster": "Fundamental relationships break down irreparably."
+  },
+  "38": {
+   "triumph": "The Sentient finds unity in opposition through deep understanding.",
+   "conflict": "Opposing forces create internal tension and doubt.",
+   "disaster": "Irreconcilable differences lead to complete estrangement."
+  },
+  "39": {
+   "triumph": "The Sentient overcomes obstacles through careful navigation.",
+   "conflict": "Difficulties prove more challenging than anticipated.",
+   "disaster": "Insurmountable obstacles force abandonment of goals."
+  },
+  "40": {
+   "triumph": "The Sentient achieves liberation through letting go of burdens.",
+   "conflict": "Deliverance requires sacrificing comfortable attachments.",
+   "disaster": "Freedom comes at too high a price, leaving lasting damage."
+  },
+  "41": {
+   "triumph": "The Sentient accepts decrease gracefully, finding wealth in simplicity.",
+   "conflict": "Necessary losses feel like personal failure.",
+   "disaster": "Decrease becomes depletion, leaving nothing in reserve."
+  },
+  "42": {
+   "triumph": "The Sentient's increase flows naturally to benefit all.",
+   "conflict": "Growth brings responsibilities that strain resources.",
+   "disaster": "Increase becomes burden as resources prove insufficient."
+  },
+  "43": {
+   "triumph": "The Sentient breaks through obstacles with decisive clarity.",
+   "conflict": "Resolution requires more force than comfortable.",
+   "disaster": "Breakthrough attempts reveal fatal weaknesses."
+  },
+  "44": {
+   "triumph": "The Sentient recognizes danger in time to take preventive action.",
+   "conflict": "Coming dangers require uncomfortable preparations.",
+   "disaster": "Temptation leads to entanglement with serious consequences."
+  },
+  "45": {
+   "triumph": "The Sentient gathers resources and support naturally.",
+   "conflict": "Maintaining unity requires constant attention and energy.",
+   "disaster": "Gathered resources scatter as center fails to hold."
+  },
+  "46": {
+   "triumph": "The Sentient rises through genuine merit and proper timing.",
+   "conflict": "Advancement reveals personal inadequacies.",
+   "disaster": "Premature pushing upward leads to a devastating fall."
+  },
+  "47": {
+   "triumph": "The Sentient finds meaning and opportunity in adversity.",
+   "conflict": "Exhaustion threatens as challenges continue.",
+   "disaster": "Oppressive circumstances crush the spirit entirely."
+  },
+  "48": {
+   "triumph": "The Sentient reaches deep to access hidden sources of renewal.",
+   "conflict": "The well requires more restoration than expected.",
+   "disaster": "The source runs dry, leaving no path to renewal."
+  },
+  "49": {
+   "triumph": "The Sentient's revolution creates necessary transformation.",
+   "conflict": "Change creates more resistance than anticipated.",
+   "disaster": "Revolutionary forces spiral out of control."
+  },
+  "50": {
+   "triumph": "The Sentient's sacrificial vessel becomes filled with sacred purpose.",
+   "conflict": "Maintaining dedication requires constant renewal of commitment.",
+   "disaster": "The vessel proves flawed, unable to hold what's precious."
+  },
+  "51": {
+   "triumph": "The Sentient harnesses shocking events to achieve breakthrough.",
+   "conflict": "Arousing thunder creates more disruption than intended.",
+   "disaster": "Shock paralyzes, preventing necessary action."
+  },
+  "52": {
+   "triumph": "The Sentient finds perfect stillness, allowing natural action to arise.",
+   "conflict": "Keeping still requires suppressing needed movement.",
+   "disaster": "Forced stillness creates explosive pressure."
+  },
+  "53": {
+   "triumph": "The Sentient's gradual progress leads to lasting achievement.",
+   "conflict": "Slow development tests patience and resolve.",
+   "disaster": "Gradual decline goes unnoticed until too late."
+  },
+  "54": {
+   "triumph": "The Sentient's proper conduct transforms disadvantage into opportunity.",
+   "conflict": "Maintaining propriety requires suppressing authentic response.",
+   "disaster": "Improper relations lead to lasting damage."
+  },
+  "55": {
+   "triumph": "The Sentient's abundance creates prosperity that benefits all.",
+   "conflict": "Success brings complications that threaten stability.",
+   "disaster": "Peak conditions pass unrecognized until too late."
+  },
+  "56": {
+   "triumph": "The Sentient finds their way in strange circumstances through adaptability.",
+   "conflict": "Travel reveals personal limitations and inadequacies.",
+   "disaster": "The wanderer loses their way with no return possible."
+  },
+  "57": {
+   "triumph": "The Sentient's gentle penetration achieves lasting influence.",
+   "conflict": "Subtle approach requires more patience than available.",
+   "disaster": "Penetrating wind becomes destructive storm."
+  },
+  "58": {
+   "triumph": "The Sentient's joy creates natural harmony and satisfaction.",
+   "conflict": "Maintaining joy requires ignoring serious concerns.",
+   "disaster": "Superficial pleasure masks developing crisis."
+  },
+  "59": {
+   "triumph": "The Sentient dissolves hardness through flexible adaptation.",
+   "conflict": "Dispersion threatens loss of essential unity.",
+   "disaster": "Dissolution continues until nothing remains."
+  },
+  "60": {
+   "triumph": "The Sentient finds freedom within necessary limitations.",
+   "conflict": "Regulation constrains needed growth and expression.",
+   "disaster": "Artificial limitations create devastating restriction."
+  },
+  "61": {
+   "triumph": "The Sentient's inner truth attracts natural confidence.",
+   "conflict": "Maintaining truth requires facing uncomfortable realities.",
+   "disaster": "Truth revealed destroys necessary illusions."
+  },
+  "62": {
+   "triumph": "The Sentient maintains balance while paying attention to details.",
+   "conflict": "Small matters consume energy needed for larger concerns.",
+   "disaster": "Focus on details leads to missing critical overview."
+  },
+  "63": {
+   "triumph": "The Sentient achieves completion while maintaining vigilance.",
+   "conflict": "After completion, maintaining progress proves challenging.",
+   "disaster": "Apparent completion masks serious defects."
+  },
+  "64": {
+   "triumph": "The Sentient recognizes incompletion as opportunity for new beginning.",
+   "conflict": "Unfinished business creates anxiety about moving forward.",
+   "disaster": "Before completion, order collapses into chaos."
+  }
+ },
+ "action": {
+  "1": {
+   "triumph": "The Sentient channels raw creative force into devastating effect, reshaping the battlefield.",
+   "conflict": "Primal energies surge wildly, threatening to overwhelm the Sentient's control.",
+   "disaster": "Unleashed power rebounds catastrophically upon the Sentient."
+  },
+  "2": {
+   "triumph": "The Sentient yields perfectly to turn an opponent's force against them.",
+   "conflict": "Defensive posture limits offensive opportunities, prolonging the encounter.",
+   "disaster": "Pure receptivity leaves the Sentient unable to mount any defense."
+  },
+  "3": {
+   "triumph": "Initial chaos becomes the Sentient's weapon, creating unexpected victory.",
+   "conflict": "Difficulty focusing power leads to scattered, ineffective attacks.",
+   "disaster": "Chaotic forces spiral beyond control, endangering the Sentient."
+  },
+  "4": {
+   "triumph": "The Sentient's inexperience becomes an advantage, producing unpredictable success.",
+   "conflict": "Uncertainty in technique causes hesitation at crucial moments.",
+   "disaster": "Foolish mistakes leave the Sentient critically exposed."
+  },
+  "5": {
+   "triumph": "Perfect timing transforms the Sentient's strike into an unstoppable force.",
+   "conflict": "Awaiting the perfect moment causes missed opportunities.",
+   "disaster": "Fatal hesitation allows the enemy to seize initiative."
+  },
+  "6": {
+   "triumph": "The Sentient resolves internal conflict into harmonious, effective action.",
+   "conflict": "Divided focus splits power between attack and defense.",
+   "disaster": "Inner contradiction paralyzes the Sentient at a crucial moment."
+  },
+  "7": {
+   "triumph": "The Sentient marshals inner forces to overwhelm all opposition.",
+   "conflict": "Maintaining battlefield control drains vital energy reserves.",
+   "disaster": "The army turns upon its general as control slips away."
+  },
+  "8": {
+   "triumph": "Natural unity with martial forces creates effortless victory.",
+   "conflict": "Forced techniques fail to achieve their intended effect.",
+   "disaster": "Disharmony with chosen methods leads to self-defeat."
+  },
+  "9": {
+   "triumph": "Small advantages accumulate into overwhelming combat superiority.",
+   "conflict": "Minor setbacks threaten to unravel carefully built momentum.",
+   "disaster": "Accumulated tactical errors result in strategic failure."
+  },
+  "10": {
+   "triumph": "The Sentient steps precisely through danger, turning threat to advantage.",
+   "conflict": "Each careful move limits options for the next attack.",
+   "disaster": "A single misstep in deadly territory proves fatal."
+  },
+  "11": {
+   "triumph": "Perfect harmony between offense and defense creates unbreakable position.",
+   "conflict": "Balance between attack and protection becomes increasingly unstable.",
+   "disaster": "Apparent harmony shatters, leaving critical vulnerabilities."
+  },
+  "12": {
+   "triumph": "The Sentient turns stagnant energy into an unexpected offensive.",
+   "conflict": "Blocked chi creates increasing pressure with no release.",
+   "disaster": "Complete stagnation renders the Sentient defenseless."
+  },
+  "13": {
+   "triumph": "Unity between warrior and weapon achieves extraordinary effect.",
+   "conflict": "Disharmony between intention and action weakens strikes.",
+   "disaster": "Discord between spirit and body prevents effective action."
+  },
+  "14": {
+   "triumph": "Abundance of power flows naturally into devastating technique.",
+   "conflict": "Excessive force threatens to overwhelm precise control.",
+   "disaster": "Too much power shatters the vessel containing it."
+  },
+  "15": {
+   "triumph": "The Sentient's humble technique bypasses all defense.",
+   "conflict": "Reserved power fails to overcome immediate threats.",
+   "disaster": "Excessive modesty allows a fatal blow to land."
+  },
+  "16": {
+   "triumph": "Enthusiastic energy transforms into unstoppable combat momentum.",
+   "conflict": "Excitement causes overextension and tactical errors.",
+   "disaster": "Reckless enthusiasm leads to devastating counterattack."
+  },
+  "17": {
+   "triumph": "Perfect adaptation allows victory over superior force.",
+   "conflict": "Following the enemy's movement causes loss of initiative.",
+   "disaster": "Blind reaction leads into a fatal trap."
+  },
+  "18": {
+   "triumph": "The Sentient transmutes corruption into purifying flame.",
+   "conflict": "The work of cleansing leaves temporary vulnerabilities.",
+   "disaster": "Attempt to cure poison spreads it instead."
+  },
+  "19": {
+   "triumph": "Approaching power gathers into an irresistible assault.",
+   "conflict": "Growing strength reveals new weaknesses to address.",
+   "disaster": "Power approaches its breaking point unnoticed."
+  },
+  "20": {
+   "triumph": "Clear perception reveals the perfect moment to strike.",
+   "conflict": "Deep observation delays necessary immediate action.",
+   "disaster": "Lost in contemplation, the Sentient fails to defend."
+  },
+  "21": {
+   "triumph": "The Sentient's force bites through all resistance.",
+   "conflict": "Breaking through defense costs more than expected.",
+   "disaster": "The attempt to breach shatters offensive power."
+  },
+  "22": {
+   "triumph": "Grace of movement creates openings in any defense.",
+   "conflict": "Beautiful technique sacrifices practical effectiveness.",
+   "disaster": "Focus on form over function proves fatal."
+  },
+  "23": {
+   "triumph": "Strategic withdrawal preserves power for the killing blow.",
+   "conflict": "Necessary retreat allows enemy advancement.",
+   "disaster": "Retreat becomes rout as defenses collapse."
+  },
+  "24": {
+   "triumph": "Return to fundamental techniques produces unexpected victory.",
+   "conflict": "The path back to balance leaves temporary weakness.",
+   "disaster": "Failed restoration leaves critical vulnerabilities."
+  },
+  "25": {
+   "triumph": "Innocent movement becomes unexpected devastating technique.",
+   "conflict": "Unconscious habits create exploitable patterns.",
+   "disaster": "Naivety allows a lethal trap to spring."
+  },
+  "26": {
+   "triumph": "Contained power releases with perfect timing and effect.",
+   "conflict": "The strain of holding power creates growing instability.",
+   "disaster": "Accumulated force explodes uncontrollably."
+  },
+  "27": {
+   "triumph": "The Sentient's technique provides perfect nourishment for victory.",
+   "conflict": "Maintaining power depletes essential reserves.",
+   "disaster": "Exhausted resources leave no energy for defense."
+  },
+  "28": {
+   "triumph": "Pressure becomes power, transforming defense into attack.",
+   "conflict": "Strain of resistance creates growing weaknesses.",
+   "disaster": "Critical pressure causes catastrophic collapse."
+  },
+  "29": {
+   "triumph": "The Sentient masters treacherous conditions to achieve victory.",
+   "conflict": "Dangerous situation forces costly defensive stance.",
+   "disaster": "The abyss claims the Sentient's power completely."
+  },
+  "30": {
+   "triumph": "Brilliant technique illuminates the path to victory.",
+   "conflict": "Maintaining power creates increasing inner strain.",
+   "disaster": "Inner fire burns out at a crucial moment."
+  },
+  "31": {
+   "triumph": "Subtle influence transforms combat into effortless dance.",
+   "conflict": "Delicate technique proves difficult to maintain.",
+   "disaster": "Attempt at influence reveals fatal weakness."
+  },
+  "32": {
+   "triumph": "Unwavering stance becomes unshakeable power.",
+   "conflict": "Consistency creates predictable patterns.",
+   "disaster": "Rigid defense shatters under precise strike."
+  },
+  "33": {
+   "triumph": "Strategic retreat becomes surprising counterattack.",
+   "conflict": "Withdrawal allows enemy to seize crucial ground.",
+   "disaster": "Retreat cuts off path to essential resources."
+  },
+  "34": {
+   "triumph": "Great power flows naturally into unstoppable force.",
+   "conflict": "Raw strength proves difficult to direct precisely.",
+   "disaster": "Uncontrolled power turns back upon itself."
+  },
+  "35": {
+   "triumph": "Swift progress overwhelms enemy defenses completely.",
+   "conflict": "Rapid advance outpaces defensive coverage.",
+   "disaster": "Aggressive progress leads into perfect ambush."
+  },
+  "36": {
+   "triumph": "Inner light becomes weapon and shield combined.",
+   "conflict": "Maintaining power in darkness drains vital energy.",
+   "disaster": "Light fails, leaving the Sentient vulnerable."
+  },
+  "37": {
+   "triumph": "Proper form channels power into perfect effect.",
+   "conflict": "Traditional techniques limit adaptive response.",
+   "disaster": "Rigid forms shatter under unexpected attack."
+  },
+  "38": {
+   "triumph": "Opposition becomes source of transformative power.",
+   "conflict": "Conflicting forces create tactical uncertainty.",
+   "disaster": "Internal opposition prevents effective defense."
+  },
+  "39": {
+   "triumph": "The Sentient turns impediment into unexpected advantage.",
+   "conflict": "Obstacles force costly expenditure of power.",
+   "disaster": "Insurmountable barrier leads to total defeat."
+  },
+  "40": {
+   "triumph": "Liberation of power creates overwhelming force.",
+   "conflict": "Freedom of movement sacrifices defensive position.",
+   "disaster": "Released power escapes all control."
+  },
+  "41": {
+   "triumph": "Diminishing resources refine into concentrated power.",
+   "conflict": "Conservation of force limits tactical options.",
+   "disaster": "Critical resources fail at decisive moment."
+  },
+  "42": {
+   "triumph": "Increasing power flows naturally into victory.",
+   "conflict": "Growing force becomes difficult to direct.",
+   "disaster": "Unchecked increase bursts all bounds."
+  },
+  "43": {
+   "triumph": "Decisive breakthrough shatters all resistance.",
+   "conflict": "Resolution requires more force than available.",
+   "disaster": "Breaking point reveals structural weakness."
+  },
+  "44": {
+   "triumph": "Coming force is met and mastered perfectly.",
+   "conflict": "Anticipation of danger creates hesitation.",
+   "disaster": "The trap springs, leaving no escape."
+  },
+  "45": {
+   "triumph": "Gathered power unifies into overwhelming force.",
+   "conflict": "Maintaining unity disperses combat focus.",
+   "disaster": "Collected force scatters at crucial moment."
+  },
+  "46": {
+   "triumph": "Rising energy becomes unstoppable assault.",
+   "conflict": "Upward pressure creates unstable position.",
+   "disaster": "Forced advance leads to crushing defeat."
+  },
+  "47": {
+   "triumph": "Exhaustion becomes source of unexpected strength.",
+   "conflict": "Oppression strains remaining resources.",
+   "disaster": "Final reserves fail, leaving total defeat."
+  },
+  "48": {
+   "triumph": "Deep sources replenish power beyond limit.",
+   "conflict": "Drawing power reveals bottom of reserves.",
+   "disaster": "The well runs dry in desperate moment."
+  },
+  "49": {
+   "triumph": "Revolution of force creates irresistible change.",
+   "conflict": "Transformation strains structural integrity.",
+   "disaster": "Change devours its own source completely."
+  },
+  "50": {
+   "triumph": "Sacred vessel channels power to perfect effect.",
+   "conflict": "Container strains to hold gathered force.",
+   "disaster": "The vessel breaks, spilling power uselessly."
+  },
+  "51": {
+   "triumph": "Shocking force becomes perfect striking power.",
+   "conflict": "Thunder's power proves difficult to direct.",
+   "disaster": "Lightning rebounds upon its source."
+  },
+  "52": {
+   "triumph": "Perfect stillness explodes into decisive action.",
+   "conflict": "Maintained meditation delays crucial response.",
+   "disaster": "Stillness becomes paralysis in combat."
+  },
+  "53": {
+   "triumph": "Gradual advance creates inevitable victory.",
+   "conflict": "Slow progress allows enemy preparation.",
+   "disaster": "Development fails before technique matures."
+  },
+  "54": {
+   "triumph": "Proper action transforms disadvantage to victory.",
+   "conflict": "Propriety limits effective tactical options.",
+   "disaster": "Improper position allows fatal strike."
+  },
+  "55": {
+   "triumph": "Abundant power flows into perfect technique.",
+   "conflict": "Success breeds openings in defense.",
+   "disaster": "Peak power burns out, leaving emptiness."
+  },
+  "56": {
+   "triumph": "Strange circumstances become source of power.",
+   "conflict": "Unfamiliar ground limits tactical options.",
+   "disaster": "Lost wanderer falls to unknown dangers."
+  },
+  "57": {
+   "triumph": "Gentle penetration bypasses strongest defense.",
+   "conflict": "Subtle approach allows enemy preparation.",
+   "disaster": "Wind scatters essential force completely."
+  },
+  "58": {
+   "triumph": "Joyous energy transforms into combat mastery.",
+   "conflict": "Pleasant technique proves ineffective in crisis.",
+   "disaster": "Light heart misses mortal danger."
+  },
+  "59": {
+   "triumph": "Dispersed power reunites with devastating effect.",
+   "conflict": "Scattered force proves difficult to gather.",
+   "disaster": "Essential power disperses beyond recall."
+  },
+  "60": {
+   "triumph": "Limited force finds perfect application.",
+   "conflict": "Restriction creates exploitable patterns.",
+   "disaster": "Artificial limits prevent vital action."
+  },
+  "61": {
+   "triumph": "Inner truth becomes perfect combat clarity.",
+   "conflict": "Sincerity creates predictable responses.",
+   "disaster": "Truth realized comes far too late."
+  },
+  "62": {
+   "triumph": "Small advantage produces decisive victory.",
+   "conflict": "Minor details distract from major threats.",
+   "disaster": "Precision fails when power is needed."
+  },
+  "63": {
+   "triumph": "Perfected technique achieves effortless victory.",
+   "conflict": "Completion breeds dangerous overconfidence.",
+   "disaster": "Apparent mastery masks fatal flaw."
+  },
+  "64": {
+   "triumph": "Unformed chaos becomes source of power.",
+   "conflict": "Uncertainty clouds tactical judgment.",
+   "disaster": "Not-yet-complete crumbles under pressure."
+  }
+ },
+ "lookup": {
+  "1": "111111",
+  "2": "000000",
+  "3": "010010",
+  "4": "001001",
+  "5": "100110",
+  "6": "011011",
+  "7": "101101",
+  "8": "010101",
+  "9": "111010",
+  "10": "010111",
+  "11": "100001",
+  "12": "001000",
+  "13": "110110",
+  "14": "001111",
+  "15": "111000",
+  "16": "000111",
+  "17": "010100",
+  "18": "001010",
+  "19": "101011",
+  "20": "110001",
+  "21": "110100",
+  "22": "001001",
+  "23": "010110",
+  "24": "101110",
+  "25": "111001",
+  "26": "100011",
+  "27": "001101",
+  "28": "110010",
+  "29": "100101",
+  "30": "101001",
+  "31": "110011",
+  "32": "001110",
+  "33": "111100",
+  "34": "000011",
+  "35": "100010",
+  "36": "010001",
+  "37": "101100",
+  "38": "011000",
+  "39": "100000",
+  "40": "000100",
+  "41": "101010",
+  "42": "010011",
+  "43": "110000",
+  "44": "000110",
+  "45": "111011",
+  "46": "110101",
+  "47": "001011",
+  "48": "110010",
+  "49": "011001",
+  "50": "101111",
+  "51": "111101",
+  "52": "001100",
+  "53": "100011",
+  "54": "011010",
+  "55": "101101",
+  "56": "010110",
+  "57": "001011",
+  "58": "110001",
+  "59": "100110",
+  "60": "011011",
+  "61": "101001",
+  "62": "110100",
+  "63": "001101",
+  "64": "010101"
+ }
+};
+  if (typeof module !== 'undefined' && module.exports) module.exports = data; else root.HexDieData = data;
+})(typeof window !== 'undefined' ? window : this);

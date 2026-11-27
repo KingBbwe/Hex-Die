@@ -5,7 +5,7 @@ A web application that combines the mystical elements of I-Ching hexagrams with 
 ## Features
 
 - **Hexagram Casting**: Generates one of 64 I-Ching archetypes.
-- **Dice Rolling**: Supports various die types from d6 to d100.
+- **Dice Rolling**: d6, d8, d12 and d20 (Outcome Tier from the die alone).
 - **Modifiers**: Allows users to apply bonuses or penalties to their rolls.
 
 ## Usage
@@ -14,7 +14,7 @@ A web application that combines the mystical elements of I-Ching hexagrams with 
 2. Select a die type from the dropdown menu.
 3. Optionally, apply a modifier.
 4. Click "Harmonize" to cast a hexagram and roll the die.
-5. Analyze the outcome using the "Analyze Outcome" button.
+5. Use "Oraclize" (1 Fate Point) to reveal a line, or "Avert Disaster" to nudge a Disaster up.
 
 ## Setup
 
@@ -24,3 +24,29 @@ A web application that combines the mystical elements of I-Ching hexagrams with 
 ## License
 
 This project is licensed under [MIT License](https://opensource.org/licenses/MIT).
+
+## Engine (canon build)
+
+All resolution rules live in `engine/hexdie.js` (pure, no DOM; works from `file://` and in Node) as data in `CONFIG`.
+Rules authority: `RULES_CANON.md`. Interpretations, fixes and open flags: `DESIGN_DECISIONS.md`.
+
+```
+npm test         # 18 engine tests: tier tables, DC bands, odds, modifier/level-up properties, Pull, Bolt, Fate, damage, join
+npm i -D jsdom && npm run smoke   # end-to-end page test (rolls, Telegram, GM codes, Fate Point storage)
+```
+
+Telegram (optional): copy `config.example.js` to `config.local.js` and fill in your bot token and default chat ID.
+`config.local.js` is gitignored. Never commit it.
+
+## Loading a character
+
+Forge one in identify-eweself and use **Open in Hex-Die** (or download the JSON and pick the file here). Then tap a domain
+(Intellectual, Physical, Emotional, Spiritual) to set your Personal DC and its Roll-Over/Under mode.
+
+
+## Deploy on Render
+
+`render.yaml` defines a static site. In Render choose **New > Blueprint**, pick this repo and branch, and apply.
+The build (`scripts/render-build.sh`) copies the app into `dist/` and writes a public `config.local.js` containing **no secrets**:
+Telegram sending is off on the hosted copy because anything in a static site is readable by visitors. Run locally with your own
+`config.local.js` for Telegram. Optional `HEXDIE_URL` (identify-eweself only): set it to the deployed Hex-Die URL, with a trailing slash, to enable "Open in Hex-Die".
