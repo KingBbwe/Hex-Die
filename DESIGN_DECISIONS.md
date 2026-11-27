@@ -10,10 +10,12 @@ Authority: `RULES_CANON.md` (rulings 1–5 and G2b). Items marked **FLAG** need 
 - Step-down is an explicit flag (GM-invoked). Fate resistance lever ships **off**.
 - 2 FP spent = +1 Skulduggery, cumulative floor. Disaster mitigation +1 per FP, cap 2 per scene.
 
-## Interpretations — FLAG
-1. **Step-down penalty applies to agency, not the cast.** Old code reduced the hexagram (`max(1, hex − R)`).
-   In Roll-Over that equals a negative modifier; in Roll-Under, lowering the cast *helps* the player.
-   Rejected: reducing the cast. Chosen: `mod − R`. A test proves step-down never helps in any mode.
+## Interpretations — ALL RULED 2026-11-27 (see 6C in RULES_CANON.md)
+1. **Step-down moves the cast against the player — RULED 2026-11-27.** The penalty R lowers the hexagram cast in Roll-Over and
+   raises it in Roll-Under (clamped 1–64), following the mode actually in force after any Pull. The die only changes size; the
+   modifier is untouched. Rationale (commander): the hexagram is the body, the die is the mind; difficulty stays in the body.
+   (An earlier draft put R on the die as a negative modifier. Withdrawn.) Tests prove step-down never helps in any mode.
+   Side effect to know: at the extremes the clamp softens the penalty (a cast of 3 stepped down by 8 in Roll-Over becomes 1, not −5).
 2. **Line reveal.** Docs say "reveal a line (1–6), substitute the die result, improve the tier only if the line
    exceeds the roll". Value is drawn on a d6. Line→tier uses the d6 scale (6 = Triumph, 4–5 = Conflict, 1–3 = Disaster),
    which matches **every worked example** in the docs. Rejected: looking the line up in the die's own table —
@@ -25,7 +27,7 @@ Authority: `RULES_CANON.md` (rulings 1–5 and G2b). Items marked **FLAG** need 
 5. **Damage never flips a mode.** DC shifts use the *base* DC for band lookup (`modeDc`); only the number moves.
 6. **Advantage on damage lines**: keep the better line for the actor — higher in Over, lower in Under; disadvantage reverses.
 
-## THE JOIN (proposed fixed table, closes the pass/tier gap) — FLAG, awaiting ratification
+## THE JOIN (fixed table, closes the pass/tier gap) — APPROVED 2026-11-27
 The PASS decides *what happens*; the TIER decides *what it costs and how it feels*.
 
 | | Triumph | Conflict | Disaster |
@@ -43,7 +45,7 @@ table features are kept; only the resolution logic underneath was replaced by th
 Step Down checkbox; *Harmonize*, *Oraclize* and shake-to-roll; the Game Master Settings panel (groups, GM codes, player join);
 Telegram notifications (roll, Fate Point, Legendary Feat, line reveal); 3-minute inactivity reset; vibrate on roll.
 
-### Table conventions inherited from Cyber, not in RULES_CANON — FLAG
+### Table conventions inherited from Cyber, not in RULES_CANON — KEPT by ruling 2026-11-27
 7. **Fate Points cap at 5, with +3 once per 24 h (capped).** Carried over unchanged. Cyber reset the 24 h clock on every
    spend/add; here a separate `lastRegen` stamp is used so spending does not postpone the top-up. Old `{points,timestamp}`
    saves are read and migrated.

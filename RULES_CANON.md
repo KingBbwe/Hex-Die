@@ -240,10 +240,10 @@ Roll-Under domains:  Cast  ≤  DC + Die + Mod      ("your agency raises the cei
 
 ---
 
-## 6B. THE JOIN — PROPOSED fixed table for pass/fail x Outcome Tier (closes the open gap)
+## 6B. THE JOIN — APPROVED 2026-11-27, fixed table for pass/fail x Outcome Tier (closes the open gap)
 
 The PASS decides what happens; the TIER decides what it costs and how it feels. Implemented in
-`engine/hexdie.js` (`CONFIG.join`), awaiting ratification. Names and rules are one-line edits.
+`engine/hexdie.js` (`CONFIG.join`), approved by the commander on 2026-11-27. Names and rules are one-line edits.
 
 | | Triumph | Conflict | Disaster |
 |---|---|---|---|
@@ -251,6 +251,23 @@ The PASS decides what happens; the TIER decides what it costs and how it feels. 
 | **FAIL** | **The Noble Stumble**: no penalty, learn something, next attempt +1 (once) | **Slipped Hold**: situation holds; retry at a price | **The Cliff Edge**: a consequence lands; GM may offer success for +1 Skulduggery |
 
 Interpretations the engine had to make are logged in `DESIGN_DECISIONS.md` (Hex-Die repo, PR #2).
+
+---
+
+## 6C. COMMANDER RULINGS ON ENGINE INTERPRETATIONS — 2026-11-27
+
+1. **Step-down** lowers the hexagram cast by R in Roll-Over and raises it by R in Roll-Under (clamped 1–64). Body carries the difficulty; the die only changes size. Supersedes the "penalty on agency" draft.
+2. **Line reveal** uses a d6 as the line value for every character, whatever die they roll. Scale: 1–3 Disaster, 4–5 Conflict, 6 Triumph. Substitutes the die result only if the line beats the roll and the tier improves.
+3. **Substituted results** (line reveal, Avert Disaster) are re-judged: they may flip a fail into a pass, and cancel a natural-1 Bolt.
+4. **Non-strict comparison**: Over passes at ≥ DC, Under at ≤ the ceiling. DC 48 is Roll-Over.
+5. **Wounds never flip the mode.** Damage moves the DC number; the band comes from the base DC.
+6. **Advantage on damage lines** keeps the line better for the actor (higher in Over, lower in Under; disadvantage reverses).
+7. **The Join table (6B)** approved as written.
+8. **Fate Points**: cap 5, +3 once per 24 h (capped), kept as a table convention.
+9. **Legendary Feat** is announced on pass + Triumph.
+10. **Oraclize** is the canon line reveal at 1 Fate Point.
+11. **Spending a Fate Point to resist the Ovine Pull** is permitted in principle but ships OFF (`pull.resistableWithFatePoint=false`).
+12. **GM codes** embed group name and chat ID so they work across devices; the commander accepts that a code holder can post to that chat through the bot, for now.
 
 ---
 

@@ -550,20 +550,21 @@
 
     // ---------------- rendering ----------------
     function formula(r) {
-        var push = r.bolted ? -r.die : r.roll, mod = (r.input.mod || 0) - r.stepDownPenalty;
+        var push = r.bolted ? -r.die : r.roll, mod = r.input.mod || 0, cast = r.castAdj;
         var ms = mod ? (mod > 0 ? ' + ' : ' − ') + Math.abs(mod) : '';
         var pushS = r.bolted ? '(−' + r.die + ' Bolt)' : String(r.roll);
         return r.mode === 'over'
-            ? r.cast + ' + ' + pushS + ms + ' = ' + (r.cast + push + mod) + '  vs  DC ' + r.input.dc + ' (need ≥)'
-            : r.cast + '  vs  DC ' + r.input.dc + ' + ' + pushS + ms + ' = ' + (r.input.dc + push + mod) + ' (need ≤)';
+            ? cast + ' + ' + pushS + ms + ' = ' + (cast + push + mod) + '  vs  DC ' + r.input.dc + ' (need ≥)'
+            : cast + '  vs  DC ' + r.input.dc + ' + ' + pushS + ms + ' = ' + (r.input.dc + push + mod) + ' (need ≤)';
     }
     function show(r, note) {
         var el = $('result'); el.textContent = '';
         function add(tag, t, cls) { var n = document.createElement(tag); n.textContent = t; if (cls) n.className = cls; el.appendChild(n); return n; }
         add('h3', r.join.name + ' — ' + (r.pass ? 'PASS' : 'FAIL') + ' · ' + r.tierName);
         add('p', r.join.rule);
-        add('p', 'Mode: ' + activeSetName() + '  |  Hexagram ' + r.cast + ' (' + (D.names[r.cast] || '') + ')  |  d' + r.die +
-            (r.stepDownUsed ? ' (stepped down from d' + r.declaredDie + ', −' + r.stepDownPenalty + ')' : '') + ' → ' + r.roll + '  |  ' + modeLabel(r.mode));
+        add('p', 'Mode: ' + activeSetName() + '  |  Hexagram ' + r.cast + ' (' + (D.names[r.cast] || '') + ')' +
+            (r.castAdj !== r.cast ? ' → stepped ' + (r.castAdj < r.cast ? 'down' : 'up') + ' to ' + r.castAdj + ' (' + (D.names[r.castAdj] || '') + ')' : '') + '  |  d' + r.die +
+            (r.stepDownUsed ? ' (stepped down from d' + r.declaredDie + ')' : '') + ' → ' + r.roll + '  |  ' + modeLabel(r.mode));
         add('p', formula(r));
         if (r.pulled) add('p', 'The Ovine Pull: instinct dragged this check into ' + modeLabel(r.mode) + '.', 'jinx');
         if (r.bolted) add('p', 'The Bolt: a natural 1. Agency turned against you.', 'jinx');
