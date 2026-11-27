@@ -24,3 +24,14 @@ A web application that combines the mystical elements of I-Ching hexagrams with 
 ## License
 
 This project is licensed under [MIT License](https://opensource.org/licenses/MIT).
+
+## Engine (canon build)
+
+The resolution rules live in `engine/hexdie.js` (pure, no DOM; works from `file://` and in Node). All rules are data in `CONFIG`.
+Rules authority: `RULES_CANON.md`. Interpretations and open flags: `DESIGN_DECISIONS.md`.
+
+```
+npm test        # 18 tests: tier tables, DC bands, odds, modifier/level-up properties, Pull, Bolt, Fate, damage, join
+```
+
+Telegram roll notifications (optional): copy `config.example.js` to `config.local.js` and fill in your values. Never commit it.
