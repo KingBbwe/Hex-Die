@@ -585,7 +585,9 @@
     function baseDc() { var v = parseInt($('dc').value, 10); return (v >= 1 && v <= 64) ? v : null; }
     function skillMod() {
         var n = $('skillSelect').value;
-        return n && character ? SK.modifier(character.skills, n) : 0;
+        if (!n || !character) return 0;
+        if (SK.findAcquired(n)) { var am = SK.acquiredModifier(character.acquired, n); return am === null ? 0 : am; }
+        return SK.modifier(character.skills, n);
     }
     function mods() { var m = parseInt($('modifier').value, 10); return (isNaN(m) ? 0 : m) + skillMod(); }
     // Skills picker: the character's assigned skills first (modifier 0), then every other catalogue skill (default -2).
@@ -594,10 +596,12 @@
         function opt(parent, name, label) { var o = document.createElement('option'); o.value = name; o.textContent = label; parent.appendChild(o); }
         opt(sel, '', '— no skill —');
         var mine = Object.keys(character.skills || {});
-        if (mine.length) { var g = document.createElement('optgroup'); g.label = 'Your skills'; mine.forEach(function (n) { opt(g, n, n + ' (' + (character.skills[n] >= 0 ? '+' : '') + character.skills[n] + ')'); }); sel.appendChild(g); }
+        if (mine.length) { var g = document.createElement('optgroup'); g.label = 'Your skills'; mine.forEach(function (n) { opt(g, n, n + ' · ' + SK.find(n).attribute + ' (' + (character.skills[n] >= 0 ? '+' : '') + character.skills[n] + ')'); }); sel.appendChild(g); }
+        var held = SK.ACQUIRED_NAMES.filter(function (n) { return SK.acquiredModifier(character.acquired, n) !== null; });
+        if (held.length) { var ga = document.createElement('optgroup'); ga.label = 'Acquired skillsets'; held.forEach(function (n) { opt(ga, n, n + ' (+0)'); }); sel.appendChild(ga); }
         var groups = {};
-        SK.CATALOGUE.forEach(function (k) { if (mine.indexOf(k.name) === -1) (groups[k.domain || 'Other'] = groups[k.domain || 'Other'] || []).push(k.name); });
-        Object.keys(groups).forEach(function (dn) { var g = document.createElement('optgroup'); g.label = dn + ' (−2)'; groups[dn].forEach(function (n) { opt(g, n, n + ' (−2)'); }); sel.appendChild(g); });
+        SK.CATALOGUE.forEach(function (k) { if (mine.indexOf(k.name) === -1) (groups[k.domain || 'Other'] = groups[k.domain || 'Other'] || []).push(k); });
+        Object.keys(groups).forEach(function (dn) { var g = document.createElement('optgroup'); g.label = dn + ' (−2)'; groups[dn].forEach(function (k) { opt(g, k.name, k.name + ' · ' + k.attribute + ' (−2)'); }); sel.appendChild(g); });
         $('skillGroup').style.display = '';
     }
     function adjusted() { var b = baseDc(); return b === null ? null : H.adjustDC(b, H.modeForDC(b), dmg); }

@@ -105,13 +105,20 @@ function load(pre, url) {
   await feed(JSON.stringify(fx));
   ok('skill picker appears with a Character', $('skillGroup').style.display === '');
   const mine = Object.keys(fx.skills);
-  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $('skillSelect').querySelectorAll('option').length === 1 + 113, $('skillSelect').querySelectorAll('option').length);
+  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $("skillSelect").querySelectorAll("option").length === 1 + 113, $('skillSelect').querySelectorAll('option').length);
   const other = [...$('skillSelect').querySelectorAll('option')].map(o => o.value).find(v => v && !mine.includes(v));
   async function formulaFor(skill, modv) {
     $('dieType').value = '6'; $('modifier').value = String(modv); $('skillSelect').value = skill; $('dc').value = '40';
     $('rollButton').click(); await new Promise(r => setTimeout(r, 30));
     return [...$('result').querySelectorAll('p')].map(p => p.textContent).find(t => /=|\+/.test(t) && /dc|DC|vs/i.test(t)) || $('result').textContent;
   }
+  // an Acquired Skillset the character holds appears and adds its modifier (0); one not held does not appear
+  const fxA = JSON.parse(JSON.stringify(fx)); fxA.acquired = { 'Rapport Building': 0 };
+  await feed(JSON.stringify(fxA));
+  const acqOpts = [...$('skillSelect').querySelectorAll('optgroup')].filter(g => g.label === 'Acquired skillsets').flatMap(g => [...g.querySelectorAll('option')].map(o => o.value));
+  ok('a held Acquired Skillset is offered, an unheld one is not', acqOpts.join() === 'Rapport Building', acqOpts.join());
+  ok('skills show their attribute', /· (Inspiration|Intellect|Prowess|SelfAwareness|Instinct|Drive|Energy|Emotion|Will) \(/.test($('skillSelect').textContent));
+  await feed(JSON.stringify(fx));
   const fMine = await formulaFor(mine[0], 0), fOther = await formulaFor(other, 0), fOther3 = await formulaFor(other, 3), fNone = await formulaFor('', 0);
   ok('an assigned skill adds nothing (modifier 0)', /^\d+ \+ (\d+|\(−\d+ Bolt\)) = /.test(fMine), fMine);
   ok('an unassigned skill subtracts 2', /^\d+ \+ (\d+|\(−\d+ Bolt\)) − 2 = /.test(fOther), fOther);
