@@ -105,7 +105,7 @@ function load(pre, url) {
   await feed(JSON.stringify(fx));
   ok('skill picker appears with a Character', $('skillGroup').style.display === '');
   const mine = Object.keys(fx.skills);
-  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $("skillSelect").querySelectorAll("option").length === 1 + 113, $('skillSelect').querySelectorAll('option').length);
+  ok("picker lists the character's skills first, then the rest at -2", $('skillSelect').querySelector('optgroup').label === 'Your skills' && $("skillSelect").querySelectorAll("option").length === 1 + 134, $('skillSelect').querySelectorAll('option').length);
   const other = [...$('skillSelect').querySelectorAll('option')].map(o => o.value).find(v => v && !mine.includes(v));
   async function formulaFor(skill, modv) {
     $('dieType').value = '6'; $('modifier').value = String(modv); $('skillSelect').value = skill; $('dc').value = '40';
@@ -124,6 +124,37 @@ function load(pre, url) {
   ok('an unassigned skill subtracts 2', /^\d+ \+ (\d+|\(−\d+ Bolt\)) − 2 = /.test(fOther), fOther);
   ok('the skill modifier stacks with the manual modifier (3 + -2 = +1)', /^\d+ \+ (\d+|\(−\d+ Bolt\)) \+ 1 = /.test(fOther3), fOther3);
   ok('no skill selected adds nothing', /^\d+ \+ (\d+|\(−\d+ Bolt\)) = /.test(fNone), fNone);
+
+  // ---- 6. Shake-to-roll (the Cyber interface's signature move)
+  const shake = async (win, seconds, mag) => {                       // feed devicemotion events on a fake clock
+    let t = 1e6; win.Date.now = () => t;
+    const ev = m => { const e = new win.Event('devicemotion'); e.accelerationIncludingGravity = { x: m, y: 0, z: 0 }; return e; };
+    for (let ms = 0; ms <= seconds * 1000; ms += 100) { t += 100; win.dispatchEvent(ev(mag)); }
+    t += 700; win.dispatchEvent(ev(1));                              // hold still: the roll fires
+  };
+  const rolled = win => !!win.document.getElementById('result').querySelector('h3');          // a real outcome heading, not a validation message
+  const setDc = win => { win.document.getElementById('dc').value = 20; };
+  // Android-style: no permission prompt, so shake must be on without any tap
+  w = await load(x => { x.DeviceMotionEvent = function () {}; });
+  ok('shake switches itself on where no permission is needed', /Shake-to-roll is on/.test(w.document.getElementById('shakeStatus').textContent), w.document.getElementById('shakeStatus').textContent);
+  ok('enable button stays hidden there', w.document.getElementById('enableMotion').style.display !== 'block');
+  setDc(w); const before = w.document.getElementById('result').textContent;
+  await shake(w, 0.5, 30);
+  ok('a short shake does not roll', !rolled(w) && /Too short/.test(w.document.getElementById('shakeStatus').textContent), w.document.getElementById('shakeStatus').textContent);
+  await shake(w, 2.5, 30);
+  ok('a 2.5 second shake rolls the dice and hexagram', rolled(w), w.document.getElementById('result').textContent.slice(0, 60));
+  // iOS-style: permission required, nothing rolls until it is granted
+  w = await load(x => { x.DeviceMotionEvent = function () {}; x.DeviceMotionEvent.requestPermission = () => Promise.resolve('granted'); });
+  ok('iOS shows the enable button and does not auto-enable', w.document.getElementById('enableMotion').style.display === 'block');
+  setDc(w); await shake(w, 2.5, 30);
+  ok('no roll before permission is granted', !rolled(w));
+  w.enableShakeDetection(); await new Promise(r => setTimeout(r, 30));
+  ok('granting permission hides the button', w.document.getElementById('enableMotion').style.display === 'none');
+  await shake(w, 2.5, 30);
+  ok('shake rolls after permission is granted', rolled(w));
+  w = await load(x => { x.DeviceMotionEvent = function () {}; x.DeviceMotionEvent.requestPermission = () => Promise.resolve('denied'); });
+  w.enableShakeDetection(); await new Promise(r => setTimeout(r, 30));
+  ok('a refusal is explained, not silent', /refused/.test(w.document.getElementById('shakeStatus').textContent), w.document.getElementById('shakeStatus').textContent);
   console.log(checks.map(c => c.join('  ')).join('\n'));
   console.log('JS errors:', errors.length ? errors : 'none');
   process.exit(checks.some(c => c[0] === 'FAIL') || errors.length ? 1 : 0);
