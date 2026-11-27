@@ -172,3 +172,25 @@ test('VACUITY: canon-as-ratified (no Signed Agency) FAILS the modifier and level
   assert.ok(modViolations > 20, 'expected the +mod harm in Under bands, got ' + modViolations);
   assert.ok(lvlViolations > 20, 'expected the level-up demotion in Under bands, got ' + lvlViolations);
 });
+
+test('step-down moves the CAST against the player: down in Roll-Over, up in Roll-Under, clamped 1..64', () => {
+  const o = H.resolveCheck({ cast: 30, roll: 4, die: 12, mod: 0, dc: 10, stepDown: true });   // d12 -> d8, R = 8; DC 10 is Roll-Over
+  assert.equal(o.mode, 'over'); assert.equal(o.castAdj, 22); assert.equal(o.cast, 30); assert.equal(o.die, 8);
+  const u = H.resolveCheck({ cast: 30, roll: 4, die: 12, mod: 0, dc: 20, stepDown: true });   // DC 20 is Roll-Under
+  assert.equal(u.mode, 'under'); assert.equal(u.castAdj, 38);
+  assert.equal(H.resolveCheck({ cast: 3, roll: 2, die: 20, mod: 0, dc: 5, stepDown: true }).castAdj, 1);    // clamp low
+  assert.equal(H.resolveCheck({ cast: 62, roll: 2, die: 20, mod: 0, dc: 20, stepDown: true }).castAdj, 64); // clamp high
+  assert.equal(H.resolveCheck({ cast: 30, roll: 4, die: 12, mod: 0, dc: 10 }).castAdj, 30);                 // no step-down: unchanged
+});
+test('step-down: the modifier is left alone (difficulty lives in the body, not the die)', () => {
+  const a = H.resolveCheck({ cast: 40, roll: 5, die: 8, mod: 3, dc: 20, stepDown: true });
+  const b = H.resolveCheck({ cast: 40, roll: 5, die: 8, mod: 3, dc: 20 });
+  assert.equal(a.castAdj - b.castAdj, 4);    // d8 -> d6, R = 4, Roll-Under: cast raised by 4
+});
+test('step-down never helps, in any mode, for any cast, roll or die (exhaustive)', () => {
+  for (const die of [6, 8, 12, 20]) for (const dc of [1, 10, 16, 17, 25, 32, 33, 40, 48, 49, 60, 64]) for (let cast = 1; cast <= 64; cast += 3)
+    for (let roll = 1; roll <= 6; roll++) for (const pull of [3, 1]) {
+      const off = H.resolveCheck({ cast, roll, die, mod: 0, dc, pullRoll: pull }), on = H.resolveCheck({ cast, roll, die, mod: 0, dc, stepDown: true, pullRoll: pull });
+      if (on.pass && !off.pass) assert.fail(`step-down helped: d${die} DC${dc} cast${cast} roll${roll}`);
+    }
+});

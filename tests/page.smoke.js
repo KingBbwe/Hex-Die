@@ -45,7 +45,7 @@ function load(pre) {
   // ---- 2. Telegram only when configured; plain text; no Markdown parse mode
   w = await load(x => { x.TELEGRAM_BOT_TOKEN = 'TESTTOKEN'; x.TELEGRAM_CHAT_ID = '-1009999999999'; }); $ = id => w.document.getElementById(id);
   $('dc').value = 20; $('rollButton').click();
-  const f = w.__fetches[0]; const body = f && JSON.parse(f.o.body);
+  const f = w.__fetches.find(x => /Harmonized/.test(x.o.body)); const body = f && JSON.parse(f.o.body);
   ok('Telegram posts to bot URL with configured chat', f && f.u === 'https://api.telegram.org/botTESTTOKEN/sendMessage' && body.chat_id === '-1009999999999', f && f.u);
   ok('Telegram body is plain text (no parse_mode)', body && !('parse_mode' in body) && /Harmonized Hex & Die/.test(body.text));
 
@@ -58,7 +58,7 @@ function load(pre) {
   w2.document.getElementById('gmCode').value = code; w2.document.getElementById('playerName').value = 'Bleat'; w2.joinGameGroup();
   ok('second device joins with the code', (w2.__alerts || []).some(a => /Ewe Crew/.test(a)), (w2.__alerts || []).join('|'));
   w2.document.getElementById('dc').value = 10; w2.document.getElementById('rollButton').click();
-  const f2 = JSON.parse(w2.__fetches[0].o.body);
+  const f2 = JSON.parse(w2.__fetches.find(x => /Harmonized/.test(x.o.body)).o.body);
   ok('joined player\'s rolls go to the GM\'s chat, tagged with their name', f2.chat_id === '-1001234567890' && /Bleat/.test(f2.text));
   w2.document.getElementById('gmCode').value = 'GM_garbage'; w2.joinGameGroup(); ok('garbage GM code rejected', (w2.__alerts || []).some(a => /Invalid GM code/.test(a)));
 

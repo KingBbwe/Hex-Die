@@ -34,7 +34,8 @@
     bolt: { enabled: true },
 
     // Step-down (canon ruling 5): GM-invoked ONLY. die -> [new die, penalty].
-    // NOTE: penalty is applied to AGENCY (as a negative modifier), not by lowering the cast.
+    // The penalty R moves the HEXAGRAM CAST against the player (difficulty stays in the body):
+    // Roll-Over lowers the cast by R, Roll-Under raises it by R, clamped to 1..64. The die is untouched apart from its size.
     // Identical in Roll-Over; in Roll-Under, lowering the cast would HELP the player.
     stepDown: { 6: [6, 2], 8: [6, 4], 12: [8, 8], 20: [12, 10] },
 
@@ -137,14 +138,17 @@
 
     var bolted = !!(cfg.bolt.enabled && roll === 1);
     var push = bolted ? -eff.die : roll;
-    var mod = (input.mod || 0) - eff.penalty;
+    var mod = input.mod || 0;
     var cast = input.cast, pass;
+    // Step-down: shift the cast against the player, in the direction of the mode actually in force (after any Pull).
+    var castAdj = mode === 'over' ? Math.max(1, cast - eff.penalty) : Math.min(64, cast + eff.penalty);
+    cast = castAdj;
     if (cfg.signedAgency) pass = mode === 'over' ? cast + push + mod >= dc : cast <= dc + push + mod;
     else { var total = cast + push + mod; pass = mode === 'over' ? total >= dc : total <= dc; }
 
     var tier = tierFromRoll(eff.die, roll, cfg), cell = joinCell(pass, tier, cfg);
     return { pass: pass, tier: tier, tierName: TIER_NAME[tier], mode: mode, pulled: pulled,
-             twilight: !!tw, bolted: bolted, cast: cast, roll: roll, die: eff.die, declaredDie: input.die,
+             twilight: !!tw, bolted: bolted, cast: input.cast, castAdj: castAdj, roll: roll, die: eff.die, declaredDie: input.die,
              stepDownUsed: !!input.stepDown, stepDownPenalty: eff.penalty,
              join: cell, joinKey: (pass ? 'pass' : 'fail') + ':' + tier, input: input };
   }
