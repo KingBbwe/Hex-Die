@@ -3,431 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Chronicles of Auld Ewe - Cyberpunk Edition</title>
-    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-    :root {
-        --primary: #6b46c1;
-        --primary-hover: #553c9a;
-        --bg-dark: #1a1a2e;
-        --bg-darker: #16213e;
-        --text-light: #e2e8f0;
-    }
-
-    body {
-        background: linear-gradient(45deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
-        color: var(--text-light);
-        font-family: 'Orbitron', system-ui, -apple-system, sans-serif;
-        margin: 0;
-        padding: 0;
-        line-height: 1.5;
-        min-height: 100vh;
-    }
-
-    nav {
-        background: rgba(22, 33, 62, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 2px solid var(--primary);
-        box-shadow: 0 0 15px rgba(107, 70, 193, 0.3);
-        padding: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    nav ul {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0;
-        margin: 0;
-        list-style: none;
-    }
-
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: rgba(26, 26, 46, 0.9);
-        border: 1px solid var(--primary);
-        box-shadow: 0 0 30px rgba(107, 70, 193, 0.2);
-        border-radius: 8px;
-        backdrop-filter: blur(5px);
-    }
-
-    h1, h2, h3 {
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-shadow: 0 0 10px rgba(107, 70, 193, 0.5);
-    }
-
-    h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-        color: #fff;
-        text-align: center;
-    }
-
-    h2 {
-        font-size: 1.2rem;
-        margin-bottom: 0.3rem;
-        color: #cbd5e1;
-        text-align: center;
-    }
-
-    h3 {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-        color: #94a3b8;
-        text-align: center;
-    }
-
-    .input-group {
-        margin-bottom: 1.5rem;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--text-light);
-    }
-
-    input, select {
-        width: 100%;
-        padding: 0.6rem;
-        border: 1px solid var(--primary) !important;
-        border-radius: 0.375rem;
-        background: rgba(22, 33, 62, 0.8) !important;
-        color: var(--text-light) !important;
-        margin-bottom: 0.5rem;
-        transition: all 0.3s ease !important;
-    }
-
-    input:focus, select:focus {
-        outline: none;
-        border-color: #21bf73 !important;
-        box-shadow: 0 0 15px rgba(107, 70, 193, 0.4) !important;
-    }
-
-    .toggle-group {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 0.75rem;
-        background-color: var(--bg-darker);
-        border: 1px solid var(--primary);
-        border-radius: 0.375rem;
-        box-shadow: inset 0 0 10px rgba(107, 70, 193, 0.2);
-    }
-
-    .mode-group {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .mode-button {
-        flex: 1;
-        padding: 0.6rem;
-        border: 2px solid var(--primary) !important;
-        border-radius: 0.375rem;
-        background-color: transparent;
-        color: var(--text-light);
-        cursor: pointer;
-        transition: all 0.2s;
-        clip-path: polygon(90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%, 10% 0);
-    }
-
-    .mode-button.active {
-        background-color: var(--primary);
-        border-color: var(--primary);
-    }
-
-    .mode-button:hover {
-        background-color: var(--primary-hover);
-    }
-
-    button {
-        width: 100%;
-        padding: 0.8rem;
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 1.0rem;
-        transition: all 0.3s ease;
-        margin-bottom: 0.5rem;
-        position: relative;
-        overflow: hidden;
-        border: 2px solid var(--primary) !important;
-        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
-    }
-
-    button:hover {
-        background-color: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
-    }
-
-    button::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(107, 70, 193, 0.2), transparent);
-        transform: rotate(45deg);
-        transition: all 0.5s;
-    }
-
-    button:hover::before {
-        animation: cyber-glow 1.5s infinite;
-    }
-
-    .oraclize-btn {
-        background-color: #21bf73;
-    }
-
-    #result {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        background: rgba(22, 33, 62, 0.8);
-        border-radius: 0.375rem;
-        border: 1px solid var(--primary);
-        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1),
-                    0 0 20px rgba(107, 70, 193, 0.1);
-        position: relative;
-    }
-
-    #result strong {
-        color: #a78bfa;
-    }
-
-    #changingLines {
-        text-align: left;
-        margin-top: 1rem;
-        padding: 1rem;
-        background: rgba(22, 33, 62, 0.8);
-        border-radius: 0.375rem;
-        display: none;
-        border: 1px solid var(--primary);
-        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
-    }
-
-    .fate-controls {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .fate-points {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    #fatePoints {
-        width: 60px;
-        font-weight: bold;
-        text-align: center;
-        font-family: 'Orbitron', sans-serif;
-        border: 2px solid var(--primary) !important;
-        background: rgba(22, 33, 62, 0.9) !important;
-    }
-
-    .add-fate {
-        background-color: #21bf73 !important;
-        width: auto !important;
-        padding: 0.5rem 1rem !important;
-    }
-
-                .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .step-down-toggle {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-            transition: background-color 0.3s, border-color 0.3s;
-            margin: 0;
-        }
-
-        .step-down-toggle:checked {
-            background-color: #39FF14;
-            border-color: #39FF14;
-        }
-
-        .step-down-toggle:checked::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: translate(-50%, -50%) rotate(45deg);
-        }
-
-    .chat-manager-container {
-        margin-top: 2rem;
-        padding: 1rem;
-        border-top: 1px solid var(--primary);
-        background-color: var(--bg-darker);
-        border-radius: 0.375rem;
-        border: 1px solid var(--primary);
-        box-shadow: inset 0 0 20px rgba(107, 70, 193, 0.1);
-    }
-
-    .chat-manager-details {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .chat-manager-details summary {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: var(--primary);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        background-color: var(--bg-dark);
-        transition: background-color 0.2s;
-        border: 1px solid var(--primary);
-        clip-path: polygon(95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%, 5% 0);
-    }
-
-    .chat-manager-details summary:hover {
-        background-color: var(--primary-hover);
-        color: white;
-    }
-
-    .chat-setup-form,
-    .player-setup-form {
-        margin: 1rem 0;
-        padding: 1rem;
-        background-color: var(--bg-dark);
-        border-radius: 0.375rem;
-        border: 1px solid var(--primary);
-    }
-
-    #gmCodeDisplay {
-        margin-top: 1rem;
-        padding: 1rem;
-        background-color: var(--bg-dark);
-        border: 1px solid var(--primary);
-        border-radius: 0.375rem;
-        text-align: center;
-    }
-
-    @keyframes cyber-glow {
-        0% { left: -50%; }
-        100% { left: 150%; }
-    }
-
-    @keyframes border-pulse {
-        0% { opacity: 0.5; }
-        50% { opacity: 1; }
-        100% { opacity: 0.5; }
-    }
-    .jinx { font-style: italic; color: #f6ad55; }
-    #fateStats { margin: 0 0 1rem; font-size: 0.85rem; }
-    #modeHint { display: block; margin-top: 0.25rem; }
-    #result pre { line-height: 1.1; }
-    #result blockquote { margin: 0.75rem 0; padding-left: 1rem; border-left: 3px solid var(--primary); }
-    button:disabled { opacity: 0.45; cursor: not-allowed; }
-    </style>
+    <title>Hex &amp; Die · The Chronicles of Auld Ewe</title>
+    <meta name="theme-color" content="#0b0d1a">
+    <link rel="preload" href="assets/fonts/orbitron-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <nav>
         <ul>
-            <li><strong style="color: #fff;">The Chronicles of Auld Ewe</strong></li>
+            <li><strong>Auld Ewe · Hex &amp; Die</strong></li>
             <li><a href="#" id="howToPlayBtn" style="color: var(--text-light);">How to Play</a></li>
         </ul>
     </nav>
 
     <main class="container">
         <section>
-            <div class="fate-controls">
-                <div class="fate-points">
-                    <label for="fatePoints">Fate Points:</label>
-                    <input type="number" id="fatePoints" value="3" min="0" max="5" readonly>
+            <div class="hud">
+                <div class="fate-controls">
+                    <div class="fate-points">
+                        <label for="fatePoints">Fate</label>
+                        <div id="fatePips" class="pips" aria-hidden="true"></div>
+                        <input type="number" id="fatePoints" value="3" min="0" max="5" readonly aria-label="Fate Points">
+                    </div>
+                    <button class="add-fate" onclick="addFatePoint()">+1</button>
                 </div>
-                <button class="add-fate" onclick="addFatePoint()">Add +1</button>
+                <p id="fateStats"><span class="chip">Spent <b id="fpSpent">0</b></span><span class="chip">Skulduggery <b>+<span id="skul">0</span></b></span></p>
             </div>
-            <p id="fateStats">Spent: <span id="fpSpent">0</span> · Skulduggery: +<span id="skul">0</span></p>
 
-            <h1>The Chronicles of Auld Ewe</h1>
-            <h2>Harmonized Hex & Die System</h2>
-            <h3>Shake device or click Harmonize!</h3>
+            <div class="title-block">
+                <h1>The Chronicles of Auld Ewe</h1>
+                <h2>Harmonized Hex &amp; Die</h2>
+                <h3>Shake your device or press Harmonize</h3>
+            </div>
 
-            <div id="shakeStatus"></div>
+            <div id="shakeStatus" role="status"></div>
+            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
 
-            <div class="input-group" id="characterBox">
-                <label for="characterFile">Character (from identify-eweself)</label>
+            <div class="card input-group" id="characterBox">
+                <p class="card-title">Character</p>
+                <label for="characterFile">Load from identify-eweself</label>
                 <input type="file" id="characterFile" accept="application/json,.json">
                 <div id="characterInfo"></div>
                 <div id="domainBtns" class="mode-group" style="display:none"></div>
             </div>
 
-            <div class="input-group">
-                <label for="dc">Difficulty Class (DC)</label>
-                <input type="number" id="dc" placeholder="Enter DC" min="1" max="64">
-                <small id="modeHint"></small>
+            <div class="card">
+                <p class="card-title">The Check</p>
+                <div class="input-group">
+                    <label for="dc">Difficulty Class (DC)</label>
+                    <input type="number" id="dc" placeholder="1 – 64" min="1" max="64" inputmode="numeric">
+                    <small id="modeHint"></small>
+                </div>
+                <div class="field-row input-group">
+                    <div>
+                        <label for="dieType">Die</label>
+                        <select id="dieType">
+                            <option value="6">d6</option>
+                            <option value="8">d8</option>
+                            <option value="12">d12</option>
+                            <option value="20">d20</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="modifier">Modifier</label>
+                        <input type="number" id="modifier" value="0" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="input-group" id="skillGroup" style="display:none">
+                    <label for="skillSelect">Skill (adds its modifier)</label>
+                    <select id="skillSelect"></select>
+                </div>
+                <div class="toggle-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
+                        <label for="stepDownToggle">Step Down</label>
+                    </div>
+                    <span class="toggle-hint">only when the GM calls it</span>
+                </div>
             </div>
 
-            <div class="input-group">
-                <label for="dieType">Die Type</label>
-                <select id="dieType">
-                    <option value="6">d6</option>
-                    <option value="8">d8</option>
-                    <option value="12">d12</option>
-                    <option value="20">d20</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="modifier">Modifier (+/-)</label>
-                <input type="number" id="modifier" value="0">
-            </div>
-
-            <div class="input-group" id="skillGroup" style="display:none">
-                <label for="skillSelect">Skill (adds its modifier)</label>
-                <select id="skillSelect"></select>
-            </div>
-
-<div class="toggle-group">
-    <div class="checkbox-wrapper">
-        <input type="checkbox" id="stepDownToggle" class="step-down-toggle">
-        <label for="stepDownToggle" style="margin: 0;">Step Down</label>
-    </div>
-</div>
-
-            <h3 style="margin-bottom: 0.5rem;">Mode</h3>
+            <p class="mode-title">Narrative Mode</p>
             <div class="mode-group">
                 <button class="mode-button" id="personalMode">Personal</button>
                 <button class="mode-button active" id="generalMode">General</button>
                 <button class="mode-button" id="actionMode">Action</button>
             </div>
 
-            <button id="enableMotion" onclick="enableShakeDetection()">Enable Shake-to-Roll</button>
             <button id="rollButton" onclick="rollDiceAndHexagram()">Harmonize</button>
-            <button class="oraclize-btn" id="oraclizeBtn" onclick="showChangingLines()">Oraclize</button>
-            <button id="mitigateBtn">Avert Disaster</button>
-            <button id="newSceneBtn">New Scene</button>
+            <div class="action-row">
+                <button class="oraclize-btn" id="oraclizeBtn" onclick="showChangingLines()">Oraclize</button>
+                <button id="mitigateBtn">Avert Disaster</button>
+                <button id="newSceneBtn">New Scene</button>
+            </div>
 
-            <div id="result"></div>
+            <div id="result" aria-live="polite"></div>
             <div id="changingLines"></div>
 
             <details id="damageBox" class="chat-manager-details">
@@ -526,8 +195,18 @@
             lastRegen = now; saveFate();
         }
     }
+    var lastPips = null;
+    function paintPips() {
+        var box = $('fatePips'); if (!box) return;
+        box.textContent = '';
+        for (var i = 0; i < MAX_FATE_POINTS; i++) {
+            var p = document.createElement('span'); p.className = 'pip' + (i < fate.fp ? ' on' : '') + (lastPips !== null && i < fate.fp && i >= lastPips ? ' pop' : '');
+            box.appendChild(p);
+        }
+        lastPips = fate.fp;
+    }
     function paintFate() {
-        $('fatePoints').value = fate.fp;
+        $('fatePoints').value = fate.fp; paintPips();
         $('fpSpent').textContent = fate.spent;
         $('skul').textContent = H.skulduggeryFromFate(fate);
         var live = !!last, cap = H.CONFIG.fate.disasterMitigationCapPerScene;
@@ -556,8 +235,13 @@
         var box = $('domainBtns'); box.textContent = ''; box.style.display = '';
         CH.DOMAINS.forEach(function (name) {
             var b = document.createElement('button'), d = c.dc[name];
-            b.className = 'mode-button'; b.id = 'domain-' + name; b.type = 'button';
-            b.textContent = cap(name) + ' ' + d.value + ' · ' + (d.mode === 'over' ? 'Over' : 'Under');
+            b.className = 'mode-button ' + d.mode; b.id = 'domain-' + name; b.type = 'button';
+            [['dn', cap(name)], ['dv', String(d.value)], ['dm', d.mode === 'over' ? 'Over' : 'Under']].forEach(function (x, i) {
+                if (i) b.appendChild(document.createTextNode(' '));
+                var sp = document.createElement('span'); sp.className = x[0];
+                if (x[0] === 'dm') { var dot = document.createElement('i'); dot.textContent = '· '; sp.appendChild(dot); }   // keeps the readable text 'Physical 20 · Under'
+                sp.appendChild(document.createTextNode(x[1])); b.appendChild(sp);
+            });
             b.addEventListener('click', function () { pickDomain(name); });
             box.appendChild(b);
         });
@@ -637,21 +321,33 @@
     }
     function show(r, note) {
         var el = $('result'); el.textContent = '';
-        function add(tag, t, cls) { var n = document.createElement(tag); n.textContent = t; if (cls) n.className = cls; el.appendChild(n); return n; }
+        el.className = 'tier-' + r.tier + ' ' + (r.pass ? 'pass' : 'fail');
+        void el.offsetWidth; el.classList.add('reveal');                 // restart the reveal animation on every roll
+        function add(tag, t, cls, parent) { var n = document.createElement(tag); if (t !== null) n.textContent = t; if (cls) n.className = cls; (parent || el).appendChild(n); return n; }
         add('h3', r.join.name + ' — ' + (r.pass ? 'PASS' : 'FAIL') + ' · ' + r.tierName);
         add('p', r.join.rule);
+        var strip = add('div', null, 'stat-strip');
+        function stat(k, v, sub, cls) { var b = add('div', null, 'stat' + (cls ? ' ' + cls : ''), strip); add('span', k, 'k', b); add('span', v, 'v', b); if (sub) add('span', sub, 's', b); }
+        stat('HEXAGRAM', String(r.castAdj), D.names[r.castAdj] || '');
+        stat('D' + r.die, r.bolted ? 'BOLT' : String(r.roll), r.stepDownUsed ? 'from d' + r.declaredDie : '');
+        var push = r.bolted ? -r.die : r.roll, mod = r.input.mod || 0;
+        stat('TOTAL', String(r.mode === 'over' ? r.castAdj + push + mod : r.input.dc + push + mod), r.mode === 'over' ? 'need ≥ ' + r.input.dc : 'cast must be ≤', r.pass ? 'pass' : 'fail');
+        add('p', formula(r), 'formula');
         add('p', (domain ? cap(domain) + ' check · ' : '') + 'Mode: ' + activeSetName() + '  |  Hexagram ' + r.cast + ' (' + (D.names[r.cast] || '') + ')' +
             (r.castAdj !== r.cast ? ' → stepped ' + (r.castAdj < r.cast ? 'down' : 'up') + ' to ' + r.castAdj + ' (' + (D.names[r.castAdj] || '') + ')' : '') + '  |  d' + r.die +
-            (r.stepDownUsed ? ' (stepped down from d' + r.declaredDie + ')' : '') + ' → ' + r.roll + '  |  ' + modeLabel(r.mode));
-        add('p', formula(r));
+            (r.stepDownUsed ? ' (stepped down from d' + r.declaredDie + ')' : '') + ' → ' + r.roll + '  |  ' + modeLabel(r.mode), 'meta');
         if (r.pulled) add('p', 'The Ovine Pull: instinct dragged this check into ' + modeLabel(r.mode) + '.', 'jinx');
         if (r.bolted) add('p', 'The Bolt: a natural 1. Agency turned against you.', 'jinx');
         if (r.revealedLine) add('p', 'Line ' + r.revealedLine + ' revealed: the die result was rewritten.');
         if (note) add('p', note);
         add('blockquote', (activeSet()[r.cast] || {})[r.tierName.toLowerCase()] || 'No narrative available');
         if (r.pass && r.tier === 'T') add('div', 'Legendary Feat attained! The Sentient grows in renown.', 'legendary-feat');
-        var rows = (D.lookup[r.cast] || '').split('').map(function (b) { return b === '1' ? '━━━━━━' : '━━  ━━'; }).reverse();
-        add('pre', rows.join('\n'));
+        var hex = add('div', null, 'hexagram'), bits = (D.lookup[r.cast] || '').split('');   // bits are bottom line first
+        hex.setAttribute('aria-label', 'Hexagram ' + r.cast);
+        for (var i = bits.length - 1; i >= 0; i--) {
+            var ln = add('div', null, 'line ' + (bits[i] === '1' ? 'yang' : 'yin') + (r.revealedLine === i + 1 ? ' revealed' : ''), hex);
+            add('span', null, null, ln); add('span', null, null, ln);
+        }
     }
 
     // ---------------- core actions ----------------
@@ -660,7 +356,7 @@
         if (b === null) { $('result').textContent = 'Enter a Personal DC from 1 to 64.'; return; }
         var a = adjusted();
         last = H.rollCheck(rng, { die: +$('dieType').value, mod: mods(), dc: a.dc, modeDc: b, stepDown: $('stepDownToggle').checked });
-        if (navigator.vibrate) navigator.vibrate(100);
+        if (navigator.vibrate) navigator.vibrate(last.tier === 'T' ? [60, 40, 140] : last.tier === 'D' ? [220] : [90]);
         show(last, a.shift ? 'Wounds have shifted your DC by ' + (a.dc - b > 0 ? '+' : '') + (a.dc - b) + '.' : '');
         $('changingLines').style.display = 'none';
         paintFate(); startInactivityTimer();
@@ -775,8 +471,8 @@
         if (!shakeEnabled) return;
         var a = ev.accelerationIncludingGravity; if (!a) return;
         var now = Date.now(), mag = Math.sqrt((a.x || 0) * (a.x || 0) + (a.y || 0) * (a.y || 0) + (a.z || 0) * (a.z || 0));
-        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
-        else if (isShaking && now - lastShake > 500) { isShaking = false; if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); else shakeMsg('Too short: shake for about 2 seconds.'); }
+        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; document.body.classList.add('shaking'); } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
+        else if (isShaking && now - lastShake > 500) { isShaking = false; document.body.classList.remove('shaking'); if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); else shakeMsg('Too short: shake for about 2 seconds.'); }
     }
 
     // ---------------- wiring ----------------
