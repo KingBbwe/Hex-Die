@@ -52,3 +52,7 @@ button {
 label, input, select {
     font-size: 0.8rem;
 }
+
+.jinx { color: #f4b942; font-style: italic; }
+pre { background: transparent; line-height: 1.1; }
+#fateBox, #damageBox { border-top: 1px solid #16213e; padding-top: 0.5rem; }
