@@ -163,6 +163,17 @@ function load(pre, url) {
   w = await load(x => { x.DeviceMotionEvent = function () {}; x.DeviceMotionEvent.requestPermission = () => Promise.resolve('denied'); });
   w.enableShakeDetection(); await new Promise(r => setTimeout(r, 30));
   ok('a refusal is explained, not silent', /refused/.test(w.document.getElementById('shakeStatus').textContent), w.document.getElementById('shakeStatus').textContent);
+
+  // ---- 7. Haptics: vibration where supported (Android); the iOS 18+ switch tick where it is not (iPhone)
+  w = await load(x => { x.DeviceMotionEvent = function () {}; });                 // jsdom, like iPhone Safari, has no navigator.vibrate
+  w.document.getElementById('dc').value = 20; w.document.getElementById('rollButton').click();
+  let sw = w.document.querySelector('#hapticTap input[type=checkbox][switch]');
+  let ticks = 0; if (sw) sw.addEventListener('click', () => ticks++);
+  w.document.getElementById('rollButton').click(); await shake(w, 2.5, 30);
+  ok('no Vibration API: a hidden iOS switch is toggled for haptics on each roll and when a shake starts', !!sw && ticks >= 3 && w.document.getElementById('hapticTap').getAttribute('aria-hidden') === 'true', 'ticks ' + ticks);
+  w = await load(x => { x.navigator.vibrate = p => { (x.__vib = x.__vib || []).push(p); return true; }; });
+  w.document.getElementById('dc').value = 20; w.document.getElementById('rollButton').click();
+  ok('with a Vibration API (Android) the phone vibrates and no switch is added', (w.__vib || []).length === 1 && !w.document.getElementById('hapticTap'), JSON.stringify(w.__vib));
   console.log(checks.map(c => c.join('  ')).join('\n'));
   console.log('JS errors:', errors.length ? errors : 'none');
   process.exit(checks.some(c => c[0] === 'FAIL') || errors.length ? 1 : 0);
