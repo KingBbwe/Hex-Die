@@ -4,7 +4,7 @@
   "private": true,
   "description": "Harmonized Hex & Die engine for The Chronicles of Auld Ewe",
   "scripts": {
-    "test": "node --test tests/engine.test.js tests/character-import.test.js tests/actions.test.js",
+    "test": "node --test tests/engine.test.js tests/character-import.test.js tests/actions.test.js tests/hexagrams.test.js",
     "smoke": "node tests/page.smoke.js"
   },
   "license": "MIT"

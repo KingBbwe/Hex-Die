@@ -87,3 +87,8 @@ Cyber's "scaling table" for changing lines (replaced by the canon line reveal), 
 
 - Vendored `engine/allocation.js` joins `engine/character.js`; refreshed from identify-eweself (rolls, 32-point allocation, zero floor, bands `18-36` / `36-50+`). Fixture regenerated. Not done: warning on an incomplete allocation at import.
 - Vendored `engine/skills.js`. The roll panel gets a skill picker (the Character's skills first, the rest at −2); the skill modifier adds to the manual modifier.
+
+## Hexagram line table corrected to King Wen (2026-11-27, commander approved)
+`engine/narratives.js` `lookup` (six lines per hexagram, bottom line first) did not match the King Wen sequence: 61 of 64 entries were wrong
+(e.g. 24 Return was drawn as 101110 instead of 100000). It is now built from the standard trigram grid and guarded by `tests/hexagrams.test.js`
+(known hexagrams, uniqueness, and the King Wen pair rule). Only the drawn hexagram uses this table; no resolution rule reads it, so no roll outcomes change.
