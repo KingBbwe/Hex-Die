@@ -3,18 +3,18 @@ const { JSDOM, VirtualConsole } = require('jsdom');
 const file = require('path').join(__dirname, '..', 'index.html');
 const errors = []; const checks = [];
 const ok = (name, cond, extra) => { checks.push([cond ? 'PASS' : 'FAIL', name, extra || '']); };
-function load(pre) {
+function load(pre, url) {
   const vc = new VirtualConsole();
   vc.on('jsdomError', e => { if (!/config\.local\.js|Could not load script|Could not load link/.test(String(e.message))) errors.push('jsdomError: ' + e.message); });
   vc.on('error', m => errors.push('console.error: ' + m));
-  return JSDOM.fromFile(file, { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true, virtualConsole: vc,
+  return JSDOM.fromFile(file, Object.assign(url ? { url } : {}, { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
       w.confirm = () => true; w.alert = m => { (w.__alerts = w.__alerts || []).push(m); };
       w.crypto = require('crypto').webcrypto; w.__fetches = [];
       const mem = {}; Object.defineProperty(w, 'localStorage', { value: { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); } } });
       w.fetch = (u, o) => { w.__fetches.push({ u, o }); return Promise.resolve({ ok: true, json: async () => ({}) }); };
       pre && pre(w);
-    } }).then(d => new Promise(r => d.window.addEventListener('load', () => setTimeout(() => r(d.window), 80))));
+    } })).then(d => new Promise(r => d.window.addEventListener('load', () => setTimeout(() => r(d.window), 80))));
 }
 (async () => {
   // ---- 1. statistical run: 500 rolls with reveals / mitigation / wounds
@@ -67,6 +67,37 @@ function load(pre) {
   ok('legacy FP shape migrates; +3 daily regen capped at 5', w.document.getElementById('fatePoints').value === '5', w.document.getElementById('fatePoints').value);
   w = await load(x => x.localStorage.setItem('auldEweFatePoints', JSON.stringify({ points: 2, timestamp: Date.now() - 3600e3 })));
   ok('no regen inside 24h', w.document.getElementById('fatePoints').value === '2', w.document.getElementById('fatePoints').value);
+
+  // ---- 5. Character import
+  const fx = require('./fixtures/character.example.json'), CHm = require('../engine/character.js');
+  const fileURL = 'file://' + file;
+  w = await load(null, fileURL + '#' + CHm.toFragment(fx)); $ = id => w.document.getElementById(id);
+  ok('character arrives by URL fragment and the fragment is cleared', /Aralen/.test($('characterInfo').textContent) && w.location.hash === '', $('characterInfo').textContent);
+  ok('four domain buttons with DC and mode', $('domainBtns').children.length === 4 && /Intellectual 5 · Over/.test($('domainBtns').children[0].textContent) && /Physical 20 · Under/.test($('domainBtns').children[1].textContent), [...$('domainBtns').children].map(b => b.textContent).join(' | '));
+  $('domain-physical').click();
+  ok('picking a domain fills the DC and shows its mode', $('dc').value === '20' && /Roll-Under/.test($('modeHint').textContent), $('modeHint').textContent);
+  ok('character die tier preselects the die', $('dieType').value === String(fx.dieTier));
+  w.__fetches.length = 0; w.TELEGRAM_BOT_TOKEN = 'T'; w.TELEGRAM_CHAT_ID = '-1000000000001';
+  $('rollButton').click();
+  ok('result is labelled with the domain', /Physical check/.test($('result').textContent));
+  const tf = w.__fetches.find(x => /Harmonized/.test(x.o.body));
+  ok('Telegram names the character and the domain', tf && /Aralen/.test(JSON.parse(tf.o.body).text) && /Physical check/.test(JSON.parse(tf.o.body).text));
+  $('dc').value = 21; $('dc').dispatchEvent(new w.Event('input'));
+  ok('editing the DC by hand drops the domain label', !$('domain-physical').classList.contains('active'));
+  $('rollButton').click(); ok('and the result is no longer labelled', !/Physical check/.test($('result').textContent));
+  // remembered across reload on the same origin store
+  const keep = w.localStorage.getItem('auldEweActiveCharacter');
+  w = await load(x => x.localStorage.setItem('auldEweActiveCharacter', keep)); $ = id => w.document.getElementById(id);
+  ok('character is remembered between visits', /Aralen/.test($('characterInfo').textContent));
+  // file picker
+  w = await load(); $ = id => w.document.getElementById(id);
+  const feed = (text) => new Promise(r => { const f = new w.File([text], 'c.json', { type: 'application/json' }); Object.defineProperty($('characterFile'), 'files', { value: [f], configurable: true }); $('characterFile').dispatchEvent(new w.Event('change')); setTimeout(r, 60); });
+  await feed(JSON.stringify(fx)); ok('file picker loads a Character', /Aralen/.test($('characterInfo').textContent));
+  await feed('not json'); ok('non-JSON file is refused politely', /not valid JSON/.test($('characterInfo').textContent));
+  const tampered = JSON.parse(JSON.stringify(fx)); tampered.dc.spiritual.mode = 'under';
+  await feed(JSON.stringify(tampered)); ok('a Character whose mode disagrees with its DC is rejected', /Not a usable Character/.test($('characterInfo').textContent), $('characterInfo').textContent.slice(0, 80));
+  const future = JSON.parse(JSON.stringify(fx)); future.version = 2;
+  await feed(JSON.stringify(future)); ok('an unknown schema version is rejected', /version/.test($('characterInfo').textContent));
 
   console.log(checks.map(c => c.join('  ')).join('\n'));
   console.log('JS errors:', errors.length ? errors : 'none');
