@@ -262,7 +262,7 @@
         CH.DOMAINS.forEach(function (n) { var b = $('domain-' + n); if (b) b.classList.toggle('active', n === name); });
         $('dc').value = character.dc[name].value; paintHint(); paintDmg(''); startInactivityTimer();
         var dc = $('dc'); dc.classList.remove('filled'); void dc.offsetWidth; dc.classList.add('filled');   // flash the field it filled
-        $('dcSource').textContent = 'from ' + cap(name) + ' profile';
+        $('dcSource').textContent = 'from ' + cap(name) + ' profile'; shakeActivity();
         if (dc.scrollIntoView && dc.getBoundingClientRect && dc.getBoundingClientRect().bottom > (window.innerHeight || 0)) dc.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function readCharacterFile(file) {
@@ -309,7 +309,7 @@
     }
     function resetFormFields() {
         $('dc').value = ''; $('modifier').value = '0'; $('stepDownToggle').checked = false; clearDomain();
-        $('changingLines').style.display = 'none'; $('changingLines').textContent = ''; paintHint();
+        $('changingLines').style.display = 'none'; $('changingLines').textContent = ''; paintHint(); shakeActivity();
     }
     function startInactivityTimer() {
         clearTimeout(inactivityTimer);
@@ -364,6 +364,7 @@
         last = H.rollCheck(rng, { die: +$('dieType').value, mod: mods(), dc: a.dc, modeDc: b, stepDown: $('stepDownToggle').checked });
         window.AuldEweHaptic(last.tier === 'T' ? [60, 40, 140] : last.tier === 'D' ? [220] : [90]);   // Android: vibration; iPhone (iOS 18+): system tick
         show(last, a.shift ? 'Wounds have shifted your DC by ' + (a.dc - b > 0 ? '+' : '') + (a.dc - b) + '.' : '');
+        shakeRolled(last);
         $('changingLines').style.display = 'none';
         paintFate(); startInactivityTimer();
         if (last.pass && last.tier === 'T') sendToTelegram('legendary', { message: 'Legendary Feat attained! The Sentient grows in renown.' });
@@ -391,7 +392,7 @@
         show(last, 'Fate Point spent: the roll is nudged up by ' + m.used + '.');
         saveFate(); paintFate(); startInactivityTimer();
     }
-    function newScene() { fate = H.newScene(fate); saveFate(); paintFate(); }
+    function newScene() { fate = H.newScene(fate); saveFate(); paintFate(); shakeActivity(); }
     function paintDmg(msg) {
         var a = adjusted(), parts = [];
         for (var L = 1; L <= 6; L++) if (dmg[L]) parts.push(dmg[L] + '×L' + L);
@@ -464,22 +465,63 @@
     }
 
     // ---------------- Shake-to-roll ----------------
-    function shakeMsg(t) { var el = document.getElementById('shakeStatus'); if (el) el.textContent = t; }
+    // The status line follows what you are doing: ready -> charging (with a bar) -> charged -> result -> ready again.
+    // Anything else you do (roll by button, pick a profile, edit the DC, change mode) clears it back to the ready hint.
+    var SHAKE_UI = window.SHAKE_UI = { doneMs: 5000, shortMs: 2500, blockedMs: 3500 };
+    var shakeTimer = null, shakeCharged = false;
+    function shakeEl() { return document.getElementById('shakeStatus'); }
+    function shakeSet(state, text, holdMs, charge) {
+        clearTimeout(shakeTimer);
+        var el = shakeEl(); if (!el) return;
+        el.setAttribute('data-state', state); el.style.setProperty('--charge', charge === undefined ? (state === 'charged' ? 1 : 0) : charge);
+        el.textContent = text;
+        if (holdMs) shakeTimer = setTimeout(shakeIdle, holdMs);
+    }
+    function shakeMsg(t) { shakeSet('info', t); }                         // permission and error messages
+    function shakeIdle() {
+        if (!shakeEnabled) return;
+        shakeCharged = false;
+        if (baseDc() === null) shakeSet('blocked', 'Pick a profile or enter a DC, then shake');
+        else shakeSet('idle', 'Ready: shake for 2 seconds, then hold still');
+    }
     function enableShakeDetection() {
+        function on() { shakeEnabled = true; var b = document.getElementById('enableMotion'); if (b) b.style.display = 'none'; shakeIdle(); }
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission().then(function (s) {
-                if (s === 'granted') { shakeEnabled = true; shakeMsg('Shake-to-roll is on: shake for about 2 seconds, then hold still.'); var b = document.getElementById('enableMotion'); if (b) b.style.display = 'none'; }
+                if (s === 'granted') on();
                 else shakeMsg('Motion access was refused. Allow it in browser settings, or press Harmonize!');
             }).catch(function (e) { shakeMsg('Shake is unavailable here (needs HTTPS and a motion sensor). Press Harmonize!'); console.error(e); });
-        } else { shakeEnabled = true; shakeMsg('Shake-to-roll is on: shake for about 2 seconds, then hold still.'); }
+        } else on();
     }
+    function endShake() { isShaking = false; shakeCharged = false; document.body.classList.remove('shaking'); }
     function handleShake(ev) {
         if (!shakeEnabled) return;
         var a = ev.accelerationIncludingGravity; if (!a) return;
         var now = Date.now(), mag = Math.sqrt((a.x || 0) * (a.x || 0) + (a.y || 0) * (a.y || 0) + (a.z || 0) * (a.z || 0));
-        if (mag > SHAKE_THRESHOLD) { if (!isShaking) { isShaking = true; shakeStart = now; document.body.classList.add('shaking'); window.AuldEweHaptic(30); } lastShake = now; shakeMsg(now - shakeStart >= MIN_SHAKE_MS ? 'Keep going... now hold still to roll!' : 'Shaking... ' + Math.max(0, ((MIN_SHAKE_MS - (now - shakeStart)) / 1000)).toFixed(1) + 's more'); }
-        else if (isShaking && now - lastShake > 500) { isShaking = false; document.body.classList.remove('shaking'); if (lastShake - shakeStart >= MIN_SHAKE_MS) rollDiceAndHexagram(); else shakeMsg('Too short: shake for about 2 seconds.'); }
+        if (mag > SHAKE_THRESHOLD) {
+            if (!isShaking) { isShaking = true; shakeStart = now; shakeCharged = false; document.body.classList.add('shaking'); window.AuldEweHaptic(30); }
+            lastShake = now;
+            var held = now - shakeStart;
+            if (held >= MIN_SHAKE_MS) {
+                if (!shakeCharged) { shakeCharged = true; window.AuldEweHaptic(45); }          // a tick the moment it is charged
+                shakeSet('charged', 'Charged! Hold still to roll', 0, 1);
+            } else shakeSet('charging', 'Charging... ' + ((MIN_SHAKE_MS - held) / 1000).toFixed(1) + 's', 0, held / MIN_SHAKE_MS);
+        } else if (isShaking && now - lastShake > 500) {
+            var charged = lastShake - shakeStart >= MIN_SHAKE_MS;
+            endShake();
+            if (!charged) shakeSet('short', 'Too short: keep shaking a little longer', SHAKE_UI.shortMs);
+            else if (baseDc() === null) { rollDiceAndHexagram(); shakeSet('blocked', 'Pick a profile or enter a DC first, then shake again', SHAKE_UI.blockedMs); }
+            else rollDiceAndHexagram();
+        }
     }
+    // Called after every roll, however it was triggered: say what happened, then fall back to the ready hint.
+    function shakeRolled(r) {
+        if (!shakeEnabled) return;
+        shakeSet('done', 'Rolled: ' + r.tierName + (r.pass ? ' (pass)' : ' (fail)') + '. Shake again to re-roll', SHAKE_UI.doneMs);
+    }
+    // Any other activity returns the status to the ready hint straight away.
+    function shakeActivity() { if (shakeEnabled && !isShaking) shakeIdle(); }
+    document.addEventListener('visibilitychange', function () { if (document.hidden && isShaking) { endShake(); shakeIdle(); } });
 
     // ---------------- wiring ----------------
     window.addFatePoint = addFatePoint; window.rollDiceAndHexagram = rollDiceAndHexagram; window.showChangingLines = showChangingLines;
@@ -492,11 +534,11 @@
             btn.classList.toggle('active', btn.id === 'generalMode');      // narrative mode always opens at General
             btn.addEventListener('click', function () {
                 document.querySelectorAll('#modeGroup .mode-button').forEach(function (b) { b.classList.remove('active'); });
-                btn.classList.add('active'); if (last) show(last); startInactivityTimer();
+                btn.classList.add('active'); if (last) show(last); startInactivityTimer(); shakeActivity();
             });
         });
         ['dc', 'modifier', 'stepDownToggle', 'dieType'].forEach(function (id) {
-            $(id).addEventListener('input', function () { startInactivityTimer(); if (id === 'dc') { if (domain && +$('dc').value !== character.dc[domain].value) clearDomain(); paintHint(); paintDmg(''); } });
+            $(id).addEventListener('input', function () { startInactivityTimer(); if (id === 'dc') { if (domain && +$('dc').value !== character.dc[domain].value) clearDomain(); paintHint(); paintDmg(''); } shakeActivity(); });
         });
         $('mitigateBtn').addEventListener('click', mitigate);
         $('characterFile').addEventListener('change', function () { if (this.files && this.files[0]) readCharacterFile(this.files[0]); });
