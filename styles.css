@@ -106,10 +106,24 @@ h2 { margin-top: 0.45rem; font-weight: 700; font-size: clamp(0.72rem, 3vw, 0.9re
 #fateStats b { color: var(--text); font-family: var(--display); font-size: 0.78rem; }
 
 /* ---------------- shake status ---------------- */
-#shakeStatus { margin: 0 auto 1rem; min-height: 0; width: fit-content; max-width: 100%; text-align: center;
-    font-size: 0.92rem; color: var(--cyan); }
-#shakeStatus:not(:empty) { padding: 0.4rem 0.85rem; border: 1px solid rgba(34, 211, 238, 0.4); background: rgba(34, 211, 238, 0.07); }
-#shakeStatus:not(:empty)::before { content: '📳 '; }
+/* data-state: idle | charging | charged | short | done | blocked | info. --charge (0..1) fills the bar while charging. */
+#shakeStatus { --charge: 0; --tone: 34, 211, 238; margin: 0 auto 1rem; min-height: 0; width: fit-content; min-width: min(100%, 17rem); max-width: 100%; text-align: center;
+    font-size: 0.95rem; color: rgb(var(--tone)); transition: color 0.2s, border-color 0.2s; }
+#shakeStatus:not(:empty) { padding: 0.45rem 0.9rem; border: 1px solid rgba(var(--tone), 0.45);
+    background: linear-gradient(90deg, rgba(var(--tone), 0.38) calc(var(--charge) * 100%), rgba(var(--tone), 0.07) calc(var(--charge) * 100%)); }
+#shakeStatus:not(:empty)::before { content: '◌  '; }
+#shakeStatus[data-state=charging] { --tone: 139, 92, 246; color: #fff; }
+#shakeStatus[data-state=charging]::before { content: '⚡ '; }
+#shakeStatus[data-state=charged] { --tone: 34, 211, 238; color: #fff; font-weight: 700; box-shadow: 0 0 18px rgba(34, 211, 238, 0.55); animation: pulse 0.6s ease-in-out infinite alternate; }
+#shakeStatus[data-state=charged]::before { content: '✦ '; }
+#shakeStatus[data-state=short] { --tone: 245, 158, 11; }
+#shakeStatus[data-state=short]::before { content: '↺ '; }
+#shakeStatus[data-state=blocked] { --tone: 245, 158, 11; }
+#shakeStatus[data-state=blocked]::before { content: '⚠ '; }
+#shakeStatus[data-state=done] { --tone: 34, 197, 94; color: #bbf7d0; }
+#shakeStatus[data-state=done]::before { content: '✔ '; }
+#shakeStatus[data-state=info]::before { content: 'ⓘ '; }
+@keyframes pulse { to { box-shadow: 0 0 6px rgba(34, 211, 238, 0.25); } }
 
 /* ---------------- section cards and fields ---------------- */
 .card { margin: 0 0 1rem; padding: 0.9rem; background: var(--panel-2); border: 1px solid rgba(139, 92, 246, 0.28); position: relative; }

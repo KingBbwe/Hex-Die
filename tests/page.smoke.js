@@ -144,13 +144,46 @@ function load(pre, url) {
   const setDc = win => { win.document.getElementById('dc').value = 20; };
   // Android-style: no permission prompt, so shake must be on without any tap
   w = await load(x => { x.DeviceMotionEvent = function () {}; });
-  ok('shake switches itself on where no permission is needed', /Shake-to-roll is on/.test(w.document.getElementById('shakeStatus').textContent), w.document.getElementById('shakeStatus').textContent);
+  const st = () => w.document.getElementById('shakeStatus'), msg = () => st().textContent, state = () => st().getAttribute('data-state');
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  ok('shake switches itself on where no permission is needed', state() === 'blocked' && /Pick a profile or enter a DC/.test(msg()), msg());
   ok('enable button stays hidden there', w.document.getElementById('enableMotion').style.display !== 'block');
-  setDc(w); const before = w.document.getElementById('result').textContent;
-  await shake(w, 0.5, 30);
-  ok('a short shake does not roll', !rolled(w) && /Too short/.test(w.document.getElementById('shakeStatus').textContent), w.document.getElementById('shakeStatus').textContent);
-  await shake(w, 2.5, 30);
-  ok('a 2.5 second shake rolls the dice and hexagram', rolled(w), w.document.getElementById('result').textContent.slice(0, 60));
+  w.document.getElementById('dc').value = 20; w.document.getElementById('dc').dispatchEvent(new w.Event('input'));
+  ok('entering a DC turns the hint to Ready', state() === 'idle' && /^Ready/.test(msg()), msg());
+  w.SHAKE_UI.shortMs = 60; w.SHAKE_UI.doneMs = 60; w.SHAKE_UI.blockedMs = 60;
+  // charging reports progress; a short shake does not roll and says so, then clears itself
+  { let t = 1e6; w.Date.now = () => t; const ev = m => { const e = new w.Event('devicemotion'); e.accelerationIncludingGravity = { x: m, y: 0, z: 0 }; return e; };
+    for (let ms = 0; ms <= 1000; ms += 100) { t += 100; w.dispatchEvent(ev(30)); }
+    ok('mid-shake it shows charging with the time left and a partly filled bar', state() === 'charging' && /Charging\.\.\. 0\.9s|Charging\.\.\. 1\.0s/.test(msg()) && +st().style.getPropertyValue('--charge') > 0.4 && +st().style.getPropertyValue('--charge') < 0.6, msg() + ' ' + st().style.getPropertyValue('--charge'));
+    t += 700; w.dispatchEvent(ev(1));
+    ok('a short shake does not roll and explains why', !rolled(w) && state() === 'short' && /Too short/.test(msg()), msg());
+    await sleep(120);
+    ok('the too-short message clears itself back to Ready', state() === 'idle', msg());
+    for (let ms = 0; ms <= 2500; ms += 100) { t += 100; w.dispatchEvent(ev(30)); }
+    ok('after two seconds it says Charged and the bar is full', state() === 'charged' && /Charged/.test(msg()) && +st().style.getPropertyValue('--charge') === 1, msg());
+    t += 700; w.dispatchEvent(ev(1));
+    ok('releasing rolls, and the status reports the outcome', rolled(w) && state() === 'done' && /^Rolled: (Triumph|Conflict|Disaster)/.test(msg()), msg());
+    await sleep(120);
+    ok('the roll message then resets to Ready (no stale "hold still")', state() === 'idle' && !/hold still to roll/.test(msg()), msg());
+    // activity-aware: other actions clear a lingering result message at once
+    w.SHAKE_UI.doneMs = 60000;
+    w.document.getElementById('rollButton').click();
+    ok('rolling by button also reports the outcome', state() === 'done', msg());
+    w.document.getElementById('dc').value = 21; w.document.getElementById('dc').dispatchEvent(new w.Event('input'));
+    ok('editing the DC clears the outcome message immediately', state() === 'idle', msg());
+    w.document.getElementById('rollButton').click(); w.document.getElementById('actionMode').click();
+    ok('changing narrative mode clears it too', state() === 'idle', msg());
+    // a charged shake with no DC does not pretend to roll
+    w.document.getElementById('dc').value = ''; w.document.getElementById('dc').dispatchEvent(new w.Event('input'));
+    for (let ms = 0; ms <= 2500; ms += 100) { t += 100; w.dispatchEvent(ev(30)); }
+    t += 700; w.dispatchEvent(ev(1));
+    ok('a charged shake with no DC asks for one instead of reporting a roll', state() === 'blocked' && /DC/.test(msg()), msg());
+    // leaving the tab mid-shake abandons it
+    w.document.getElementById('dc').value = 20; w.document.getElementById('dc').dispatchEvent(new w.Event('input'));
+    for (let ms = 0; ms <= 500; ms += 100) { t += 100; w.dispatchEvent(ev(30)); }
+    Object.defineProperty(w.document, 'hidden', { value: true, configurable: true }); w.document.dispatchEvent(new w.Event('visibilitychange'));
+    ok('backgrounding the page mid-shake cancels it', state() === 'idle' && !w.document.body.classList.contains('shaking'), msg());
+  }
   // iOS-style: permission required, nothing rolls until it is granted
   w = await load(x => { x.DeviceMotionEvent = function () {}; x.DeviceMotionEvent.requestPermission = () => Promise.resolve('granted'); });
   ok('iOS shows the enable button and does not auto-enable', w.document.getElementById('enableMotion').style.display === 'block');
